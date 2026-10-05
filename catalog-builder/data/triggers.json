@@ -1,0 +1,20 @@
+{
+  "_doc": "Algs written with their triggers in parentheses, e.g. \"U (R U R' U') (R U' R')\". Only these groups are shown as triggers for that alg (replacing its automatic closing insert); an alg written with no parentheses shows none. Each group must be a named trigger (TRIGGER_NAMES in shared/catalog.ts: 3-move insert, sledgehammer, hedgeslammer, sexy move), named from its shape. Rebuild with: npm run build-catalog",
+  "algs": [
+    "(R U R' U') (R U R' U') (R U R')",
+    "(R U R' U') (R U R' U') (R U R' U')",
+    "y' (R' U' R U) (R' U' R U) (R' U' R)",
+    "y2 (L U L' U') (L U L' U') (L U L')",
+    "(R' F R F') (R' F R F') (R' F R F')",
+    "(F R' F' R) (F R' F' R) (F R' F' R)",
+    "(L' U' L U) (L' U' L U) (L' U' L)",
+    "(R' U' R U) (R' U' R U) (R' U' R)",
+    "y (R U R' U') (R U R' U') (R U R')",
+    "(L U L' U') (L U L' U') (L U L')",
+    "(R' F R F') (R' F R F')",
+    "(F' L F L') (F' L F L')",
+    "(F R' F' R) (F R' F' R)",
+    "y (L F' L' F) (L F' L' F)",
+    "(L F' L' F) (L F' L' F)"
+  ]
+}

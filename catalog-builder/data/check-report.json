@@ -1,0 +1,147 @@
+{
+  "checkedAt": "2026-10-04T16:35:05.505Z",
+  "results": [
+    {
+      "source": "speedcubedb",
+      "slotRotation": {
+        "FR": "",
+        "FL": "y'",
+        "BR": "y",
+        "BL": "y2"
+      },
+      "stats": {
+        "FR": {
+          "total": 1329,
+          "ok": 1328,
+          "nonZeroAuf": 0
+        },
+        "FL": {
+          "total": 345,
+          "ok": 345,
+          "nonZeroAuf": 0
+        },
+        "BR": {
+          "total": 325,
+          "ok": 325,
+          "nonZeroAuf": 0
+        },
+        "BL": {
+          "total": 312,
+          "ok": 312,
+          "nonZeroAuf": 0
+        }
+      },
+      "caseIssues": [],
+      "failures": [
+        {
+          "case": 4,
+          "slot": "FR",
+          "rank": 18,
+          "moves": "l b d",
+          "votes": 0,
+          "reason": "does not solve F2L"
+        }
+      ]
+    },
+    {
+      "source": "cubicdb",
+      "slotRotation": {
+        "FR": ""
+      },
+      "stats": {
+        "FR": {
+          "total": 343,
+          "ok": 331,
+          "nonZeroAuf": 1
+        }
+      },
+      "caseIssues": [],
+      "failures": [
+        {
+          "case": 1,
+          "slot": "FR",
+          "rank": 5,
+          "moves": "y U2 R2 F R F' R",
+          "reason": "does not solve F2L"
+        },
+        {
+          "case": 2,
+          "slot": "FR",
+          "rank": 7,
+          "moves": "U' F U F'",
+          "reason": "does not solve F2L"
+        },
+        {
+          "case": 8,
+          "slot": "FR",
+          "rank": 9,
+          "moves": "U R' U2 R U2 R' U R",
+          "reason": "does not solve F2L"
+        },
+        {
+          "case": 9,
+          "slot": "FR",
+          "rank": 6,
+          "moves": "U R U R' U2 F' U F",
+          "reason": "does not solve F2L"
+        },
+        {
+          "case": 10,
+          "slot": "FR",
+          "rank": 4,
+          "moves": "R' U R2 U R'",
+          "reason": "does not solve F2L"
+        },
+        {
+          "case": 11,
+          "slot": "FR",
+          "rank": 8,
+          "moves": "y2 L U2 L2 U' L2 U' L'",
+          "reason": "does not solve F2L"
+        },
+        {
+          "case": 12,
+          "slot": "FR",
+          "rank": 6,
+          "moves": "U2 R U2 R' U' R U R' U' R U' R",
+          "reason": "does not solve F2L"
+        },
+        {
+          "case": 15,
+          "slot": "FR",
+          "rank": 11,
+          "moves": "R' U R U' R U2 R' U2 R U' R'",
+          "reason": "does not solve F2L"
+        },
+        {
+          "case": 16,
+          "slot": "FR",
+          "rank": 11,
+          "moves": "L' U' L U2 L' U L U' L' U L",
+          "reason": "does not solve F2L"
+        },
+        {
+          "case": 22,
+          "slot": "FR",
+          "rank": 9,
+          "moves": "U F' U F R U R' U' R U R' U' R U R'",
+          "reason": "does not solve F2L"
+        },
+        {
+          "case": 33,
+          "slot": "FR",
+          "rank": 5,
+          "moves": "U D' L' U' L D",
+          "reason": "does not solve F2L"
+        },
+        {
+          "case": 39,
+          "slot": "FR",
+          "rank": 4,
+          "moves": "R F U R U' R' F' U' R'",
+          "reason": "does not solve F2L"
+        }
+      ]
+    }
+  ]
+}

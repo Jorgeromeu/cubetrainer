@@ -1,0 +1,13 @@
+{
+  "name": "server",
+  "private": true,
+  "type": "module",
+  "description": "User-data API, one module and SQLite file per trainer. No dependencies: node:http + node:sqlite.",
+  "engines": {
+    "node": ">=23.6"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning src/main.ts",
+    "dev": "node --disable-warning=ExperimentalWarning --watch src/main.ts"
+  }
+}

@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cubetrainer · F2L</title>
+    <script>
+      // Stealth mode before first paint, so cubes never flash in colour (see src/stealth.ts).
+      try {
+        if (localStorage.getItem('cubetrainer.stealth') === 'on') document.documentElement.setAttribute('data-stealth', '')
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

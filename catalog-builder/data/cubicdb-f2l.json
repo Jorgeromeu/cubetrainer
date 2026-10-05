@@ -1,0 +1,1834 @@
+{
+  "source": "cubicdb",
+  "sourceUrl": "https://github.com/isaacvr/cubicdb/blob/HEAD/src/database/algs.db",
+  "collectedAt": "2026-10-04T16:24:26.638Z",
+  "notes": [
+    "FR slot only. No votes (all 0) or other metadata.",
+    "cubicdb's \"scramble\" field is a solving alg; setups here are its inverse."
+  ],
+  "cases": [
+    {
+      "number": 1,
+      "name": "F2L 1",
+      "setups": {
+        "FR": "R U R' U'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R' F R F'",
+            "rank": 0
+          },
+          {
+            "moves": "U2 R U2 R'",
+            "rank": 1
+          },
+          {
+            "moves": "M' U R U' r'",
+            "rank": 2
+          },
+          {
+            "moves": "y2 U L U' L'",
+            "rank": 3
+          },
+          {
+            "moves": "y' r' U' R U M'",
+            "rank": 4
+          },
+          {
+            "moves": "y U2 R2 F R F' R",
+            "rank": 5
+          },
+          {
+            "moves": "y F' L F L'",
+            "rank": 6
+          },
+          {
+            "moves": "U F' L' U' L F",
+            "rank": 7
+          },
+          {
+            "moves": "y U F R U' R' F'",
+            "rank": 8
+          }
+        ]
+      }
+    },
+    {
+      "number": 2,
+      "name": "F2L 2",
+      "setups": {
+        "FR": "R' F R F'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "y U' L' U L",
+            "rank": 0
+          },
+          {
+            "moves": "F R' F' R",
+            "rank": 1
+          },
+          {
+            "moves": "y' U' R' U R",
+            "rank": 2
+          },
+          {
+            "moves": "r U R' U' M",
+            "rank": 3
+          },
+          {
+            "moves": "d' L' U L",
+            "rank": 4
+          },
+          {
+            "moves": "y U2 L' U2 L",
+            "rank": 5
+          },
+          {
+            "moves": "y L F' L' F",
+            "rank": 6
+          },
+          {
+            "moves": "U' F U F'",
+            "rank": 7
+          },
+          {
+            "moves": "y U' F R U R' F'",
+            "rank": 8
+          },
+          {
+            "moves": "U r' D' r U' r' D r",
+            "rank": 9
+          },
+          {
+            "moves": "U' r U' r' U r U r'",
+            "rank": 10
+          },
+          {
+            "moves": "y2 l U L' U' M'",
+            "rank": 11
+          },
+          {
+            "moves": "y r U' r' F",
+            "rank": 12
+          },
+          {
+            "moves": "U2 l R U' R' U l'",
+            "rank": 13
+          },
+          {
+            "moves": "U2 R2 B' R' B R'",
+            "rank": 14
+          },
+          {
+            "moves": "U' F R' F' R2 U' R'",
+            "rank": 15
+          }
+        ]
+      }
+    },
+    {
+      "number": 3,
+      "name": "F2L 3",
+      "setups": {
+        "FR": "F' U F"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "y L' U' L",
+            "rank": 0
+          },
+          {
+            "moves": "F' U' F",
+            "rank": 1
+          },
+          {
+            "moves": "y' R' U' R",
+            "rank": 2
+          },
+          {
+            "moves": "U M R U' R' U M'",
+            "rank": 3
+          },
+          {
+            "moves": "U R U2 R' U' F' U F",
+            "rank": 4
+          },
+          {
+            "moves": "y' R' U R U R' U R",
+            "rank": 5
+          }
+        ]
+      }
+    },
+    {
+      "number": 4,
+      "name": "F2L 4",
+      "setups": {
+        "FR": "R U' R'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R U R'",
+            "rank": 0
+          },
+          {
+            "moves": "y2 L U L'",
+            "rank": 1
+          },
+          {
+            "moves": "y F U F'",
+            "rank": 2
+          }
+        ]
+      }
+    },
+    {
+      "number": 5,
+      "name": "F2L 5",
+      "setups": {
+        "FR": "F2' U' L' U L F2'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "U' R U R' U2 R U' R'",
+            "rank": 0
+          },
+          {
+            "moves": "U' R U R' U' R U2 R'",
+            "rank": 1
+          },
+          {
+            "moves": "U' R U R' U R' F R F'",
+            "rank": 2
+          },
+          {
+            "moves": "F2 L' U' L U F2",
+            "rank": 3
+          },
+          {
+            "moves": "y' U r' U R U' R' U' r",
+            "rank": 4
+          },
+          {
+            "moves": "R' D' R U R' D R U R U' R'",
+            "rank": 5
+          }
+        ]
+      }
+    },
+    {
+      "number": 6,
+      "name": "F2L 6",
+      "setups": {
+        "FR": "r U' R' U' R U r' U"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "d R' U' R U2 R' U R",
+            "rank": 0
+          },
+          {
+            "moves": "y U L' U' L U2 L' U L",
+            "rank": 1
+          },
+          {
+            "moves": "U' r U' R' U R U r'",
+            "rank": 2
+          },
+          {
+            "moves": "U F' U' F U2 F' U F",
+            "rank": 3
+          },
+          {
+            "moves": "d R' U' R U R' U2 R",
+            "rank": 4
+          },
+          {
+            "moves": "y F2 R U R' U' F2",
+            "rank": 5
+          },
+          {
+            "moves": "R U' R' U R U' R' U F' U' F",
+            "rank": 6
+          },
+          {
+            "moves": "U' L F' l' U R U r'",
+            "rank": 7
+          },
+          {
+            "moves": "d R' U' R U' l U' R' U x",
+            "rank": 8
+          }
+        ]
+      }
+    },
+    {
+      "number": 7,
+      "name": "F2L 7",
+      "setups": {
+        "FR": "R U R' U2' R U2' R' U"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "U' R U2 R' U2 R U' R'",
+            "rank": 0
+          },
+          {
+            "moves": "U' R U2 R' U' R U2 R'",
+            "rank": 1
+          },
+          {
+            "moves": "U' R U2 R' U R' F R F'",
+            "rank": 2
+          },
+          {
+            "moves": "M' U' M U2 r U' r'",
+            "rank": 3
+          },
+          {
+            "moves": "y' r U2 R2 U' R2 U' r'",
+            "rank": 4
+          }
+        ]
+      }
+    },
+    {
+      "number": 8,
+      "name": "F2L 8",
+      "setups": {
+        "FR": "r' U' R2 U' R2' U2' r"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "d R' U2 R U2 R' U R",
+            "rank": 0
+          },
+          {
+            "moves": "r' U2 R2 U R2' U r",
+            "rank": 1
+          },
+          {
+            "moves": "y U L' U2 L U2 L' U L",
+            "rank": 2
+          },
+          {
+            "moves": "U F' U2 F U2 F' U F",
+            "rank": 3
+          },
+          {
+            "moves": "d R' U2 R U R' U2 R",
+            "rank": 4
+          },
+          {
+            "moves": "B' R' U' R2 U R' B",
+            "rank": 5
+          },
+          {
+            "moves": "R2 U2 F R2 F' U2 R2",
+            "rank": 6
+          },
+          {
+            "moves": "d R' U2 R U' l U' R' U x",
+            "rank": 7
+          },
+          {
+            "moves": "R' U2 R r U R' U' r' U2 R",
+            "rank": 8
+          },
+          {
+            "moves": "U R' U2 R U2 R' U R",
+            "rank": 9
+          }
+        ]
+      }
+    },
+    {
+      "number": 9,
+      "name": "F2L 9",
+      "setups": {
+        "FR": "F' U F U' R U R' U"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "U' R U' R' U F' U' F",
+            "rank": 0
+          },
+          {
+            "moves": "U' R U' R' d R' U' R",
+            "rank": 1
+          },
+          {
+            "moves": "F R U R' U' F' R U' R'",
+            "rank": 2
+          },
+          {
+            "moves": "y' U R' U' R U' R' U' R",
+            "rank": 3
+          },
+          {
+            "moves": "d R' U' R U' R' U' R",
+            "rank": 4
+          },
+          {
+            "moves": "y F2 U R U' R' F2",
+            "rank": 5
+          },
+          {
+            "moves": "U R U R' U2 F' U F",
+            "rank": 6
+          },
+          {
+            "moves": "y U2 L' U L U L' U' L",
+            "rank": 7
+          }
+        ]
+      }
+    },
+    {
+      "number": 10,
+      "name": "F2L 10",
+      "setups": {
+        "FR": "R U' R' U' R U' R' U"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "U' R U R' U R U R'",
+            "rank": 0
+          },
+          {
+            "moves": "U y' R' U R U' y R U R'",
+            "rank": 1
+          },
+          {
+            "moves": "U2 R U' R' U' R U R'",
+            "rank": 2
+          },
+          {
+            "moves": "d R' U R d' R U R'",
+            "rank": 3
+          },
+          {
+            "moves": "R' U R2 U R'",
+            "rank": 4
+          },
+          {
+            "moves": "y U L' U L U' F U F'",
+            "rank": 5
+          },
+          {
+            "moves": "y' f R' U R U' R2 f'",
+            "rank": 6
+          },
+          {
+            "moves": "U F' U F U' R U R'",
+            "rank": 7
+          },
+          {
+            "moves": "U F R' F' R U2 R U' R'",
+            "rank": 8
+          }
+        ]
+      }
+    },
+    {
+      "number": 11,
+      "name": "F2L 11",
+      "setups": {
+        "FR": "F' U F U' R U2' R' U"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "U' R U2 R' U F' U' F",
+            "rank": 0
+          },
+          {
+            "moves": "U' R U2 R' d R' U' R",
+            "rank": 1
+          },
+          {
+            "moves": "y' R U2 R2 U' R2 U' R'",
+            "rank": 2
+          },
+          {
+            "moves": "F R' F' R U' R U' R' U R U' R'",
+            "rank": 3
+          },
+          {
+            "moves": "y L' U L U' L' U L U2 L' U L",
+            "rank": 4
+          },
+          {
+            "moves": "y F R U R' U' R U R' U' R U2 R' F'",
+            "rank": 5
+          },
+          {
+            "moves": "R U' R' U R U' R2 F R F' R U' R'",
+            "rank": 6
+          },
+          {
+            "moves": "y L U2 L2 U' L2 U' L'",
+            "rank": 7
+          },
+          {
+            "moves": "y2 L U2 L2 U' L2 U' L'",
+            "rank": 8
+          },
+          {
+            "moves": "U' R U R' U' R U R' F R' F' R",
+            "rank": 9
+          },
+          {
+            "moves": "R U R' U R' F R F' U R U' R'",
+            "rank": 10
+          }
+        ]
+      }
+    },
+    {
+      "number": 12,
+      "name": "F2L 12",
+      "setups": {
+        "FR": "R' U' R2' U' R2' U2' R"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R U' R' U R U' R' U2 R U' R'",
+            "rank": 0
+          },
+          {
+            "moves": "R' U2 R2 U R2 U R",
+            "rank": 1
+          },
+          {
+            "moves": "U F' U2 F U' R U R'",
+            "rank": 2
+          },
+          {
+            "moves": "U R U' R' U' R U R' U' R U R'",
+            "rank": 3
+          },
+          {
+            "moves": "d R' U2 R d' R U R'",
+            "rank": 4
+          },
+          {
+            "moves": "R2 U2 R' U' R U' R' U' R'",
+            "rank": 5
+          },
+          {
+            "moves": "U2 R U2 R' U' R U R' U' R U' R",
+            "rank": 6
+          },
+          {
+            "moves": "R U2 R' U2 R U2 R' U' R U2 R'",
+            "rank": 7
+          },
+          {
+            "moves": "R' D' R U2 R' D R2 U R'",
+            "rank": 8
+          }
+        ]
+      }
+    },
+    {
+      "number": 13,
+      "name": "F2L 13",
+      "setups": {
+        "FR": "R' U R U R' U' R U' y"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "y' U R' U R U' R' U' R",
+            "rank": 0
+          },
+          {
+            "moves": "d R' U R U' R' U' R",
+            "rank": 1
+          },
+          {
+            "moves": "y U L' U L U' L' U' L",
+            "rank": 2
+          },
+          {
+            "moves": "M' U' R U R' U' R U2 r'",
+            "rank": 3
+          },
+          {
+            "moves": "U R U' R' U R U' R' U' F' U F",
+            "rank": 4
+          },
+          {
+            "moves": "y L' U L U' L' U2 L U2 L' U L",
+            "rank": 5
+          }
+        ]
+      }
+    },
+    {
+      "number": 14,
+      "name": "F2L 14",
+      "setups": {
+        "FR": "R U' R' U' R U R' U"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "U' R U' R' U R U R'",
+            "rank": 0
+          },
+          {
+            "moves": "y L' U2 L U2 F U2 F' U F U' F'",
+            "rank": 1
+          },
+          {
+            "moves": "R U' R' U R U2 R' U2 R U' R'",
+            "rank": 2
+          }
+        ]
+      }
+    },
+    {
+      "number": 15,
+      "name": "F2L 15",
+      "setups": {
+        "FR": "R U R' U' R U R' U2' R U' R'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R U R' U2 R U' R' U R U' R'",
+            "rank": 0
+          },
+          {
+            "moves": "y L' U L U2 y' R U R'",
+            "rank": 1
+          },
+          {
+            "moves": "M U r U' r' U' M'",
+            "rank": 2
+          },
+          {
+            "moves": "R' D' R U' R' D R U R U' R'",
+            "rank": 3
+          },
+          {
+            "moves": "R U2 R' U R U R' U R U' R'",
+            "rank": 4
+          },
+          {
+            "moves": "U R' F R F' U R U R'",
+            "rank": 5
+          },
+          {
+            "moves": "F' U F U2 R U R'",
+            "rank": 6
+          },
+          {
+            "moves": "y' R' U R U2 y R U R'",
+            "rank": 7
+          },
+          {
+            "moves": "l U r U' r' U' l'",
+            "rank": 8
+          },
+          {
+            "moves": "R B L U' L' B' R'",
+            "rank": 9
+          },
+          {
+            "moves": "U' R' U2 R' U R' U' R U2 R",
+            "rank": 10
+          },
+          {
+            "moves": "R' U R U' R U2 R' U2 R U' R'",
+            "rank": 11
+          }
+        ]
+      }
+    },
+    {
+      "number": 16,
+      "name": "F2L 16",
+      "setups": {
+        "FR": "F' U F U2' R U R'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R U' R' U2 F' U' F",
+            "rank": 0
+          },
+          {
+            "moves": "R U' R' U2 y L' U' L",
+            "rank": 1
+          },
+          {
+            "moves": "R U' R' U d R' U' R",
+            "rank": 2
+          },
+          {
+            "moves": "R2 B' R' B R' U2 R U' R'",
+            "rank": 3
+          },
+          {
+            "moves": "U M' U R U' r' U' R U R'",
+            "rank": 4
+          },
+          {
+            "moves": "U F U R U' R' F' R U R'",
+            "rank": 5
+          },
+          {
+            "moves": "U F R U R' U' F' U R U' R'",
+            "rank": 6
+          },
+          {
+            "moves": "y F U' R U' R' U2 F'",
+            "rank": 7
+          },
+          {
+            "moves": "R U' R2 D' r U' r' D R2 U' R'",
+            "rank": 8
+          },
+          {
+            "moves": "y L' U2 L U' L' U' L U' L' U L",
+            "rank": 9
+          },
+          {
+            "moves": "y' R D R' U R D' R' U' R' U R",
+            "rank": 10
+          },
+          {
+            "moves": "L' U' L U2 L' U L U' L' U L",
+            "rank": 11
+          },
+          {
+            "moves": "y U' r U' r' F U' L' U' L",
+            "rank": 12
+          },
+          {
+            "moves": "U F R' F' R2 U' R' U2 R U' R'",
+            "rank": 13
+          }
+        ]
+      }
+    },
+    {
+      "number": 17,
+      "name": "F2L 17",
+      "setups": {
+        "FR": "R U' R' U R U2' R'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R U2 R' U' R U R'",
+            "rank": 0
+          },
+          {
+            "moves": "y L F' L' F L' U L U' L' U L",
+            "rank": 1
+          },
+          {
+            "moves": "U' R U' R' U2 R U2 R2 F R F'",
+            "rank": 2
+          }
+        ]
+      }
+    },
+    {
+      "number": 18,
+      "name": "F2L 18",
+      "setups": {
+        "FR": "R' U R U' R' U2' R y"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "y' R' U2 R U R' U' R",
+            "rank": 0
+          },
+          {
+            "moves": "y L' U2 L U L' U' L",
+            "rank": 1
+          },
+          {
+            "moves": "R' F R F' R U' R' U R U' R'",
+            "rank": 2
+          },
+          {
+            "moves": "R U R' U' R U R' U' F R' F' R",
+            "rank": 3
+          },
+          {
+            "moves": "U R U' R2 F R F' U R U' R'",
+            "rank": 4
+          }
+        ]
+      }
+    },
+    {
+      "number": 19,
+      "name": "F2L 19",
+      "setups": {
+        "FR": "R U R' U' R U2' R' U'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "U R U2 R' U R U' R'",
+            "rank": 0
+          },
+          {
+            "moves": "U R U2 R2 F R F'",
+            "rank": 1
+          },
+          {
+            "moves": "R U' R' U R U' R' U R U R'",
+            "rank": 2
+          },
+          {
+            "moves": "U R U2 R' U R U' R'",
+            "rank": 3
+          },
+          {
+            "moves": "y U F U2 F2 L F L'",
+            "rank": 4
+          },
+          {
+            "moves": "y U F U2 F2 L F L'",
+            "rank": 5
+          }
+        ]
+      }
+    },
+    {
+      "number": 20,
+      "name": "F2L 20",
+      "setups": {
+        "FR": "R' U' R U R' U2' R U y"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "y' U' R' U2 R U' R' U R",
+            "rank": 0
+          },
+          {
+            "moves": "y U' L' U2 L U' L' U L",
+            "rank": 1
+          },
+          {
+            "moves": "U' R U' R2 F R F' R U' R'",
+            "rank": 2
+          },
+          {
+            "moves": "d' L' U2 L U' L' U L",
+            "rank": 3
+          },
+          {
+            "moves": "U' R U R' U r U' r' U2 r U r'",
+            "rank": 4
+          },
+          {
+            "moves": "y L' U L U' L' U L U' L' U' L",
+            "rank": 5
+          },
+          {
+            "moves": "y' R' U R U' R' U R U' R' U' R",
+            "rank": 6
+          }
+        ]
+      }
+    },
+    {
+      "number": 21,
+      "name": "F2L 21",
+      "setups": {
+        "FR": "R U' R' U2' R U R'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "U2 R U R' U R U' R'",
+            "rank": 0
+          },
+          {
+            "moves": "R U' R' U2 R U R'",
+            "rank": 1
+          },
+          {
+            "moves": "y F R U2 R' F'",
+            "rank": 2
+          },
+          {
+            "moves": "R B U2 B' R'",
+            "rank": 3
+          },
+          {
+            "moves": "U2 R U R2 F R F'",
+            "rank": 4
+          },
+          {
+            "moves": "y' r' U r U2 r' U' r",
+            "rank": 5
+          }
+        ]
+      }
+    },
+    {
+      "number": 22,
+      "name": "F2L 22",
+      "setups": {
+        "FR": "F' L' U2' L F"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "F' L' U2 L F",
+            "rank": 0
+          },
+          {
+            "moves": "y' U2 R' U' R U' R' U R",
+            "rank": 1
+          },
+          {
+            "moves": "r U' r' U2 r U r'",
+            "rank": 2
+          },
+          {
+            "moves": "y' R' U R U2 R' U' R",
+            "rank": 3
+          },
+          {
+            "moves": "y U2 L' U' L U' L' U L",
+            "rank": 4
+          },
+          {
+            "moves": "y' U2 l' U R' U' R2 x'",
+            "rank": 5
+          },
+          {
+            "moves": "y L' U L U2 L' U' L",
+            "rank": 6
+          },
+          {
+            "moves": "d U R' U' R U' R' U R",
+            "rank": 7
+          },
+          {
+            "moves": "U' R U2 R2 F R F' R U' R'",
+            "rank": 8
+          },
+          {
+            "moves": "U F' U F R U R' U' R U R' U' R U R'",
+            "rank": 9
+          }
+        ]
+      }
+    },
+    {
+      "number": 23,
+      "name": "F2L 23",
+      "setups": {
+        "FR": "R U R' U' R U R' U R U R' U'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R U R' U2 R U R' U' R U R'",
+            "rank": 0
+          },
+          {
+            "moves": "U R U' R' U' R U' R' U R U' R'",
+            "rank": 1
+          },
+          {
+            "moves": "U2 R2 U2 R' U' R U' R2",
+            "rank": 2
+          },
+          {
+            "moves": "y F' U' L' U L F L' U L",
+            "rank": 3
+          },
+          {
+            "moves": "F R' F' R U R U R'",
+            "rank": 4
+          },
+          {
+            "moves": "U R U' R' U' R U' R2 F R F'",
+            "rank": 5
+          },
+          {
+            "moves": "F U R U' R' F' U' F' U' F",
+            "rank": 6
+          },
+          {
+            "moves": "R U' R' U' R U R' U2 R U R'",
+            "rank": 7
+          },
+          {
+            "moves": "R' U' R U' R' U2 R2 U2 R'",
+            "rank": 8
+          },
+          {
+            "moves": "R' U' F' U F R U F R' F' R",
+            "rank": 9
+          },
+          {
+            "moves": "U2 R U R' U' R U' R' U2 R U' R'",
+            "rank": 10
+          },
+          {
+            "moves": "U y' R' U' R U' y R U' R' U y' R' U R",
+            "rank": 11
+          }
+        ]
+      }
+    },
+    {
+      "number": 24,
+      "name": "F2L 24",
+      "setups": {
+        "FR": "r U' r' U r U' R' U' R U' r'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "F U R U' R' F' R U' R'",
+            "rank": 0
+          },
+          {
+            "moves": "U' R U R2 F R F' R U' R'",
+            "rank": 1
+          },
+          {
+            "moves": "y U' L' U L U L' U L U' L' U L",
+            "rank": 2
+          },
+          {
+            "moves": "y' R' U' R U2 R' U' R U R' U' R",
+            "rank": 3
+          },
+          {
+            "moves": "y U2 L2 U2 L U L' U L2",
+            "rank": 4
+          },
+          {
+            "moves": "R U R' U R U R' U2 F' U F",
+            "rank": 5
+          },
+          {
+            "moves": "r U R' U R U r' U' r U r'",
+            "rank": 6
+          },
+          {
+            "moves": "U' R U R' U R U' R' U y' R' U R",
+            "rank": 7
+          },
+          {
+            "moves": "U' R B' R B R2 U R U' R'",
+            "rank": 8
+          },
+          {
+            "moves": "y' R' U R U R' U' R U2 R' U' R",
+            "rank": 9
+          },
+          {
+            "moves": "y' U' R' U R U R' U R U' R' U R",
+            "rank": 10
+          },
+          {
+            "moves": "y U' F' L F L' U' L' U' L",
+            "rank": 11
+          },
+          {
+            "moves": "U' R B' R B R F R F'",
+            "rank": 12
+          },
+          {
+            "moves": "y U' L' U L U L' U L2 F' L' F",
+            "rank": 13
+          }
+        ]
+      }
+    },
+    {
+      "number": 25,
+      "name": "F2L 25",
+      "setups": {
+        "FR": "F' R U R' U' R' F R"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R' F' R U R U' R' F",
+            "rank": 0
+          },
+          {
+            "moves": "U' R' F R F' R U R'",
+            "rank": 1
+          },
+          {
+            "moves": "R' U' R' U' R' U R U R",
+            "rank": 2
+          },
+          {
+            "moves": "U' F' R U R' U' R' F R",
+            "rank": 3
+          },
+          {
+            "moves": "y U' L' U L y' U R U' R'",
+            "rank": 4
+          },
+          {
+            "moves": "U' F' U F U R U' R'",
+            "rank": 5
+          },
+          {
+            "moves": "R U' R' U' R U' R' U R U R'",
+            "rank": 6
+          },
+          {
+            "moves": "R U R U R U R' U' R' U' R2",
+            "rank": 7
+          },
+          {
+            "moves": "B' R2 U' R' U R2 B",
+            "rank": 8
+          },
+          {
+            "moves": "l' U' l U l F' l' F",
+            "rank": 9
+          },
+          {
+            "moves": "U' R U R' U2 R U' R' U2 R U' R'",
+            "rank": 10
+          },
+          {
+            "moves": "U' F' U F R' F R F'",
+            "rank": 11
+          }
+        ]
+      }
+    },
+    {
+      "number": 26,
+      "name": "F2L 26",
+      "setups": {
+        "FR": "F' U' F U R U R' U'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "U R U' R' U' F' U F",
+            "rank": 0
+          },
+          {
+            "moves": "U R U' R' F R' F' R",
+            "rank": 1
+          },
+          {
+            "moves": "y r U r' U' r' F r F'",
+            "rank": 2
+          },
+          {
+            "moves": "U R U' R' d' L' U L",
+            "rank": 3
+          },
+          {
+            "moves": "U R U R' U' y L' U' L",
+            "rank": 4
+          },
+          {
+            "moves": "y' R U R U R U' R' U' R'",
+            "rank": 5
+          },
+          {
+            "moves": "U R U' R' U' y L' U L",
+            "rank": 6
+          },
+          {
+            "moves": "y U F r' F' r U r U' r'",
+            "rank": 7
+          },
+          {
+            "moves": "R' U' R F' R' U R F",
+            "rank": 8
+          },
+          {
+            "moves": "U R U' M' U R' U' M",
+            "rank": 9
+          },
+          {
+            "moves": "l' F' R U R' U' R' F R l",
+            "rank": 10
+          },
+          {
+            "moves": "U' R U2 R' U2 y L' U' L",
+            "rank": 11
+          }
+        ]
+      }
+    },
+    {
+      "number": 27,
+      "name": "F2L 27",
+      "setups": {
+        "FR": "R U R' U' R U R'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R U' R' U R U' R'",
+            "rank": 0
+          },
+          {
+            "moves": "R U' R2 F R F'",
+            "rank": 1
+          },
+          {
+            "moves": "y L' U' L U2 F U' F'",
+            "rank": 2
+          },
+          {
+            "moves": "y' R' U' R U y U R U' R'",
+            "rank": 3
+          }
+        ]
+      }
+    },
+    {
+      "number": 28,
+      "name": "F2L 28",
+      "setups": {
+        "FR": "R' U' R U R' U' R y"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R U R' U' F R' F' R",
+            "rank": 0
+          },
+          {
+            "moves": "y L' U L U' L' U L",
+            "rank": 1
+          },
+          {
+            "moves": "y' R' U R U' R' U R",
+            "rank": 2
+          },
+          {
+            "moves": "R U R' U2 F' U F",
+            "rank": 3
+          },
+          {
+            "moves": "R U R' U2 F' U F",
+            "rank": 4
+          },
+          {
+            "moves": "F' U F2 R' F' R",
+            "rank": 5
+          },
+          {
+            "moves": "R U' R' U' R' F R F' R U' R'",
+            "rank": 6
+          },
+          {
+            "moves": "y L' U L2 F' L' F",
+            "rank": 7
+          }
+        ]
+      }
+    },
+    {
+      "number": 29,
+      "name": "F2L 29",
+      "setups": {
+        "FR": "R U R' U' r U R' U' M"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R' F R F' R' F R F'",
+            "rank": 0
+          },
+          {
+            "moves": "y L' U' L U L' U' L",
+            "rank": 1
+          },
+          {
+            "moves": "y' R' U' R U R' U' R",
+            "rank": 2
+          },
+          {
+            "moves": "M' U R U' r' U R U' R'",
+            "rank": 3
+          },
+          {
+            "moves": "U2 R U' R' y' R' U' R",
+            "rank": 4
+          },
+          {
+            "moves": "R' F R F' U R U' R'",
+            "rank": 5
+          },
+          {
+            "moves": "x R' U R U' R' U R U' x'",
+            "rank": 6
+          }
+        ]
+      }
+    },
+    {
+      "number": 30,
+      "name": "F2L 30",
+      "setups": {
+        "FR": "R U' R' U R U' R'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R U R' U' R U R'",
+            "rank": 0
+          },
+          {
+            "moves": "F R' F' R F R' F' R",
+            "rank": 1
+          },
+          {
+            "moves": "y U' L' U' L U2 F U2 F' U F U' F'",
+            "rank": 2
+          }
+        ]
+      }
+    },
+    {
+      "number": 31,
+      "name": "F2L 31",
+      "setups": {
+        "FR": "R U R' F R' F' R U"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "U' R' F R F' R U' R'",
+            "rank": 0
+          },
+          {
+            "moves": "R U' R' y L' U2 L",
+            "rank": 1
+          },
+          {
+            "moves": "R U' R' U2 F R' F' R",
+            "rank": 2
+          },
+          {
+            "moves": "l F' R U' R' U l'",
+            "rank": 3
+          },
+          {
+            "moves": "R U' R' y' R' U2 R",
+            "rank": 4
+          },
+          {
+            "moves": "R U' R' y U L' U L",
+            "rank": 5
+          },
+          {
+            "moves": "R U' R' d R' U R",
+            "rank": 6
+          },
+          {
+            "moves": "R U' R' U y' R' U R",
+            "rank": 7
+          },
+          {
+            "moves": "F2 r U r' F R U' R'",
+            "rank": 8
+          },
+          {
+            "moves": "U' R' F R F' U' R' F R F'",
+            "rank": 9
+          }
+        ]
+      }
+    },
+    {
+      "number": 32,
+      "name": "F2L 32",
+      "setups": {
+        "FR": "R U' R' U R U' R' U R U' R'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R U R' U' R U R' U' R U R'",
+            "rank": 0
+          },
+          {
+            "moves": "U R U' R' U R U' R' U R U' R'",
+            "rank": 1
+          },
+          {
+            "moves": "R2 U R2 U R2 U2 R2",
+            "rank": 2
+          },
+          {
+            "moves": "U R U R' U' R U2 R' U R U' R'",
+            "rank": 3
+          },
+          {
+            "moves": "R' F R F' R' F R F' R' F R F'",
+            "rank": 4
+          },
+          {
+            "moves": "y L' U' L U L' U' L U L' U' L",
+            "rank": 5
+          },
+          {
+            "moves": "F R' F' R F R' F' R F R' F' R",
+            "rank": 6
+          },
+          {
+            "moves": "U R U' R' U R U' R2 F R F'",
+            "rank": 7
+          },
+          {
+            "moves": "U' R U R' U' R U R' U R U' R'",
+            "rank": 8
+          },
+          {
+            "moves": "U' R U R' U' R U R2 F R F'",
+            "rank": 9
+          },
+          {
+            "moves": "U' F R' F' R U' R U R'",
+            "rank": 10
+          },
+          {
+            "moves": "U R' F R F' d R' U' R",
+            "rank": 11
+          }
+        ]
+      }
+    },
+    {
+      "number": 33,
+      "name": "F2L 33",
+      "setups": {
+        "FR": "R U R' U2' R U R' U"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "U' R U' R' U2 R U' R'",
+            "rank": 0
+          },
+          {
+            "moves": "U' R U' R' U R' F R F'",
+            "rank": 1
+          },
+          {
+            "moves": "y R' D R U' R' D' R",
+            "rank": 2
+          },
+          {
+            "moves": "R U R' U' R U' R' U R U' R'",
+            "rank": 3
+          },
+          {
+            "moves": "U' R U' R' U' R U2 R'",
+            "rank": 4
+          },
+          {
+            "moves": "U D' L' U' L D",
+            "rank": 5
+          },
+          {
+            "moves": "R U R' U' F' U F R U' R' U F' U F",
+            "rank": 6
+          }
+        ]
+      }
+    },
+    {
+      "number": 34,
+      "name": "F2L 34",
+      "setups": {
+        "FR": "R U' R' U' R U2 R' U"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "U R U R' U2 R U R'",
+            "rank": 0
+          },
+          {
+            "moves": "U' R U2 R' U R U R'",
+            "rank": 1
+          },
+          {
+            "moves": "y U L' U L U2 L' U L",
+            "rank": 2
+          },
+          {
+            "moves": "y' U R' U R U2 R' U R",
+            "rank": 3
+          },
+          {
+            "moves": "U' R' D' R U R' D R",
+            "rank": 4
+          },
+          {
+            "moves": "L D' L' U L D L'",
+            "rank": 5
+          },
+          {
+            "moves": "U F' U F U' F R' F' R",
+            "rank": 6
+          },
+          {
+            "moves": "U R' D' R U' R' D R",
+            "rank": 7
+          },
+          {
+            "moves": "F' U' F U R U R' U2 F' U F",
+            "rank": 8
+          }
+        ]
+      }
+    },
+    {
+      "number": 35,
+      "name": "F2L 35",
+      "setups": {
+        "FR": "F' U F U' R U' R' U"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "U' R U R' U F' U' F",
+            "rank": 0
+          },
+          {
+            "moves": "U2 R U R' F R' F' R",
+            "rank": 1
+          },
+          {
+            "moves": "U M' U R U' r' R U' R'",
+            "rank": 2
+          },
+          {
+            "moves": "U' R U R' d R' U' R",
+            "rank": 3
+          },
+          {
+            "moves": "U2 R U' R' U' y' R' U' R",
+            "rank": 4
+          },
+          {
+            "moves": "U' l U' R U l' U R'",
+            "rank": 5
+          }
+        ]
+      }
+    },
+    {
+      "number": 36,
+      "name": "F2L 36",
+      "setups": {
+        "FR": "R U' R u U R U' R' u' R2'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "U2 R' F R F' U2 R U R'",
+            "rank": 0
+          },
+          {
+            "moves": "U F' U' F U' R U R'",
+            "rank": 1
+          },
+          {
+            "moves": "y U L' U' L y' U' R U R'",
+            "rank": 2
+          },
+          {
+            "moves": "R2 u R U R' U' u' R' U R'",
+            "rank": 3
+          },
+          {
+            "moves": "U2 F' U' F U R U' R'",
+            "rank": 4
+          },
+          {
+            "moves": "d R' U' R d' R U R'",
+            "rank": 5
+          },
+          {
+            "moves": "U2 F' U' F R' F R F'",
+            "rank": 6
+          },
+          {
+            "moves": "R2 D r' U r D' R' U R'",
+            "rank": 7
+          },
+          {
+            "moves": "d R' F R' F' R U' R",
+            "rank": 8
+          }
+        ]
+      }
+    },
+    {
+      "number": 37,
+      "name": "F2L 37",
+      "setups": {
+        "FR": "R U' R U2' F R2' F' U2' R2'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R2 U2 F R2 F' U2 R' U R'",
+            "rank": 0
+          },
+          {
+            "moves": "R U' R' d R' U2 R U2 R' U R",
+            "rank": 1
+          },
+          {
+            "moves": "R' F R F' R U' R' U R U' R' U2 R U' R'",
+            "rank": 2
+          },
+          {
+            "moves": "R U2 R' U R U2 R' U F' U' F",
+            "rank": 3
+          },
+          {
+            "moves": "R U R' U2 R U2 R' U F' U' F",
+            "rank": 4
+          },
+          {
+            "moves": "R r U R' U' r' U2 R U R U' R2",
+            "rank": 5
+          },
+          {
+            "moves": "R U' R' B' R' U' R2 U R' B",
+            "rank": 6
+          },
+          {
+            "moves": "r U' r' R U R' U r U' r' R U R'",
+            "rank": 7
+          },
+          {
+            "moves": "F2 U2 R' F2 R U2 F U' F",
+            "rank": 8
+          },
+          {
+            "moves": "L' B' R2 B' R2 B2 L R U R'",
+            "rank": 9
+          },
+          {
+            "moves": "F' U F' U2 R' F2 R U2 F2",
+            "rank": 10
+          },
+          {
+            "moves": "R U' R' y U L' U2 L U2 L' U L",
+            "rank": 11
+          },
+          {
+            "moves": "R' F R F' R' U2 R2 U R2 U R",
+            "rank": 12
+          },
+          {
+            "moves": "F' U' F U2 F' U2 F U' R U R'",
+            "rank": 13
+          },
+          {
+            "moves": "y L' U L d' L U2 L' U2 L U' L'",
+            "rank": 14
+          },
+          {
+            "moves": "R U R' U' R U2 R' U y' R' U' R U' R' U R",
+            "rank": 15
+          },
+          {
+            "moves": "R U R' U2 R U2 R' d R' U' R",
+            "rank": 16
+          }
+        ]
+      }
+    },
+    {
+      "number": 38,
+      "name": "F2L 38",
+      "setups": {
+        "FR": "R U' R' U R U2' R' U R U' R'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R U R' U' R U2 R' U' R U R'",
+            "rank": 0
+          },
+          {
+            "moves": "R U' R' U' R U R' U2 R U' R'",
+            "rank": 1
+          },
+          {
+            "moves": "R2 U2 R' U' R U' R' U2 R'",
+            "rank": 2
+          },
+          {
+            "moves": "F R' F' R2 U2 R' U' R U R'",
+            "rank": 3
+          }
+        ]
+      }
+    },
+    {
+      "number": 39,
+      "name": "F2L 39",
+      "setups": {
+        "FR": "R U' R' U' R U R' U' R U2' R'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R U R' U2 R U' R' U R U R'",
+            "rank": 0
+          },
+          {
+            "moves": "R U' R' U R U2 R' U R U' R'",
+            "rank": 1
+          },
+          {
+            "moves": "R U2 R U R' U R U2 R2",
+            "rank": 2
+          },
+          {
+            "moves": "R U2 R' U R U' R' U R U R'",
+            "rank": 3
+          },
+          {
+            "moves": "R F U R U' R' F' U' R'",
+            "rank": 4
+          },
+          {
+            "moves": "F R' F' R U' R U' R' U R U R'",
+            "rank": 5
+          }
+        ]
+      }
+    },
+    {
+      "number": 40,
+      "name": "F2L 40",
+      "setups": {
+        "FR": "R U R' F U R U' R' F' R U R'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R U' R' F R U R' U' F' R U' R'",
+            "rank": 0
+          },
+          {
+            "moves": "r U' r' U2 r U r' R U R'",
+            "rank": 1
+          },
+          {
+            "moves": "R F U R U' R' F' U' R'",
+            "rank": 2
+          },
+          {
+            "moves": "F' L' U2 L F R U R'",
+            "rank": 3
+          },
+          {
+            "moves": "R U' R' U' R U' R' U F' U' F",
+            "rank": 4
+          },
+          {
+            "moves": "R U' R' U' R U' R' d R' U' R",
+            "rank": 5
+          },
+          {
+            "moves": "F2 L' U' L U F U' F",
+            "rank": 6
+          },
+          {
+            "moves": "y L' U' L U L' U L U2 y' R U R'",
+            "rank": 7
+          }
+        ]
+      }
+    },
+    {
+      "number": 41,
+      "name": "F2L 41",
+      "setups": {
+        "FR": "r U' r' U2' r U M U R'"
+      },
+      "algs": {
+        "FR": [
+          {
+            "moves": "R U R' U' R U' R' U2 y' R' U' R",
+            "rank": 0
+          },
+          {
+            "moves": "R U F R U R' U' F' R'",
+            "rank": 1
+          },
+          {
+            "moves": "R U' R' F' L' U2 L F",
+            "rank": 2
+          },
+          {
+            "moves": "R U' M' U' r' U2 r U r'",
+            "rank": 3
+          },
+          {
+            "moves": "R U' R' r U' r' U2 r U r'",
+            "rank": 4
+          },
+          {
+            "moves": "y F2 R U R' U' F' U F'",
+            "rank": 5
+          },
+          {
+            "moves": "R U2 R' U2 R U' R' U2 F' U' F",
+            "rank": 6
+          },
+          {
+            "moves": "R U R' F U R U' R' F' R U R'",
+            "rank": 7
+          },
+          {
+            "moves": "R U R' F R' F' R2 U' R' U2 R U' R'",
+            "rank": 8
+          },
+          {
+            "moves": "y F R U2 R' F' L' U' L",
+            "rank": 9
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+# User data: each trainer's SQLite DB (and its WAL files). Back it up, never commit it.
+/data/
+*.sqlite
+*.sqlite-*
+*.db-wal
+*.db-shm
+
+# Dependencies and build output
+node_modules/
+dist/
+*.tsbuildinfo
+
+# catalog-builder's download cache (re-fetchable; see catalog-builder/README.md)
+catalog-builder/raw/
+
+# Logs
+*.log
+logs/
+
+# Local env and editor/OS files
+.env
+.env.*
+*.local
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+*.sw?

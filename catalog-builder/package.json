@@ -1,0 +1,21 @@
+{
+  "name": "catalog-builder",
+  "private": true,
+  "type": "module",
+  "description": "Collects F2L alg data from external sources and stores it locally.",
+  "engines": {
+    "node": ">=23.6"
+  },
+  "scripts": {
+    "fetch": "node src/fetch-speedcubedb.ts && node src/fetch-cubicdb.ts",
+    "parse": "node src/parse-speedcubedb.ts && node src/parse-cubicdb.ts",
+    "check": "node src/check.ts",
+    "build-catalog": "node src/build-catalog.ts",
+    "build-pll": "node src/build-pll.ts",
+    "collect": "npm run fetch && npm run parse && npm run check && npm run build-catalog"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "cubing": "^0.63.8"
+  }
+}

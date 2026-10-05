@@ -1,0 +1,1047 @@
+{
+ "version": 1,
+ "generatedAt": "2026-10-05T00:32:48.823Z",
+ "caseSet": {
+  "id": "pll",
+  "name": "PLL"
+ },
+ "cases": [
+  {
+   "id": "pll-H",
+   "name": "H",
+   "group": "Edges only",
+   "algs": [
+    "M2 U M2 U2 M2 U M2",
+    "M2 U' M2 U2 M2 U' M2",
+    "R2 S2 R2 U' R2 S2 R2"
+   ],
+   "scrambles": [
+    "R2 F2 B2 L2 D L2 F2 B2 R2",
+    "R2 L2 D' R2 L2 U2 R2 L2 D' R2 L2",
+    "R2 L2 D R2 L2 U2 R2 L2 D R2 L2",
+    "R2 L2 D2 R2 L2 U' R2 L2 D2 R2 L2"
+   ],
+   "stickers": ".BFB./LUUUR/RUUUL/LUUUR/.FBF.",
+   "arrows": [
+    {
+     "from": [
+      1,
+      2
+     ],
+     "to": [
+      1,
+      0
+     ],
+     "both": true
+    },
+    {
+     "from": [
+      2,
+      1
+     ],
+     "to": [
+      0,
+      1
+     ],
+     "both": true
+    }
+   ]
+  },
+  {
+   "id": "pll-Ua",
+   "name": "Ua",
+   "group": "Edges only",
+   "algs": [
+    "y2 M2 U M U2 M' U M2",
+    "R U R' U R' U' R2 U' R' U R' U R",
+    "y R2 U' S' U2 S U' R2"
+   ],
+   "scrambles": [
+    "R2 U F B' R2 F' B U R2",
+    "R2 L2 D' R L' F2 R' L D' R2 L2",
+    "R2 U R U R' U' R' U' R' U R'",
+    "R' U' R U' R U R2 U R U' R U' R'"
+   ],
+   "stickers": ".BLB./LUUUR/RUUUB/LUUUR/.FFF.",
+   "arrows": [
+    {
+     "from": [
+      2,
+      1
+     ],
+     "to": [
+      1,
+      0
+     ]
+    },
+    {
+     "from": [
+      1,
+      0
+     ],
+     "to": [
+      0,
+      1
+     ]
+    },
+    {
+     "from": [
+      0,
+      1
+     ],
+     "to": [
+      2,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pll-Ub",
+   "name": "Ub",
+   "group": "Edges only",
+   "algs": [
+    "y2 M2 U' M U2 M' U' M2",
+    "R' U R' U' R' U' R' U R U R2",
+    "R2' U R U R' U' R3 U' R' U R'"
+   ],
+   "scrambles": [
+    "R2 L2 D R L' F2 R' L D R2 L2",
+    "R2 U' R' U' R U R U R U' R",
+    "R U' R U R U R U' R' U' R2"
+   ],
+   "stickers": ".BRB./LUUUR/BUUUL/LUUUR/.FFF.",
+   "arrows": [
+    {
+     "from": [
+      2,
+      1
+     ],
+     "to": [
+      0,
+      1
+     ]
+    },
+    {
+     "from": [
+      1,
+      0
+     ],
+     "to": [
+      2,
+      1
+     ]
+    },
+    {
+     "from": [
+      0,
+      1
+     ],
+     "to": [
+      1,
+      0
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pll-Z",
+   "name": "Z",
+   "group": "Edges only",
+   "algs": [
+    "M' U' M2 U' M2 U' M' U2 M2",
+    "M2 U M2 U M' U2 M2 U2 M'",
+    "y M2 U' M2 U' M' U2 M2 U2 M'"
+   ],
+   "scrambles": [
+    "R2 L2 D2 R L' F R2 L2 B R2 L2 F R L'",
+    "R L' B2 R2 L2 F2 R L' U' R2 L2 D' R2 L2",
+    "R L' B2 R2 L2 F2 R L' U R2 L2 D R2 L2",
+    "R2 L2 D2 R L' F' R2 L2 B' R2 L2 F' R L'"
+   ],
+   "stickers": ".BRB./LUUUR/FUUUB/LUUUR/.FLF.",
+   "arrows": [
+    {
+     "from": [
+      1,
+      2
+     ],
+     "to": [
+      0,
+      1
+     ],
+     "both": true
+    },
+    {
+     "from": [
+      2,
+      1
+     ],
+     "to": [
+      1,
+      0
+     ],
+     "both": true
+    }
+   ]
+  },
+  {
+   "id": "pll-Aa",
+   "name": "Aa",
+   "group": "Adjacent corner swap",
+   "algs": [
+    "x R' U R' D2 R U' R' D2 R2 x'",
+    "l' U R' D2 R U' R' D2 R2 x'",
+    "y x' R2 D2 R' U' R D2 R' U R' x"
+   ],
+   "scrambles": [
+    "R2 B2 R F R' B2 R F' R",
+    "R B' R F2 R' B R F2 R2"
+   ],
+   "stickers": ".RBR./BUUUF/LUUUR/LUUUL/.FFB.",
+   "arrows": [
+    {
+     "from": [
+      2,
+      2
+     ],
+     "to": [
+      0,
+      0
+     ]
+    },
+    {
+     "from": [
+      2,
+      0
+     ],
+     "to": [
+      2,
+      2
+     ]
+    },
+    {
+     "from": [
+      0,
+      0
+     ],
+     "to": [
+      2,
+      0
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pll-Ab",
+   "name": "Ab",
+   "group": "Adjacent corner swap",
+   "algs": [
+    "x R2 D2 R U R' D2 R U' R x'",
+    "y x' R U' R D2 R' U R D2 R2 x",
+    "R' B' R U' R D R' U R D' R2 B R"
+   ],
+   "scrambles": [
+    "R' F R' B2 R F' R' B2 R2",
+    "R2 F2 R' B' R F2 R' B R'",
+    "R' B' R2 D R' U' R D' R' U R' B R"
+   ],
+   "stickers": ".FBL./RUUUB/LUUUR/LUUUB/.FFR.",
+   "arrows": [
+    {
+     "from": [
+      2,
+      2
+     ],
+     "to": [
+      2,
+      0
+     ]
+    },
+    {
+     "from": [
+      2,
+      0
+     ],
+     "to": [
+      0,
+      0
+     ]
+    },
+    {
+     "from": [
+      0,
+      0
+     ],
+     "to": [
+      2,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pll-F",
+   "name": "F",
+   "group": "Adjacent corner swap",
+   "algs": [
+    "y R' U' F' R U R' U' R' F R2 U' R' U' R U R' U R",
+    "y R' F R f' R' F R2 U R' U' R' F' R2 U R' S",
+    "R' U R U' R2 F' U' F U R F R' F' R2"
+   ],
+   "scrambles": [
+    "R2 F R F' R' U' F' U F R2 U R' U' R",
+    "R' U R U' R2 F' U' F U R F R' F' R2",
+    "F B' D R' D2 F D R D R' D2 F' D B R' F' R",
+    "R' U' R U' R' U R U R2 F' R U R U' R' F U R"
+   ],
+   "stickers": ".RBL./BUUUB/RUUUL/LUUUR/.FFF.",
+   "arrows": [
+    {
+     "from": [
+      2,
+      1
+     ],
+     "to": [
+      0,
+      1
+     ],
+     "both": true
+    },
+    {
+     "from": [
+      2,
+      0
+     ],
+     "to": [
+      0,
+      0
+     ],
+     "both": true
+    }
+   ]
+  },
+  {
+   "id": "pll-Ga",
+   "name": "Ga",
+   "group": "Adjacent corner swap",
+   "algs": [
+    "R2 U R' U R' U' R U' R2 D U' R' U R D'",
+    "R2 u R' U R' U' R u' R2 F' U F",
+    "y R U R' F' R U R' U' R' F R U' R' F R2 U' R' U' R U R' F'"
+   ],
+   "scrambles": [
+    "F' U' F R2 D B' U B U' B D' R2",
+    "D R' U' R U D' R2 U R' U R U' R U' R2",
+    "R' U' R D' U R2 U R' U R U' R U' R2 D",
+    "F R U' R' U R U R2 F' R U R' F' R U R U' R' F R U' R'"
+   ],
+   "stickers": ".LBL./FUUUB/RUUUF/RUUUR/.BLF.",
+   "arrows": [
+    {
+     "from": [
+      1,
+      2
+     ],
+     "to": [
+      0,
+      1
+     ]
+    },
+    {
+     "from": [
+      2,
+      1
+     ],
+     "to": [
+      1,
+      2
+     ]
+    },
+    {
+     "from": [
+      0,
+      1
+     ],
+     "to": [
+      2,
+      1
+     ]
+    },
+    {
+     "from": [
+      2,
+      0
+     ],
+     "to": [
+      0,
+      0
+     ]
+    },
+    {
+     "from": [
+      0,
+      0
+     ],
+     "to": [
+      0,
+      2
+     ]
+    },
+    {
+     "from": [
+      0,
+      2
+     ],
+     "to": [
+      2,
+      0
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pll-Gb",
+   "name": "Gb",
+   "group": "Adjacent corner swap",
+   "algs": [
+    "D R' U' R U D' R2 U R' U R U' R U' R2",
+    "R' U' R U D' R2 U R' U R U' R U' R2 D",
+    "y F' U' F R2 u R' U R U' R u' R2"
+   ],
+   "scrambles": [
+    "R2 D B' U B' U' B D' R2 F' U F",
+    "R2 U R' U R' U' R U' R2 D U' R' U R D'",
+    "D' R2 U R' U R' U' R U' R2 D U' R' U R"
+   ],
+   "stickers": ".LRL./FUUUB/BUUUL/RUUUR/.BFF.",
+   "arrows": [
+    {
+     "from": [
+      2,
+      1
+     ],
+     "to": [
+      0,
+      1
+     ]
+    },
+    {
+     "from": [
+      1,
+      0
+     ],
+     "to": [
+      2,
+      1
+     ]
+    },
+    {
+     "from": [
+      0,
+      1
+     ],
+     "to": [
+      1,
+      0
+     ]
+    },
+    {
+     "from": [
+      2,
+      0
+     ],
+     "to": [
+      0,
+      0
+     ]
+    },
+    {
+     "from": [
+      0,
+      0
+     ],
+     "to": [
+      0,
+      2
+     ]
+    },
+    {
+     "from": [
+      0,
+      2
+     ],
+     "to": [
+      2,
+      0
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pll-Gc",
+   "name": "Gc",
+   "group": "Adjacent corner swap",
+   "algs": [
+    "R2 U' R U' R U R' U R2 D' U R U' R' D",
+    "y2 R2 F2 R U2 R U2 R' F R U R' U' R' F R2",
+    "D R2 U' R U' R U R' U R2 D' U R U' R'"
+   ],
+   "scrambles": [
+    "B U B' R2 D' F U' F' U F' D R2",
+    "D' R U R' U' D R2 U' R U' R' U R' U R2",
+    "R2 F' R U R U' R' F' R U2 R' U2 R' F2 R2",
+    "R U R' U' D R2 U' R U' R' U R' U R2 D'"
+   ],
+   "stickers": ".LFL./FUUUB/BUUUR/RUUUR/.BLF.",
+   "arrows": [
+    {
+     "from": [
+      1,
+      2
+     ],
+     "to": [
+      0,
+      1
+     ]
+    },
+    {
+     "from": [
+      1,
+      0
+     ],
+     "to": [
+      1,
+      2
+     ]
+    },
+    {
+     "from": [
+      0,
+      1
+     ],
+     "to": [
+      1,
+      0
+     ]
+    },
+    {
+     "from": [
+      2,
+      0
+     ],
+     "to": [
+      0,
+      0
+     ]
+    },
+    {
+     "from": [
+      0,
+      0
+     ],
+     "to": [
+      0,
+      2
+     ]
+    },
+    {
+     "from": [
+      0,
+      2
+     ],
+     "to": [
+      2,
+      0
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pll-Gd",
+   "name": "Gd",
+   "group": "Adjacent corner swap",
+   "algs": [
+    "R U R' U' D R2 U' R U' R' U R' U R2 D'",
+    "D' R U R' U' D R2 U' R U' R' U R' U R2",
+    "R U R' y' R2 u' R U' R' U R' u R2"
+   ],
+   "scrambles": [
+    "R2 D' F U' F U F' D R2 B U' B'",
+    "D R2 U' R U' R U R' U R2 D' U R U' R'",
+    "R2 U' R U' R U R' U R2 D' U R U' R' D",
+    "R2 F2 R U2 R U2 R' F R U R' U' R' F R2"
+   ],
+   "stickers": ".LRL./FUUUB/LUUUF/RUUUR/.BBF.",
+   "arrows": [
+    {
+     "from": [
+      1,
+      2
+     ],
+     "to": [
+      1,
+      0
+     ]
+    },
+    {
+     "from": [
+      2,
+      1
+     ],
+     "to": [
+      1,
+      2
+     ]
+    },
+    {
+     "from": [
+      1,
+      0
+     ],
+     "to": [
+      2,
+      1
+     ]
+    },
+    {
+     "from": [
+      2,
+      0
+     ],
+     "to": [
+      0,
+      0
+     ]
+    },
+    {
+     "from": [
+      0,
+      0
+     ],
+     "to": [
+      0,
+      2
+     ]
+    },
+    {
+     "from": [
+      0,
+      2
+     ],
+     "to": [
+      2,
+      0
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pll-Ja",
+   "name": "Ja",
+   "group": "Adjacent corner swap",
+   "algs": [
+    "y2 x R2 F R F' R U2 r' U r U2 x'",
+    "y R' U L' U2 R U' R' U2 R L",
+    "L' U' L F L' U' L U L F' L2 U L"
+   ],
+   "scrambles": [
+    "F2 L' U' L F2 R' D R' D' R2",
+    "L' R' U2 R U R' U2 L U' R",
+    "L' U2 L U L' U2 R U' L U R'",
+    "L' U' L2 F L' U' L' U L F' L' U L"
+   ],
+   "stickers": ".LBB./FUUUR/FUUUR/BUUUR/.LLF.",
+   "arrows": [
+    {
+     "from": [
+      1,
+      2
+     ],
+     "to": [
+      0,
+      1
+     ],
+     "both": true
+    },
+    {
+     "from": [
+      0,
+      0
+     ],
+     "to": [
+      0,
+      2
+     ],
+     "both": true
+    }
+   ]
+  },
+  {
+   "id": "pll-Jb",
+   "name": "Jb",
+   "group": "Adjacent corner swap",
+   "algs": [
+    "R U R' F' R U R' U' R' F R2 U' R'",
+    "R U2 R' U' R U2 L' U R' U' L",
+    "r' F R F' r U2 R' U R U2 R'"
+   ],
+   "scrambles": [
+    "L' U R U' L U2 R' U R U2 R'",
+    "R U2 R' U' R U2 L' U R' U' L",
+    "R U R2 F' R U R U' R' F R U' R'"
+   ],
+   "stickers": ".BBB./LUUUR/FUUUR/FUUUF/.RLL.",
+   "arrows": [
+    {
+     "from": [
+      1,
+      2
+     ],
+     "to": [
+      0,
+      1
+     ],
+     "both": true
+    },
+    {
+     "from": [
+      2,
+      2
+     ],
+     "to": [
+      0,
+      2
+     ],
+     "both": true
+    }
+   ]
+  },
+  {
+   "id": "pll-Ra",
+   "name": "Ra",
+   "group": "Adjacent corner swap",
+   "algs": [
+    "y R U' R' U' R U R D R' U' R D' R' U2 R'",
+    "y R U R' F' R U2 R' U2 R' F R U R U2 R'",
+    "L U2 L' U2 L F' L' U' L U L F L2"
+   ],
+   "scrambles": [
+    "L2 F' L' U' L' U L F L' U2 L U2 L'",
+    "R U2 R D R' U R D' R' U' R' U R U R'",
+    "R U2 R' U' R' F' R U2 R U2 R' F R U' R'",
+    "R U' R2 D' R U R' D R U' R U' R' U R U R'"
+   ],
+   "stickers": ".BLR./LUUUF/BUUUR/LUUUB/.FFR.",
+   "arrows": [
+    {
+     "from": [
+      1,
+      0
+     ],
+     "to": [
+      0,
+      1
+     ],
+     "both": true
+    },
+    {
+     "from": [
+      2,
+      2
+     ],
+     "to": [
+      2,
+      0
+     ],
+     "both": true
+    }
+   ]
+  },
+  {
+   "id": "pll-Rb",
+   "name": "Rb",
+   "group": "Adjacent corner swap",
+   "algs": [
+    "R' U2 R U2 R' F R U R' U' R' F' R2",
+    "y R2 F R U R U' R' F' R U2 R' U2 R",
+    "R' U2 R' D' R U' R' D R U R U' R' U' R"
+   ],
+   "scrambles": [
+    "R2 F R U R U' R' F' R U2 R' U2 R",
+    "R' U2 R U2 R' F R U R' U' R' F' R2",
+    "R' U R U R' U' R' D' R U R' D R U2 R",
+    "R' U2 R' D' R U' R' D R U R U' R' U' R"
+   ],
+   "stickers": ".BBR./LUUUF/FUUUR/LUUUB/.FLR.",
+   "arrows": [
+    {
+     "from": [
+      1,
+      2
+     ],
+     "to": [
+      0,
+      1
+     ],
+     "both": true
+    },
+    {
+     "from": [
+      2,
+      2
+     ],
+     "to": [
+      2,
+      0
+     ],
+     "both": true
+    }
+   ]
+  },
+  {
+   "id": "pll-T",
+   "name": "T",
+   "group": "Adjacent corner swap",
+   "algs": [
+    "R U R' U' R' F R2 U' R' U' R U R' F'",
+    "R U R' U' R' F R2 U' R' U F' L' U L",
+    "R2 u R2 u' R2 F2 u' F2 u F2"
+   ],
+   "scrambles": [
+    "F2 D' L2 D F2 R2 D B2 D' R2",
+    "F R U' R' U R U R2 F' R U R U' R'",
+    "L' U' L F U' R U R2 F' R U R U' R'"
+   ],
+   "stickers": ".BBR./LUUUF/RUUUL/LUUUB/.FFR.",
+   "arrows": [
+    {
+     "from": [
+      2,
+      1
+     ],
+     "to": [
+      0,
+      1
+     ],
+     "both": true
+    },
+    {
+     "from": [
+      2,
+      2
+     ],
+     "to": [
+      2,
+      0
+     ],
+     "both": true
+    }
+   ]
+  },
+  {
+   "id": "pll-E",
+   "name": "E",
+   "group": "Diagonal corner swap",
+   "algs": [
+    "y x' R U' R' D R U R' D' R U R' D R U' R' D' x",
+    "y R' U' R' D' R U' R' D R U R' D' R U R' D R2",
+    "R2 U F' R' U R U' R' U R U' R' U R U' F U' R2"
+   ],
+   "scrambles": [
+    "F R B R' F' R B' R' F R B' R' F' R B R'",
+    "R2 D' R U' R' D R U' R' D' R U R' D R U R",
+    "R2 U F' U R' U' R U R' U' R U R' U' R F U' R2"
+   ],
+   "stickers": ".RBL./BUUUB/LUUUR/FUUUF/.RFL.",
+   "arrows": [
+    {
+     "from": [
+      2,
+      2
+     ],
+     "to": [
+      0,
+      2
+     ],
+     "both": true
+    },
+    {
+     "from": [
+      2,
+      0
+     ],
+     "to": [
+      0,
+      0
+     ],
+     "both": true
+    }
+   ]
+  },
+  {
+   "id": "pll-Na",
+   "name": "Na",
+   "group": "Diagonal corner swap",
+   "algs": [
+    "R U R' U R U R' F' R U R' U' R' F R2 U' R' U2 R U' R'",
+    "F' R U R' U' R' F R2 F U' R' U' R U F' R'",
+    "R F U' R' U R U F' R2 F' R U R U' R' F"
+   ],
+   "scrambles": [
+    "R F U' R' U R U F' R2 F' R U R U' R' F",
+    "F' R U R' U' R' F R2 F U' R' U' R U F' R'",
+    "L' F' L U2 L' F' L U2 L' F' L U2 L' F' L U2 L' F' L",
+    "R U R' U2 R U R2 F' R U R U' R' F R U' R' U' R U' R'"
+   ],
+   "stickers": ".BBF./LUUUL/RUUUL/RUUUR/.BFF.",
+   "arrows": [
+    {
+     "from": [
+      2,
+      1
+     ],
+     "to": [
+      0,
+      1
+     ],
+     "both": true
+    },
+    {
+     "from": [
+      2,
+      0
+     ],
+     "to": [
+      0,
+      2
+     ],
+     "both": true
+    }
+   ]
+  },
+  {
+   "id": "pll-Nb",
+   "name": "Nb",
+   "group": "Diagonal corner swap",
+   "algs": [
+    "R' U R U' R' F' U' F R U R' F R' F' R U' R",
+    "r' D' F r U' r' F' D r2 U r' U' r' F r F'",
+    "R' U L' U2 R U' L R' U L' U2 R U' L"
+   ],
+   "scrambles": [
+    "L' U R' U2 L U' R L' U R' U2 L U' R",
+    "F L' U' L U L F' L2 F' U L U L' U' F L",
+    "R' U R' F R F' R U' R' F' U F R U R' U' R",
+    "B U' B' U R' U R U' R' F' U F R U R' U' R"
+   ],
+   "stickers": ".FBB./RUUUR/RUUUL/LUUUL/.FFB.",
+   "arrows": [
+    {
+     "from": [
+      2,
+      1
+     ],
+     "to": [
+      0,
+      1
+     ],
+     "both": true
+    },
+    {
+     "from": [
+      2,
+      2
+     ],
+     "to": [
+      0,
+      0
+     ],
+     "both": true
+    }
+   ]
+  },
+  {
+   "id": "pll-V",
+   "name": "V",
+   "group": "Diagonal corner swap",
+   "algs": [
+    "R' U R' U' R D' R' D R' U D' R2 U' R2 D R2",
+    "R' U R U' R' f' U' R U2 R' U' R U' R' f R",
+    "R' U R' U' y R' F' R2 U' R' U R' F R F"
+   ],
+   "scrambles": [
+    "F' R' F' R U' R U R2 F R U F U' F",
+    "R2 D' R2 U R2 D U' R D' R D R' U R U' R",
+    "R' B' D R D' R D R2 D' R B R U R' U' R",
+    "R2 D R2 U' R2 D' U R' D R' D' R U' R' U R'"
+   ],
+   "stickers": ".FRB./RUUUR/LUUUB/LUUUL/.FFB.",
+   "arrows": [
+    {
+     "from": [
+      2,
+      1
+     ],
+     "to": [
+      1,
+      0
+     ],
+     "both": true
+    },
+    {
+     "from": [
+      2,
+      2
+     ],
+     "to": [
+      0,
+      0
+     ],
+     "both": true
+    }
+   ]
+  },
+  {
+   "id": "pll-Y",
+   "name": "Y",
+   "group": "Diagonal corner swap",
+   "algs": [
+    "F R U' R' U' R U R' F' R U R' U' R' F R F'",
+    "F R' F R2 U' R' U' R U R' F' R U R' U' F'",
+    "R2 U' R2 U' R2 U F U F' R2 F U' F'"
+   ],
+   "scrambles": [
+    "F U F' R2 F U' F' U' R2 U R2 U R2",
+    "B' R B R' U' R' U R2 U R' U' R' F R F'",
+    "F U R U' R' F R U' R' U R U R2 F' R F'",
+    "F R' F' R U R U' R' F R U' R' U R U R' F'"
+   ],
+   "stickers": ".FLB./RUUUR/BUUUR/LUUUL/.FFB.",
+   "arrows": [
+    {
+     "from": [
+      1,
+      0
+     ],
+     "to": [
+      0,
+      1
+     ],
+     "both": true
+    },
+    {
+     "from": [
+      2,
+      2
+     ],
+     "to": [
+      0,
+      0
+     ],
+     "both": true
+    }
+   ]
+  }
+ ]
+}
