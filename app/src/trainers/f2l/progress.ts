@@ -7,7 +7,7 @@
 // The app works without the server: while it's unreachable, `load` is 'offline', the
 // progress UI is hidden, and loading is retried in the background until it answers.
 import { useSyncExternalStore } from 'react'
-import { Rejected, request } from '../../common/api.ts'
+import { Rejected, request } from '../../../../packages/core/api.ts'
 import { algsById, reachable, type CatalogAlg } from './catalog.ts'
 import type {
   AlgRef,

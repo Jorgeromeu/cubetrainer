@@ -1,14 +1,8 @@
 // Repository for PLL solves. The only module that touches PLL's tables.
 import type { DatabaseSync } from "node:sqlite";
-import type { PllCatalog } from "../../../../shared/pll/catalog.ts";
-import {
-  MAX_SOLVE_MS,
-  PENALTIES,
-  type PatchSolveBody,
-  type Penalty,
-  type PutSolveBody,
-  type Solve,
-} from "../../../../shared/pll/solves.ts";
+import type { PllCatalog } from "../../../../packages/core/catalog/pll.ts";
+import { PENALTIES, type Penalty } from "../../../../packages/core/solve.ts";
+import { MAX_SOLVE_MS, type PatchSolveBody, type PutSolveBody, type Solve } from "../../../../shared/pll/solves.ts";
 import { InvalidRequest } from "../../http.ts";
 
 interface SolveRow {

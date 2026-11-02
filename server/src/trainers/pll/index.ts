@@ -6,7 +6,7 @@
 //   DELETE /api/pll/solves/:id   -> null
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { PllCatalog } from "../../../../shared/pll/catalog.ts";
+import type { PllCatalog } from "../../../../packages/core/catalog/pll.ts";
 import type { SolvesResponse } from "../../../../shared/pll/solves.ts";
 import type { ServerTrainer } from "../../trainer.ts";
 import { solvesRepository } from "./solves.ts";

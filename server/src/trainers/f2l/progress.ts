@@ -1,6 +1,6 @@
 // Repository for F2L progress. The only module that touches F2L's tables.
 import type { DatabaseSync } from "node:sqlite";
-import { LINK_KINDS, type Catalog, type LinkKind } from "../../../../shared/f2l/catalog.ts";
+import { LINK_KINDS, type Catalog, type LinkKind } from "../../../../packages/core/catalog/f2l.ts";
 import { InvalidRequest } from "../../http.ts";
 import {
   ALG_STATUSES,

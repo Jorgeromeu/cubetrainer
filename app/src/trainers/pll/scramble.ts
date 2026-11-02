@@ -1,7 +1,7 @@
 // Scrambles for the PLL trainer: one of the case's scrambles (the inverse of one of its
 // algs), with a random AUF before and after so the case shows up at any angle.
-import { pick } from '../../common/drill/draw.ts'
-import { AUFS, joinMoves } from '../../common/notation/moves.ts'
+import { pick } from '../../../../packages/core/drill/draw.ts'
+import { AUFS, joinMoves } from '../../../../packages/core/notation/moves.ts'
 import type { PllCase } from './catalog.ts'
 
 export interface PllScramble {

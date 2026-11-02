@@ -4,7 +4,7 @@
 // nothing to show, and it keeps retrying. Excluded solves (a DB-side mark, so a re-import can't
 // bring them back) are dropped here: the page never shows them.
 import { useSyncExternalStore } from 'react'
-import { request } from '../../common/api.ts'
+import { request } from '../../../../packages/core/api.ts'
 import type { Milestone, MilestonesResponse, Solve, SolvesResponse } from '../../../../shared/stats/solves.ts'
 
 export type { Milestone, Solve }

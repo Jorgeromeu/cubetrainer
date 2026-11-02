@@ -1,9 +1,7 @@
 // The stats trainer's API contract between server/ and app/: full solves from any timer,
 // imported from its export file, to chart.
 
-/** A solve's penalty, as on any cubing timer: none, 2 seconds added, or did not finish. */
-export const PENALTIES = ["ok", "+2", "dnf"] as const;
-export type Penalty = (typeof PENALTIES)[number];
+import type { Penalty, TimedSolve } from "../../packages/core/solve.ts";
 
 /** The timers whose exports can be imported. */
 export const IMPORT_FORMATS = ["cubetime"] as const;
@@ -14,7 +12,7 @@ export const SCRAMBLED_BY = ["timer", "hand"] as const;
 export type ScrambledBy = (typeof SCRAMBLED_BY)[number];
 
 /** One timed solve. */
-export interface Solve {
+export interface Solve extends TimedSolve {
   /** uuid, made by the server on import */
   id: string;
   /** Milliseconds as timed, without the penalty. */

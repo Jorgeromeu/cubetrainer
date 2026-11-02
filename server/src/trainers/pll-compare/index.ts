@@ -5,7 +5,7 @@
 //   DELETE /api/pll-compare/sets/:id   -> null
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { PllCatalog } from "../../../../shared/pll/catalog.ts";
+import type { PllCatalog } from "../../../../packages/core/catalog/pll.ts";
 import type { SetsResponse } from "../../../../shared/pll-compare/sets.ts";
 import type { ServerTrainer } from "../../trainer.ts";
 import { setsRepository } from "./sets.ts";

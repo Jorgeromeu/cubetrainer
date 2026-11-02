@@ -1,8 +1,8 @@
 // The PLL catalog (catalog/pll.json, built by catalog-builder/src/build-pll.ts).
 import catalogJson from '../../../../catalog/pll.json'
-import type { PllCase, PllCatalog } from '../../../../shared/pll/catalog.ts'
+import type { PllCase, PllCatalog } from '../../../../packages/core/catalog/pll.ts'
 
-export type { PllCase } from '../../../../shared/pll/catalog.ts'
+export type { PllCase } from '../../../../packages/core/catalog/pll.ts'
 
 export const pllCases = (catalogJson as unknown as PllCatalog).cases
 

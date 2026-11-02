@@ -4,12 +4,12 @@
 // removals too.
 // Changes still waiting for the server are lost on reload.
 import { useSyncExternalStore } from 'react'
-import { Rejected, request } from '../../common/api.ts'
-import type { PatchSolveBody, Penalty, PutSolveBody, Solve, SolvesResponse } from '../../../../shared/pll/solves.ts'
-import { averageOf, effectiveMs, formatTime } from '../../common/solveTime.ts'
+import { Rejected, request } from '../../../../packages/core/api.ts'
+import type { PatchSolveBody, PutSolveBody, Solve, SolvesResponse } from '../../../../shared/pll/solves.ts'
+import { averageOf, effectiveMs, formatTime, type Penalty } from '../../../../packages/core/solve.ts'
 
 export type { Penalty, Solve }
-export { averageOf, effectiveMs, formatMs, formatSolve, formatTime } from '../../common/solveTime.ts'
+export { averageOf, effectiveMs, formatMs, formatSolve, formatTime } from '../../../../packages/core/solve.ts'
 
 /** PLL's part of the server's API (server/src/trainers/pll/). */
 const API = '/api/pll'

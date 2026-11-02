@@ -2,7 +2,7 @@
 // player's move strip): whole-cube rotations stand out, and so do an alg's named triggers.
 // Triggers are never guessed from the moves: only the catalog's marked ones are shown
 // (CatalogAlg.triggers). Notation.tsx renders it.
-import type { AlgTrigger } from '../../../../shared/cube.ts'
+import type { AlgTrigger } from '../cube.ts'
 import { isRotation } from './moves.ts'
 
 /** A run of moves shown together: a marked trigger, or a single plain move / rotation. */

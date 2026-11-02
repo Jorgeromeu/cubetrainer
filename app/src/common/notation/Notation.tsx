@@ -1,7 +1,7 @@
 import { Fragment, type ReactNode } from 'react'
-import { TRIGGER_NAMES, type AlgTrigger } from '../../../../shared/cube.ts'
-import { isRotation } from './moves.ts'
-import { groupMoves, splitMoves } from './notation.ts'
+import { TRIGGER_NAMES, type AlgTrigger } from '../../../../packages/core/cube.ts'
+import { isRotation } from '../../../../packages/core/notation/moves.ts'
+import { groupMoves, splitMoves } from '../../../../packages/core/notation/groups.ts'
 
 interface Props {
   moves: string

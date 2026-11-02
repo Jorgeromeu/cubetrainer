@@ -1,6 +1,6 @@
 // What the charts show, worked out from the solves (oldest first): each solve with its
 // running averages and spread, sessions, the spread of times, and solves per day, week or month.
-import { averageOf, effectiveMs } from '../../common/solveTime.ts'
+import { averageOf, effectiveMs } from '../../../../packages/core/solve.ts'
 import type { Solve } from './solves.ts'
 
 /** A solve with where it stood: its number and the averages ending on it. */

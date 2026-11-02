@@ -10,7 +10,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import * as cheerio from "cheerio";
 import { Alg, Move } from "cubing/alg";
 import type { KPattern } from "cubing/kpuzzle";
-import type { PllArrow, PllCase, PllCatalog } from "../../shared/pll/catalog.ts";
+import type { PllArrow, PllCase, PllCatalog } from "../../packages/core/catalog/pll.ts";
 import { cube3x3x3 } from "cubing/puzzles";
 import { fetchCached, forceFlag } from "./http.ts";
 

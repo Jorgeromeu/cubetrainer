@@ -1,5 +1,5 @@
 // The user-data API contract between server/ and app/. See docs/requirements.md §5.2.
-import type { LinkKind } from "./catalog.ts";
+import type { LinkKind } from "../../packages/core/catalog/f2l.ts";
 
 /**
  * Which alg a slot-case's main alg is. Catalog algs live in catalog/f2l.json; user algs

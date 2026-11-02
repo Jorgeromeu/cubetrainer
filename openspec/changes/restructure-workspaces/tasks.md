@@ -11,10 +11,10 @@ Each group is one commit. After each: `npm run build` in `app/`, start the serve
 
 ## 2. packages/core
 
-- [ ] 2.1 Move `shared/cube.ts` and the cross-cutting catalog types
-- [ ] 2.2 Move pure logic out of `app/src/common/`: notation parsing (`notation/moves.ts`, `moveInfo.ts`), solve time and averages (`solveTime.ts`), drill history and picks (`drill/`), API client (`api.ts`)
-- [ ] 2.3 Merge `Penalty`/`Solve` basics from `shared/pll` and `shared/stats` into one core definition
-- [ ] 2.4 Fix the sequence joining so it compares whole move families, not first characters (cube-notation REVIEW)
+- [x] 2.1 Move `shared/cube.ts` and the cross-cutting catalog types
+- [x] 2.2 Move pure logic out of `app/src/common/`: notation parsing (`notation/moves.ts`, `moveInfo.ts`), solve time and averages (`solveTime.ts`), drill history and picks (`drill/`), API client (`api.ts`)
+- [x] 2.3 Merge `Penalty`/`Solve` basics from `shared/pll` and `shared/stats` into one core definition
+- [x] 2.4 Fix the sequence joining so it compares whole move families, not first characters (cube-notation REVIEW)
 
 ## 3. packages/ui
 

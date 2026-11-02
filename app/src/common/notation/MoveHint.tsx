@@ -3,7 +3,7 @@
 // (mounted in App.tsx), so anything showing a move only needs the attribute: data-move="R'".
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { moveInfo, type Axis, type MoveInfo } from './moveInfo.ts'
+import { moveInfo, type Axis, type MoveInfo } from '../../../../packages/core/notation/moveInfo.ts'
 
 type Vec = [number, number, number]
 

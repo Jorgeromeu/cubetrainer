@@ -1,11 +1,9 @@
 // The PLL trainer's API contract between server/ and app/: timed solves, one per scramble.
 
-/** A solve's penalty, as on any cubing timer: none, 2 seconds added, or did not finish. */
-export const PENALTIES = ["ok", "+2", "dnf"] as const;
-export type Penalty = (typeof PENALTIES)[number];
+import type { Penalty, TimedSolve } from "../../packages/core/solve.ts";
 
 /** One timed solve of a PLL case: from the end of the countdown to the stop. */
-export interface Solve {
+export interface Solve extends TimedSolve {
   /** uuid, chosen by the client when the solve is timed */
   id: string;
   /** e.g. "pll-Ua" (catalog/pll.json) */

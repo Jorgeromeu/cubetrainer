@@ -1,6 +1,6 @@
 // What sits where on the cube for a case, shared by the 3D player (Cube.tsx) and the
 // flat stealth drawing (FlatCube.tsx).
-import type { Slot } from '../../../../shared/cube.ts'
+import type { Slot } from '../../../../packages/core/cube.ts'
 
 // Catalog moves assume the cross on D. The player's default orientation has white on
 // U, so every setup is prefixed with z2: white cross on the bottom, green in front.

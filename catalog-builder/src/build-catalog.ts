@@ -28,7 +28,7 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { Alg } from "cubing/alg";
-import { FRONT_BACK_SLOT, MIRROR_SLOT, OPPOSITE_SLOT, SLOTS, type AlgTrigger, type Slot, type TriggerKind } from "../../shared/cube.ts";
+import { FRONT_BACK_SLOT, MIRROR_SLOT, OPPOSITE_SLOT, SLOTS, type AlgTrigger, type Slot, type TriggerKind } from "../../packages/core/cube.ts";
 import {
   RECOMMENDERS,
   type AlgInsert,
@@ -40,7 +40,7 @@ import {
   type LinkKind,
   type Recommender,
   type SlotCase,
-} from "../../shared/f2l/catalog.ts";
+} from "../../packages/core/catalog/f2l.ts";
 import type { RecommendedDataset } from "./parse-recommended.ts";
 import {
   conjugate,

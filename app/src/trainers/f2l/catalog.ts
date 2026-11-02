@@ -1,6 +1,6 @@
 // Loads the static catalog and builds lookup indexes over it.
 import catalogJson from '../../../../catalog/f2l.json'
-import { FRONT_BACK_SLOT, MIRROR_SLOT, OPPOSITE_SLOT, type Slot } from '../../../../shared/cube.ts'
+import { FRONT_BACK_SLOT, MIRROR_SLOT, OPPOSITE_SLOT, type Slot } from '../../../../packages/core/cube.ts'
 import {
   LINK_KINDS,
   RECOMMENDERS,
@@ -11,11 +11,11 @@ import {
   type LinkKind,
   type Recommender,
   type SlotCase,
-} from '../../../../shared/f2l/catalog.ts'
-import { isRotation, joinMoves } from '../../common/notation/moves.ts'
+} from '../../../../packages/core/catalog/f2l.ts'
+import { isRotation, joinMoves } from '../../../../packages/core/notation/moves.ts'
 import type { SetupMode } from './settings.ts'
 
-export { SLOTS, type Slot } from '../../../../shared/cube.ts'
+export { SLOTS, type Slot } from '../../../../packages/core/cube.ts'
 export { LINK_KINDS, RECOMMENDERS }
 export type { Case, CatalogAlg, Cluster, LinkKind, Recommender, SlotCase }
 

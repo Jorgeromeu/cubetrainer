@@ -8,10 +8,10 @@ import {
   type ImportResponse,
   MAX_REASON_LENGTH,
   type PatchSolveBody,
-  type Penalty,
   type ScrambledBy,
   type Solve,
 } from "../../../../shared/stats/solves.ts";
+import type { Penalty } from "../../../../packages/core/solve.ts";
 import { InvalidRequest } from "../../http.ts";
 
 interface SolveRow {

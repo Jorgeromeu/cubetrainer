@@ -10,7 +10,7 @@
 //   DELETE /api/f2l/user-algs/:id         -> null
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { Catalog } from "../../../../shared/f2l/catalog.ts";
+import type { Catalog } from "../../../../packages/core/catalog/f2l.ts";
 import type { ProgressResponse } from "../../../../shared/f2l/progress.ts";
 import type { ServerTrainer } from "../../trainer.ts";
 import { algRefFrom, progressRepository } from "./progress.ts";

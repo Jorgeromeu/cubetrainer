@@ -4,7 +4,7 @@
 // "Stats"), so dark mode and stealth (ink instead of the accent) come for free. Each one
 // has a hover readout; the solve table under them has every value without hovering.
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { formatMs, formatTime } from '../../common/solveTime.ts'
+import { formatMs, formatTime } from '../../../../packages/core/solve.ts'
 import { bucketName, bucketShortName, formatDuration, sessionsOf, spreadOf, type Bin, type Bucket, type Period, type Point } from './analysis.ts'
 import { updateProgressSettings, useProgressSettings } from './settings.ts'
 import type { Milestone } from './solves.ts'

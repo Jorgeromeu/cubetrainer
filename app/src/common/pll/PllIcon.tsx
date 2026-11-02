@@ -3,7 +3,7 @@
 // PLL trainers.
 import { useStealth } from '../stealth.ts'
 import { stealthScreenColor, stealthSideColor } from '../cube/stealthCube.ts'
-import type { PllCase } from '../../../../shared/pll/catalog.ts'
+import type { PllCase } from '../../../../packages/core/catalog/pll.ts'
 
 type Face = 'U' | 'F' | 'R' | 'B' | 'L'
 

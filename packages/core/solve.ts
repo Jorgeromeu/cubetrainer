@@ -1,10 +1,14 @@
-// Timer maths shared by trainers that keep solves: penalties, WCA-style averages and how
+// Timed solves, shared by every tool that keeps them: penalties, WCA-style averages and how
 // times are written.
 
-/** What these need of a solve: its time as timed and its penalty. */
+/** A solve's penalty, as on any cubing timer: none, 2 seconds added, or did not finish. */
+export const PENALTIES = ['ok', '+2', 'dnf'] as const
+export type Penalty = (typeof PENALTIES)[number]
+
+/** What every timed solve has: its time as timed (without the penalty) and its penalty. */
 export interface TimedSolve {
   ms: number
-  penalty: 'ok' | '+2' | 'dnf'
+  penalty: Penalty
 }
 
 /** A solve's time with its penalty: +2 adds 2 seconds, a DNF is Infinity (worse than any time). */

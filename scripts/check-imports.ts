@@ -78,7 +78,7 @@ function allowedBare(from: string, spec: string): boolean {
  * Each entry: a path prefix the importing file is under, and prefixes it may import from.
  */
 const LEGACY: [string, string[]][] = [
-  ["shared/", ["shared/"]],
+  ["shared/", ["shared/", "packages/core/"]],
   ["app/src/common/", ["app/src/common/", "shared/", "packages/core/", "packages/ui/"]],
   ["app/src/shell/", ["app/src/shell/", "app/src/common/", "app/src/trainers/", "packages/ui/", "packages/core/", "tools/"]],
   ["app/src/trainers/", ["app/src/common/", "shared/", "catalog/", "packages/core/", "packages/ui/", "tools/"]],

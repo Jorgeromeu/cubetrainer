@@ -1,6 +1,6 @@
 // Repository for PLL compare's named sets. The only module that touches its tables.
 import type { DatabaseSync } from "node:sqlite";
-import type { PllCatalog } from "../../../../shared/pll/catalog.ts";
+import type { PllCatalog } from "../../../../packages/core/catalog/pll.ts";
 import {
   BLOCK_COLORS,
   isSticker,

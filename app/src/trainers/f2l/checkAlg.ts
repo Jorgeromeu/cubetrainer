@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import type { KPattern, KPuzzle } from 'cubing/kpuzzle'
 import { cube3x3x3 } from 'cubing/puzzles'
-import { AUFS } from '../../common/notation/moves.ts'
+import { AUFS } from '../../../../packages/core/notation/moves.ts'
 
 /**
  * Typed moves read so far: the moves in canonical spelling ("R2'" -> "R2", spaces

@@ -29,18 +29,21 @@ export const undoAuf = (auf: string) => (auf === 'U' ? "U'" : auf === "U'" ? 'U'
 
 const quarterTurns = (move: string) => (move.endsWith('2') ? 2 : move.endsWith("'") ? 3 : 1)
 
-/** Joins move sequences, merging turns of the same face where they meet (U + U' cancels). */
+/** A move without its amount: the layers it turns ("Rw2" → "Rw", "U'" → "U"). */
+const family = (move: string) => move.replace(/2?'?$/, '')
+
+/** Joins move sequences, merging turns of the same layers where they meet (U + U' cancels, R + Rw doesn't). */
 export function joinMoves(...parts: string[]): string {
   const out: string[] = []
   for (const move of parts.join(' ').split(/\s+/).filter(Boolean)) {
     const last = out.at(-1)
-    if (last?.[0] !== move[0]) {
+    if (last === undefined || family(last) !== family(move)) {
       out.push(move)
       continue
     }
     const turns = (quarterTurns(last) + quarterTurns(move)) % 4
     out.pop()
-    if (turns) out.push(move[0] + ['', '', '2', "'"][turns])
+    if (turns) out.push(family(move) + ['', '', '2', "'"][turns])
   }
   return out.join(' ')
 }

@@ -2,7 +2,7 @@
 // size and greys, so the player can swap in without a jump), plus the nearest layer's
 // row of each side face as a thin strip around it, like hint stickers folded flat.
 import type { KPattern } from 'cubing/kpuzzle'
-import type { Slot } from '../../../../shared/cube.ts'
+import type { Slot } from '../../../../packages/core/cube.ts'
 import { CAMERA_DISTANCE, LL_PIECES, SLOT_PAIR } from './cubeModel.ts'
 import { stealthScreenColor, type Role } from './stealthCube.ts'
 
