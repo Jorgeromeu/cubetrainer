@@ -58,7 +58,7 @@ interface Cube3D extends Object3D {
   kpuzzleFaceletInfo: Record<string, { facelet: Mesh }[][]>
 }
 
-/** Every sticker's mesh, by its name (shared/pll-compare/sets.ts). */
+/** Every sticker's mesh, by its name (tools/pll-compare/contract.ts). */
 function stickers(puzzle: Cube3D): Map<string, Mesh> {
   const byName = new Map<string, Mesh>()
   for (const [letter, { orbit, stickers }] of Object.entries(STICKER_ORBITS))

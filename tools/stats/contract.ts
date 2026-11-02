@@ -1,4 +1,4 @@
-// The stats trainer's API contract between server/ and app/: full solves from any timer,
+// The stats tool's API contract between server/ and app/: full solves from any timer,
 // imported from its export file, to chart.
 
 import type { Penalty, TimedSolve } from "../../packages/core/solve.ts";

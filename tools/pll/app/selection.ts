@@ -1,4 +1,4 @@
-// Which PLL cases the trainer draws scrambles from. A per-browser preference, kept in
+// Which PLL cases the tool draws scrambles from. A per-browser preference, kept in
 // localStorage; all cases by default.
 import { useSyncExternalStore } from 'react'
 import { pllCases, pllCasesById } from './catalog.ts'

@@ -1,4 +1,4 @@
-// Cube vocabulary shared by every trainer, the server and catalog-builder: F2L slots
+// Cube vocabulary shared by every tool, the server and catalog-builder: F2L slots
 // and the named triggers (move groups) that notation marks up.
 
 export const SLOTS = ["FR", "FL", "BR", "BL"] as const;

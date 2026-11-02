@@ -1,4 +1,4 @@
-// The PLL trainer: a scramble for a random case out of the ones selected, timed without
+// The PLL tool: a scramble for a random case out of the ones selected, timed without
 // inspection. You scramble under the table, press Space, and a countdown runs; at 0 the
 // timer starts and you lift the cube, recognise, solve, and press any key. Or, as an
 // option, hold Space and release to start (timer.ts). The time is
@@ -59,7 +59,7 @@ const drawFrom =
     return scramble && { scramble }
   }
 
-export function PllTrainer() {
+export function PllView() {
   const selection = usePllSelection()
   const history = useDealt(drawFrom(selection))
   const { entry, pos, atEnd, deal, prev } = history

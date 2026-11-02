@@ -373,12 +373,12 @@ button {
   white-space: nowrap;
 }
 
-/* The trainer's name after the brand; hovering or focusing it opens the trainer menu. */
-.trainer-switch {
+/* The tool's name after the brand; hovering or focusing it opens the tool menu. */
+.tool-switch {
   position: relative;
 }
 
-.trainer-current {
+.tool-current {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -391,7 +391,7 @@ button {
   font-weight: 700;
 }
 
-.trainer-current svg {
+.tool-current svg {
   fill: none;
   stroke: currentColor;
   stroke-width: 1.6;
@@ -401,16 +401,16 @@ button {
   transition: transform 0.15s;
 }
 
-.trainer-switch:is(:hover, :focus-within) .trainer-current {
+.tool-switch:is(:hover, :focus-within) .tool-current {
   background: var(--surface);
 }
 
-.trainer-switch:is(:hover, :focus-within) .trainer-current svg {
+.tool-switch:is(:hover, :focus-within) .tool-current svg {
   transform: rotate(180deg);
 }
 
 /* Starts right under the name (padding bridges the gap) so the pointer can move onto it. */
-.trainer-menu {
+.tool-menu {
   position: absolute;
   left: 0;
   top: 100%;
@@ -429,34 +429,34 @@ button {
   font-size: 14px;
 }
 
-.trainer-menu::before {
+.tool-menu::before {
   content: '';
   position: absolute;
   inset: -8px 0 auto;
   height: 8px;
 }
 
-.trainer-switch:is(:hover, :focus-within) .trainer-menu {
+.tool-switch:is(:hover, :focus-within) .tool-menu {
   display: flex;
 }
 
-.trainer-menu a {
+.tool-menu a {
   display: flex;
   flex-direction: column;
   padding: 6px 10px;
   border-radius: 6px;
 }
 
-.trainer-menu a:hover,
-.trainer-menu a:focus-visible {
+.tool-menu a:hover,
+.tool-menu a:focus-visible {
   background: var(--bg);
 }
 
-.trainer-menu a.current strong {
+.tool-menu a.current strong {
   color: var(--select);
 }
 
-.trainer-menu span {
+.tool-menu span {
   font-size: 12px;
   font-weight: 400;
   color: var(--muted);
@@ -851,7 +851,7 @@ kbd {
 }
 
 /* The drill card (packages/ui/drill/, used by PLL and F2L): moves on top (a scramble, a setup),
-   the trainer's stage in the middle, controls (drill/DrillNav.tsx) at the bottom. */
+   the tool's stage in the middle, controls (drill/DrillNav.tsx) at the bottom. */
 .drill {
   display: flex;
   flex-direction: column;

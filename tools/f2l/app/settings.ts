@@ -1,4 +1,4 @@
-// F2L trainer preferences (Settings → F2L). They only affect the F2L pages.
+// F2L tool preferences (Settings → F2L). They only affect the F2L pages.
 import { persisted } from '../../../packages/ui/persisted.ts'
 import { LINK_KINDS, type LinkKind } from '../../../packages/core/catalog/f2l.ts'
 import type { Status } from './progress.ts'
@@ -28,7 +28,7 @@ export interface SavedFilter extends LegendFilter {
   name: string
 }
 
-/** F2L trainer preferences. They only affect the F2L pages. */
+/** F2L tool preferences. They only affect the F2L pages. */
 export interface F2lSettings {
   /** Focus on what's missing: learnt slot-cases are greyed out (still clickable). */
   focusMissing: boolean

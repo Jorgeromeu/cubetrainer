@@ -11,7 +11,7 @@ import { averageOf, effectiveMs, formatTime, type Penalty } from '../../../packa
 export type { Penalty, Solve }
 export { averageOf, effectiveMs, formatMs, formatSolve, formatTime } from '../../../packages/core/solve.ts'
 
-/** PLL's part of the server's API (server/src/trainers/pll/). */
+/** PLL's part of the server's API (tools/pll/server/). */
 const API = '/api/pll'
 
 export interface SolvesState {

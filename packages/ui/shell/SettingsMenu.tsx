@@ -2,10 +2,10 @@ import { useEffect, useRef, useState, type ComponentType } from 'react'
 
 /**
  * Gear button at the right of the top bar opening the settings popover: the current
- * trainer's settings only (its own, plus any shared sections it uses, such as
+ * tool's settings only (its own, plus any shared sections it uses, such as
  * cube/CubeDisplaySettings.tsx). Changes apply live.
  */
-export function SettingsMenu({ TrainerSettings }: { TrainerSettings: ComponentType }) {
+export function SettingsMenu({ ToolSettings }: { ToolSettings: ComponentType }) {
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
 
@@ -40,7 +40,7 @@ export function SettingsMenu({ TrainerSettings }: { TrainerSettings: ComponentTy
       {open && (
         <div className="settings-panel" role="dialog" aria-label="Settings">
           <div className="settings-title">Settings</div>
-          <TrainerSettings />
+          <ToolSettings />
 
         </div>
       )}

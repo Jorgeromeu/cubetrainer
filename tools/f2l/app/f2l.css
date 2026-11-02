@@ -2032,7 +2032,7 @@
   filter: grayscale(0.8);
 }
 
-/* F2L train (src/trainers/f2l/Train.tsx), in the shared drill card. The cube dims and lies
+/* F2L train (src/tools/f2l/Train.tsx), in the shared drill card. The cube dims and lies
    flat in stealth like any other (Cube.tsx, data-reveal on the stage). */
 .f2l-train {
   display: flex;

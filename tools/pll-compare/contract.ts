@@ -1,4 +1,4 @@
-// The PLL compare trainer's API contract between server/ and app/: named sets of cubes,
+// The PLL compare tool's API contract between server/ and app/: named sets of cubes,
 // saved to load a comparison again (e.g. "Ra Rb T" or "Y V E").
 
 /**

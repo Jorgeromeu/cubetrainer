@@ -1,5 +1,5 @@
 // What drills share: a history of the items dealt this session, walked with ← and →.
-// Going forward past the newest deals a new one. A trainer brings its own draw (which
+// Going forward past the newest deals a new one. A tool brings its own draw (which
 // items, what each holds) and its own entry type (a scramble, a case, plus what happened).
 import { useCallback, useState } from 'react'
 

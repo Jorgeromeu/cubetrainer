@@ -4,8 +4,8 @@
 // centres). The board lives in the URL (board.ts), and can be saved as a named set (sets.ts).
 import { useEffect, useEffectEvent, useRef, useState, type CSSProperties } from 'react'
 import type { TwistyPlayer } from 'cubing/twisty'
-import type { TrainerProps } from '../../../packages/ui/tool.ts'
-import { trainerHref } from '../../../packages/ui/tool.ts'
+import type { ToolProps } from '../../../packages/ui/tool.ts'
+import { toolHref } from '../../../packages/ui/tool.ts'
 import { setStealthPalette } from '../../../packages/ui/cube/stealthCube.ts'
 import { PllIcon } from '../../../packages/ui/icons/PllIcon.tsx'
 import { BLOCK_COLORS, MAX_CAPTION, MAX_SET_NAME } from '../contract.ts'
@@ -46,7 +46,7 @@ export function CompareCrumb() {
   )
 }
 
-export function CompareTrainer({ path }: TrainerProps) {
+export function CompareView({ path }: ToolProps) {
   const [camera] = useState(() => new BoardCamera())
   const [cubes, setCubes] = useState(() => parseBoard(path[0]))
   /** The cube under the pointer, which the keys act on. */
@@ -79,7 +79,7 @@ export function CompareTrainer({ path }: TrainerProps) {
   }, [urlBoard])
   useEffect(() => {
     written.current = boardPath(cubes)
-    history.replaceState(history.state, '', trainerHref(ID, written.current))
+    history.replaceState(history.state, '', toolHref(ID, written.current))
   }, [cubes])
 
   const update = (key: number, change: (c: BoardCube) => Partial<BoardCube>) =>

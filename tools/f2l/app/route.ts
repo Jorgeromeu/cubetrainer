@@ -2,7 +2,7 @@
 //   (empty)                              overview
 //   train                                train the overview's selection (Train.tsx)
 //   <clusterId>[/<slotCaseId>[/<algId>]] cluster detail
-import { trainerHref } from '../../../packages/ui/tool.ts'
+import { toolHref } from '../../../packages/ui/tool.ts'
 
 export interface F2lRoute {
   clusterId?: string
@@ -17,8 +17,8 @@ const TRAIN_PATH = 'train'
 
 export const isTrainPath = (path: string[]) => path[0] === TRAIN_PATH
 
-export const trainHref = () => trainerHref(F2L_ID, TRAIN_PATH)
+export const trainHref = () => toolHref(F2L_ID, TRAIN_PATH)
 
 export const parseF2lPath = ([clusterId, slotCaseId, algId]: string[]): F2lRoute => ({ clusterId, slotCaseId, algId })
 
-export const f2lHref = ({ clusterId, slotCaseId, algId }: F2lRoute) => trainerHref(F2L_ID, clusterId, slotCaseId, algId)
+export const f2lHref = ({ clusterId, slotCaseId, algId }: F2lRoute) => toolHref(F2L_ID, clusterId, slotCaseId, algId)

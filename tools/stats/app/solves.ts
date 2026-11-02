@@ -9,7 +9,7 @@ import type { Milestone, MilestonesResponse, Solve, SolvesResponse } from '../co
 
 export type { Milestone, Solve }
 
-/** The stats trainer's part of the server's API (server/src/trainers/stats/). */
+/** The stats tool's part of the server's API (tools/stats/server/). */
 const API = '/api/stats'
 
 export interface SolvesState {

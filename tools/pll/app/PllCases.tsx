@@ -15,7 +15,7 @@ const ORDER_OPTIONS: { value: CaseOrder; label: string }[] = [
 ]
 
 /**
- * `onSelect` gets the new selection after every change (the trainer deals a new scramble
+ * `onSelect` gets the new selection after every change (the tool deals a new scramble
  * if the current case was deselected). Open by default, collapsed in stealth.
  */
 export function PllCases({ stats, open, onSelect }: {

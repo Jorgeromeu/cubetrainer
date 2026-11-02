@@ -6,7 +6,7 @@ import type { CompareCube, CompareSet, PutSetBody, SetsResponse } from '../contr
 
 export type { CompareSet }
 
-/** PLL compare's part of the server's API (server/src/trainers/pll-compare/). */
+/** PLL compare's part of the server's API (tools/pll-compare/server/). */
 const API = '/api/pll-compare'
 
 export interface SetsState {

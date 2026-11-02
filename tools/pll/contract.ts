@@ -1,4 +1,4 @@
-// The PLL trainer's API contract between server/ and app/: timed solves, one per scramble.
+// The PLL tool's API contract between server/ and app/: timed solves, one per scramble.
 
 import type { Penalty, TimedSolve } from "../../packages/core/solve.ts";
 

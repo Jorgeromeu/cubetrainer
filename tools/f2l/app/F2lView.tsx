@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import type { TrainerProps } from '../../../packages/ui/tool.ts'
+import type { ToolProps } from '../../../packages/ui/tool.ts'
 import { clustersById } from './catalog.ts'
 import { ClusterCrumb, ClusterView } from './ClusterView.tsx'
 import { Overview } from './Overview.tsx'
@@ -17,7 +17,7 @@ const clusterAt = (path: string[]) => {
 let overviewScrollY = 0
 
 /** The overview, a cluster or training (see route.ts). */
-export function F2lTrainer({ path }: TrainerProps) {
+export function F2lView({ path }: ToolProps) {
   const { slotCaseId, algId } = parseF2lPath(path)
   const cluster = clusterAt(path)
   const training = isTrainPath(path)
@@ -48,7 +48,7 @@ export function F2lTrainer({ path }: TrainerProps) {
   )
 }
 
-export function F2lCrumb({ path }: TrainerProps) {
+export function F2lCrumb({ path }: ToolProps) {
   const cluster = clusterAt(path)
   return cluster ? <ClusterCrumb cluster={cluster} /> : isTrainPath(path) ? <TrainCrumb /> : null
 }

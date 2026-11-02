@@ -1,5 +1,5 @@
-// The Cube display section of the settings menu, for trainers that show 3D cubes (Cube.tsx).
-// A trainer that does includes it in its own Settings; the values are shared by all of them.
+// The Cube display section of the settings menu, for tools that show 3D cubes (Cube.tsx).
+// A tool that does includes it in its own Settings; the values are shared by all of them.
 import { OnOff, Segmented, Setting, SettingsSection } from '../settings.tsx'
 import { DEFAULT_CUBE_SETTINGS, HINT_DISTANCE, updateCubeSettings, useCubeSettings, type HintMode } from './settings.ts'
 
@@ -13,7 +13,7 @@ export function CubeDisplaySettings() {
   const settings = useCubeSettings()
   return (
     <>
-      <SettingsSection title="Cube display · all trainers" />
+      <SettingsSection title="Cube display · all tools" />
       <Setting label="Highlight pair" hint="Only the slot's corner and edge in colour">
         <OnOff value={settings.highlightPair} onChange={(on) => updateCubeSettings({ highlightPair: on })} />
       </Setting>

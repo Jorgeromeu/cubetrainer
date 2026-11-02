@@ -1,6 +1,6 @@
 // A PLL case seen from above: the last layer's face, each side's top row folded out
 // around it, and arrows for where the pieces go. Plain SVG, no cubing.js. Shared by the
-// PLL trainers.
+// PLL tools.
 import { useStealth } from '../stealth.ts'
 import { stealthScreenColor, stealthSideColor } from '../cube/stealthCube.ts'
 import type { PllCase } from '../../core/catalog/pll.ts'

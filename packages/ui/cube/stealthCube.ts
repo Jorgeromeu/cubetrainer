@@ -141,7 +141,7 @@ subscribeStealth(recolourAll)
 
 /**
  * Switches every cube on the page to another palette ('pair' by default). The materials
- * are shared, so it's page-wide: a trainer that needs 'sides' sets it while it's shown.
+ * are shared, so it's page-wide: a tool that needs 'sides' sets it while it's shown.
  * Returns the cleanup, which goes back to 'pair'.
  */
 export function setStealthPalette(next: Palette): () => void {

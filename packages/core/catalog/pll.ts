@@ -1,5 +1,5 @@
 // The PLL catalog contract (catalog/pll.json): written by catalog-builder/src/build-pll.ts,
-// read by the app's PLL trainer.
+// read by the app's PLL tool.
 
 export interface PllCatalog {
   version: 1;

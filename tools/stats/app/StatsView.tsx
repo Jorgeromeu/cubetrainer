@@ -120,7 +120,7 @@ function SolveTable({ points }: { points: readonly Point[] }) {
   )
 }
 
-export function StatsTrainer() {
+export function StatsView() {
   const { load, solves, milestones, error } = useSolves()
   const [range, setRange] = useState(0)
   const allPoints = useMemo(() => pointsOf(solves), [solves])

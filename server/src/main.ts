@@ -1,4 +1,4 @@
-// The server: each trainer's API under /api/<id>/ (trainers.ts lists them, trainer.ts says
+// The server: each tool's API under /api/<id>/ (tools.ts lists them, tool.ts says
 // what one provides), each with its own SQLite file in the data dir.
 //
 // When ../app/dist exists (after `npm run build` in app/), it also serves the built app,
@@ -10,40 +10,40 @@ import { extname, join, normalize } from "node:path";
 import { openDb } from "./db.ts";
 import { compileRoute, json, matchRoute, readJson, type CompiledRoute } from "./http.ts";
 import { InvalidRequest } from "./tool.ts";
-import { TRAINERS } from "./trainers.ts";
+import { TOOLS } from "./tools.ts";
 
 const ROOT = join(import.meta.dirname, "../..");
 const PORT = Number(process.env.PORT ?? 3001);
 const DATA_DIR = process.env.DATA_DIR ?? join(ROOT, "data");
 const DIST = join(ROOT, "app/dist");
 
-/** Each trainer's routes, or why it couldn't start (then only it is down: 503s). */
+/** Each tool's routes, or why it couldn't start (then only it is down: 503s). */
 const mounted = new Map<string, { routes: CompiledRoute[] } | { failure: string }>();
 
-for (const trainer of TRAINERS) {
-  const { id } = trainer;
-  if (!/^[a-z0-9-]+$/.test(id)) throw new Error(`Trainer id must be lowercase letters, digits and dashes: ${id}`);
-  if (mounted.has(id)) throw new Error(`Two trainers with id ${id}`);
+for (const tool of TOOLS) {
+  const { id } = tool;
+  if (!/^[a-z0-9-]+$/.test(id)) throw new Error(`Tool id must be lowercase letters, digits and dashes: ${id}`);
+  if (mounted.has(id)) throw new Error(`Two tools with id ${id}`);
   try {
-    const routes = trainer
+    const routes = tool
       .routes({ repoRoot: ROOT, openDb: (migrationsDir) => openDb(join(DATA_DIR, `${id}.sqlite`), migrationsDir) })
       .map(compileRoute);
     mounted.set(id, { routes });
-    console.log(`Trainer ${id}: ${routes.length} routes under /api/${id}`);
+    console.log(`Tool ${id}: ${routes.length} routes under /api/${id}`);
   } catch (e) {
-    console.error(`Trainer ${id} failed to start and is disabled:`, e);
-    mounted.set(id, { failure: `The ${id} trainer failed to start (see the server log)` });
+    console.error(`Tool ${id} failed to start and is disabled:`, e);
+    mounted.set(id, { failure: `The ${id} tool failed to start (see the server log)` });
   }
 }
 
 async function handleApi(req: IncomingMessage, res: ServerResponse, path: string) {
   const [, id, rest = ""] = path.match(/^\/api\/([^/]+)(\/.*)?$/) ?? [];
-  const trainer = id ? mounted.get(id) : undefined;
-  if (!trainer) return json(res, 404, { error: "Not found" });
-  if ("failure" in trainer) return json(res, 503, { error: trainer.failure });
+  const tool = id ? mounted.get(id) : undefined;
+  if (!tool) return json(res, 404, { error: "Not found" });
+  if ("failure" in tool) return json(res, 503, { error: tool.failure });
 
   const method = req.method ?? "GET";
-  const match = matchRoute(trainer.routes, method, rest);
+  const match = matchRoute(tool.routes, method, rest);
   if (!("route" in match)) return match.methodMismatch ? json(res, 405, { error: "Method not allowed" }) : json(res, 404, { error: "Not found" });
   const body = method === "GET" || method === "DELETE" ? undefined : await readJson(req);
   json(res, 200, (await match.route.handle({ params: match.params, body })) ?? null);

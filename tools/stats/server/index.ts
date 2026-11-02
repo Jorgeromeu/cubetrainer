@@ -1,4 +1,4 @@
-// The stats trainer's API: solves imported from timers' exports (types in shared/stats/solves.ts).
+// The stats tool's API: solves imported from timers' exports (types in ../contract.ts).
 //
 //   GET    /api/stats/solves   -> SolvesResponse
 //   PATCH  /api/stats/solves/:id   PatchSolveBody -> Solve
@@ -8,11 +8,11 @@
 //   DELETE /api/stats/milestones/:id   -> null
 import { join } from "node:path";
 import type { MilestonesResponse, SolvesResponse } from "../contract.ts";
-import type { ServerTrainer } from "../../../server/src/tool.ts";
+import type { ServerTool } from "../../../server/src/tool.ts";
 import { milestonesRepository } from "./milestones.ts";
 import { solvesRepository } from "./solves.ts";
 
-export const statsTrainer: ServerTrainer = {
+export const statsTool: ServerTool = {
   id: "stats",
   routes({ openDb }) {
     const db = openDb(join(import.meta.dirname, "migrations"));

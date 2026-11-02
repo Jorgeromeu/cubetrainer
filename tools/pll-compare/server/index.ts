@@ -1,4 +1,4 @@
-// The PLL compare trainer's API: named sets of cubes (types in shared/pll-compare/sets.ts).
+// The PLL compare tool's API: named sets of cubes (types in ../contract.ts).
 //
 //   GET    /api/pll-compare/sets       -> SetsResponse
 //   PUT    /api/pll-compare/sets/:id   PutSetBody -> CompareSet
@@ -7,10 +7,10 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { PllCatalog } from "../../../packages/core/catalog/pll.ts";
 import type { SetsResponse } from "../contract.ts";
-import type { ServerTrainer } from "../../../server/src/tool.ts";
+import type { ServerTool } from "../../../server/src/tool.ts";
 import { setsRepository } from "./sets.ts";
 
-export const pllCompareTrainer: ServerTrainer = {
+export const pllCompareTool: ServerTool = {
   id: "pll-compare",
   routes({ repoRoot, openDb }) {
     const catalog = JSON.parse(readFileSync(join(repoRoot, "catalog/pll.json"), "utf8")) as PllCatalog;

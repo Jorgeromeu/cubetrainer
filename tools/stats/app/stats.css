@@ -4,7 +4,7 @@
   color: var(--muted);
 }
 
-/* Stats trainer (src/trainers/stats/). Flat like the F2L overview: uppercase section
+/* Stats tool. Flat like the F2L overview: uppercase section
    headings, numbers inline, hairline rows, no cards or pills. Marks are data, so they keep
    the accent in stealth too (not --select, which goes ink). */
 .stats {

@@ -1,4 +1,4 @@
-// What a trainer gives the server (trainers.ts lists them). A trainer is standalone: it
+// What a tool gives the server (tools.ts lists them). A tool is standalone: it
 // owns everything under /api/<id>/ and its own SQLite file, data/<id>.sqlite, so adding
 // or changing one can't touch another's routes or data.
 import type { DatabaseSync } from "node:sqlite";
@@ -10,7 +10,7 @@ export type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 export interface ApiRoute {
   method: Method;
-  /** Under /api/<trainer id>; ":name" segments are params, e.g. "/algs/:kind/:id". */
+  /** Under /api/<tool id>; ":name" segments are params, e.g. "/algs/:kind/:id". */
   path: string;
   /**
    * Returns the response body, sent as JSON with a 200. Throw InvalidRequest (below)
@@ -20,19 +20,19 @@ export interface ApiRoute {
   handle(request: { params: Record<string, string>; body: unknown }): unknown;
 }
 
-export interface TrainerContext {
+export interface ToolContext {
   /** The repo root, for reading catalog/ etc. */
   repoRoot: string;
   /**
-   * Opens this trainer's own DB (data/<id>.sqlite) and applies its migrations: the
+   * Opens this tool's own DB (data/<id>.sqlite) and applies its migrations: the
    * NNN_*.sql files in `migrationsDir`, in order, each once (see db.ts).
    */
   openDb(migrationsDir: string): DatabaseSync;
 }
 
-export interface ServerTrainer {
-  /** The same id as the app's trainer: the API prefix and the DB file name. */
+export interface ServerTool {
+  /** The same id as the app's tool: the API prefix and the DB file name. */
   id: string;
-  /** Called once at startup. If it throws, only this trainer is disabled (503s). */
-  routes(context: TrainerContext): ApiRoute[];
+  /** Called once at startup. If it throws, only this tool is disabled (503s). */
+  routes(context: ToolContext): ApiRoute[];
 }

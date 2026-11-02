@@ -1,4 +1,4 @@
-// The PLL trainer's API: timed solves (types in shared/pll/solves.ts).
+// The PLL tool's API: timed solves (types in ../contract.ts).
 //
 //   GET    /api/pll/solves       -> SolvesResponse
 //   PUT    /api/pll/solves/:id   PutSolveBody -> Solve
@@ -8,10 +8,10 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { PllCatalog } from "../../../packages/core/catalog/pll.ts";
 import type { SolvesResponse } from "../contract.ts";
-import type { ServerTrainer } from "../../../server/src/tool.ts";
+import type { ServerTool } from "../../../server/src/tool.ts";
 import { solvesRepository } from "./solves.ts";
 
-export const pllTrainer: ServerTrainer = {
+export const pllTool: ServerTool = {
   id: "pll",
   routes({ repoRoot, openDb }) {
     const catalog = JSON.parse(readFileSync(join(repoRoot, "catalog/pll.json"), "utf8")) as PllCatalog;

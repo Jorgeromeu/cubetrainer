@@ -1,4 +1,4 @@
-// Building blocks for the settings menu, so every trainer's section looks the same.
+// Building blocks for the settings menu, so every tool's section looks the same.
 import type { ReactNode } from 'react'
 
 export function SettingsSection({ title }: { title: string }) {

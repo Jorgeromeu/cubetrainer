@@ -33,9 +33,9 @@ Each group is one commit. After each: `npm run build` in `app/`, start the serve
 
 ## 5. Cleanup
 
-- [ ] 5.0 Rename the generic concept trainer → tool in code: `Trainer`/`ServerTrainer` → `Tool`/`ServerTool`, `TRAINERS` → `TOOLS`, `trainer-switch` CSS classes, and the strings "Cube display · all trainers" and "The <id> trainer failed to start" (the specs already say "tool"). Tool names like "Scramble trainer" stay, and so do the `cubetrainer.*` storage keys
+- [x] 5.0 Rename the generic concept trainer → tool in code: `Trainer`/`ServerTrainer` → `Tool`/`ServerTool`, `TRAINERS` → `TOOLS`, `trainer-switch` CSS classes, and the strings "Cube display · all trainers" and "The <id> trainer failed to start" (the specs already say "tool"). Tool names like "Scramble trainer" stay, and so do the `cubetrainer.*` storage keys
 
-- [ ] 5.1 Delete `shared/`, `app/src/common/`, `app/src/trainers/`, `server/src/trainers/`
-- [ ] 5.2 Make `check:imports` strict (no allowlist left)
+- [x] 5.1 Delete `shared/`, `app/src/common/`, `app/src/trainers/`, `server/src/trainers/`
+- [x] 5.2 Make `check:imports` strict (no allowlist left)
 - [ ] 5.3 Update root, app and server READMEs; replace `docs/requirements.md` with a pointer to `openspec/specs/`
 - [ ] 5.4 Verify migrations still apply to existing `data/*.sqlite` (copy the files first) and that no data changed

@@ -29,7 +29,7 @@ import type {
 
 export type { AlgRef, AlgState, AlgStatus, Note, NoteFollows, SlotCaseProgress, UserAlg, VideoLink }
 
-/** F2L's part of the server's API (server/src/trainers/f2l/). */
+/** F2L's part of the server's API (server/src/tools/f2l/). */
 const API = '/api/f2l'
 
 /** One slot-case's progress: its main alg and its algs' states. Empty slot-cases have no entry. */

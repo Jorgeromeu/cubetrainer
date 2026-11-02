@@ -1,4 +1,4 @@
-// HTTP plumbing shared by every trainer's routes: JSON in and out, request errors, and
+// HTTP plumbing shared by every tool's routes: JSON in and out, request errors, and
 // matching a request to a route.
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { type ApiRoute, InvalidRequest } from "./tool.ts";
@@ -19,7 +19,7 @@ export async function readJson(req: IncomingMessage): Promise<unknown> {
 }
 
 export interface CompiledRoute extends ApiRoute {
-  /** Matches the path under /api/<trainer id>; groups are the route's :params. */
+  /** Matches the path under /api/<tool id>; groups are the route's :params. */
   pattern: RegExp;
 }
 

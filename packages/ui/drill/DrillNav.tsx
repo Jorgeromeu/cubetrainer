@@ -12,7 +12,7 @@ interface Props {
   children?: ReactNode
 }
 
-/** A drill's ← and Next → (keys: keys.ts), then the trainer's own buttons. */
+/** A drill's ← and Next → (keys: keys.ts), then the tool's own buttons. */
 export function DrillNav({ noun, onPrev, onNext, canPrev, disabled = false, children }: Props) {
   return (
     <div className="drill-nav">

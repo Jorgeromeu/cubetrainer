@@ -1,4 +1,4 @@
-// PLL trainer preferences (Settings → PLL). They only affect the PLL page.
+// PLL tool preferences (Settings → PLL). They only affect the PLL page.
 import { persisted } from '../../../packages/ui/persisted.ts'
 
 /**

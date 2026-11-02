@@ -1,4 +1,4 @@
-// The F2L trainer's API: main algs, alg statuses, notes, video links and your own algs (types in shared/f2l/progress.ts).
+// The F2L tool's API: main algs, alg statuses, notes, video links and your own algs (types in tools/f2l/contract.ts).
 //
 //   GET   /api/f2l/progress               -> ProgressResponse
 //   PUT   /api/f2l/progress/:slotCaseId   PutProgressBody -> SlotCaseProgress | null
@@ -12,10 +12,10 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Catalog } from "../../../packages/core/catalog/f2l.ts";
 import type { ProgressResponse } from "../contract.ts";
-import type { ServerTrainer } from "../../../server/src/tool.ts";
+import type { ServerTool } from "../../../server/src/tool.ts";
 import { algRefFrom, progressRepository } from "./progress.ts";
 
-export const f2lTrainer: ServerTrainer = {
+export const f2lTool: ServerTool = {
   id: "f2l",
   routes({ repoRoot, openDb }) {
     const catalog = JSON.parse(readFileSync(join(repoRoot, "catalog/f2l.json"), "utf8")) as Catalog;
