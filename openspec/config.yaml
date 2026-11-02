@@ -1,0 +1,22 @@
+schema: spec-driven
+
+# Project context: constraints an agent can't infer from the code.
+context: |
+  Personal cubing tool for one user, run locally (no accounts, no multi-user). Structured so it
+  could be hosted later without a rewrite, but never at the cost of simplicity now.
+  The user is a returning cuber (basic F2L + 2-look OLL/PLL); features serve learning and drilling.
+  Vocabulary (slot-case, mirror cluster, AUF, alg family, alg links...) is defined in
+  specs/f2l-catalog and specs/catalog-builder; use those terms exactly.
+  Every new practice tool is its own isolated tool folder (see specs/architecture), never a mode of an
+  existing tool.
+  Every visual change ships its stealth variant (see specs/stealth-mode).
+  UI style is flat: few pills, rounded boxes or bordered cards, following the F2L tool's look.
+  The app must keep working without the server (read-only, no progress).
+
+rules:
+  proposal:
+    - Name the capabilities (specs/*) the change touches
+    - State the stealth-mode impact of any visual change
+  specs:
+    - Use SHALL/MUST and at least one WHEN/THEN scenario per requirement
+    - Spec observable behaviour (keys, defaults, limits, per-browser vs server persistence), not file layout

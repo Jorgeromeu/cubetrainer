@@ -125,6 +125,126 @@ export const relabelSides = (alg: string, steps: number) =>
     return m.modified({ family: SIDE_FACES[(i + steps + 4) % 4] });
   });
 
+type Face = "U" | "D" | "F" | "B" | "R" | "L";
+const FACES: Face[] = ["U", "D", "F", "B", "R", "L"];
+
+/**
+ * Each whole-cube rotation as the face cycle it makes, in the direction of its face turn
+ * (x like R, y like U, z like F): after the rotation, a position holds the face that sat
+ * one step before it in the cycle.
+ */
+const ROTATION_CYCLES: Record<string, Face[]> = { x: ["F", "U", "B", "D"], y: ["R", "F", "L", "B"], z: ["U", "R", "D", "L"] };
+
+/**
+ * Wide and slice moves as a face turn plus a whole-cube rotation, so they come out as face
+ * turns: a wide move turns the opposite face the same way and rotates the cube with it
+ * (`r` = `L x`, `d` = `U y'`), a slice turns both faces back and rotates (`M` = `R L' x'`).
+ * Each entry: the face turns (amount multiplier) and the rotation (same).
+ */
+const SPLIT: Record<string, { turns: [Face, number][]; rotation: [string, number] }> = {
+  R: { turns: [["L", 1]], rotation: ["x", 1] },
+  L: { turns: [["R", 1]], rotation: ["x", -1] },
+  U: { turns: [["D", 1]], rotation: ["y", 1] },
+  D: { turns: [["U", 1]], rotation: ["y", -1] },
+  F: { turns: [["B", 1]], rotation: ["z", 1] },
+  B: { turns: [["F", 1]], rotation: ["z", -1] },
+  M: { turns: [["R", 1], ["L", -1]], rotation: ["x", -1] },
+  E: { turns: [["U", 1], ["D", -1]], rotation: ["y", -1] },
+  S: { turns: [["F", -1], ["B", 1]], rotation: ["z", 1] },
+};
+
+/** The alg's moves with wide and slice moves split into face turns and rotations (see SPLIT). */
+function splitWideAndSlice(alg: string): Move[] {
+  return [...new Alg(alg).experimentalExpand()].flatMap((node) => {
+    const m = node.as(Move);
+    if (!m) throw new Error(`unsupported alg node "${node}" in "${alg}"`);
+    const wide = /^[RLUDFB]w$/.test(m.family) || /^[rludfb]$/.test(m.family);
+    const key = wide ? m.family[0].toUpperCase() : m.family;
+    if (!wide && !"MES".includes(key)) return [m];
+    const { turns, rotation } = SPLIT[key];
+    return [
+      ...turns.map(([face, k]) => new Move(face, m.amount * k)),
+      new Move(rotation[0], m.amount * rotation[1]),
+    ];
+  });
+}
+
+/** Opposite faces, in the order a canonical alg writes them when they're turned together. */
+const AXES: Face[][] = [["U", "D"], ["R", "L"], ["F", "B"]];
+
+/**
+ * Canonical face turns: consecutive turns on one axis (opposite faces commute) merged per
+ * face, written in AXES order, amounts as -1, 1 or 2. `U D U'` -> `D`, `D U` -> `U D`.
+ */
+function mergeTurns(moves: Move[]): Move[] {
+  let out = moves;
+  for (let changed = true; changed; ) {
+    changed = false;
+    const next: Move[] = [];
+    for (let i = 0; i < out.length; ) {
+      const axis = AXES.find((a) => a.includes(out[i].family as Face))!;
+      let j = i;
+      const sum = new Map<string, number>();
+      for (; j < out.length && axis.includes(out[j].family as Face); j++)
+        sum.set(out[j].family, (sum.get(out[j].family) ?? 0) + out[j].amount);
+      for (const face of axis) {
+        const turns = (((sum.get(face) ?? 0) % 4) + 4) % 4;
+        if (turns) next.push(new Move(face, turns === 3 ? -1 : turns));
+      }
+      i = j;
+    }
+    changed = next.length !== out.length || next.some((m, k) => !m.isIdentical(out[k]));
+    out = next;
+  }
+  return out;
+}
+
+/**
+ * The alg with its whole-cube rotations taken out: as face turns only, on the cube as it
+ * was first held (`y R` -> `B`, `d R'` -> `U B'`), in canonical form (see mergeTurns).
+ * Wide and slice moves count as a face turn plus a rotation (see SPLIT). The rotation the
+ * alg leaves behind is dropped. Algs that turn the cube's layers the same way, whatever
+ * their grip, give the same text.
+ */
+export function rotationless(alg: string): string {
+  // at[position] = the face (as first held) now at that position.
+  let at = Object.fromEntries(FACES.map((f) => [f, f])) as Record<Face, Face>;
+  const out: Move[] = [];
+  for (const m of splitWideAndSlice(alg)) {
+    const turns = ((m.amount % 4) + 4) % 4;
+    const cycle = ROTATION_CYCLES[m.family];
+    if (cycle) {
+      for (let t = 0; t < turns; t++) {
+        const next = { ...at };
+        cycle.forEach((pos, i) => (next[cycle[(i + 1) % 4]] = at[pos]));
+        at = next;
+      }
+      continue;
+    }
+    if (!FACES.includes(m.family as Face)) throw new Error(`rotationless: unsupported move "${m}" in "${alg}"`);
+    if (turns) out.push(new Move(at[m.family as Face], m.amount));
+  }
+  return new Alg(mergeTurns(out)).toString();
+}
+
+/**
+ * The alg as done on the slot it's for, seen from front-right: rotations taken out and
+ * the cube turned so the slot is at front-right (FL `U F U' F'` -> `U R U' R'`). The same
+ * alg in any slot, with or without a regrip, has one local form.
+ */
+export const localForm = (alg: string, slot: "FR" | "FL" | "BR" | "BL") =>
+  rotationless(`${LOCAL_ROTATION[slot]} ${alg}`.trim());
+
+/** The y rotation that brings each slot to front-right. */
+const LOCAL_ROTATION = { FR: "", FL: "y", BR: "y'", BL: "y2" };
+
+/**
+ * A local form's mirror image, also seen from front-right: the alg mirrored left-right
+ * (now for front-left) and turned back to front-right. Swaps R and F (`R U R'` ->
+ * `F' U' F`) and solves the mirror case.
+ */
+export const localMirror = (local: string) => localForm(mirrorAlg(local, "M"), "FL");
+
 /**
  * Edge orientation of the pair's edge after `setup`: true ("good edge") if it can be
  * solved with R, L, U and D turns alone, false ("bad edge") if it needs an F/B quarter

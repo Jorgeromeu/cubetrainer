@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generatedAt": "2026-10-05T00:32:48.823Z",
+ "generatedAt": "2026-10-12T14:16:47.545Z",
  "caseSet": {
   "id": "pll",
   "name": "PLL"
@@ -21,6 +21,7 @@
     "R2 L2 D R2 L2 U2 R2 L2 D R2 L2",
     "R2 L2 D2 R2 L2 U' R2 L2 D2 R2 L2"
    ],
+   "setup": "R2 F2 B2 L2 D L2 F2 B2 R2 U'",
    "stickers": ".BFB./LUUUR/RUUUL/LUUUR/.FBF.",
    "arrows": [
     {
@@ -62,6 +63,7 @@
     "R2 U R U R' U' R' U' R' U R'",
     "R' U' R U' R U R2 U R U' R U' R'"
    ],
+   "setup": "U R2 U F B' R2 F' B U R2 U'",
    "stickers": ".BLB./LUUUR/RUUUB/LUUUR/.FFF.",
    "arrows": [
     {
@@ -110,6 +112,7 @@
     "R2 U' R' U' R U R U R U' R",
     "R U' R U R U R U' R' U' R2"
    ],
+   "setup": "U2 R2 L2 D R L' F2 R' L D R2 L2 U2",
    "stickers": ".BRB./LUUUR/BUUUL/LUUUR/.FFF.",
    "arrows": [
     {
@@ -159,6 +162,7 @@
     "R L' B2 R2 L2 F2 R L' U R2 L2 D R2 L2",
     "R2 L2 D2 R L' F' R2 L2 B' R2 L2 F' R L'"
    ],
+   "setup": "R2 L2 D2 R L' F R2 L2 B R2 L2 F R L' U'",
    "stickers": ".BRB./LUUUR/FUUUB/LUUUR/.FLF.",
    "arrows": [
     {
@@ -198,6 +202,7 @@
     "R2 B2 R F R' B2 R F' R",
     "R B' R F2 R' B R F2 R2"
    ],
+   "setup": "R2 B2 R F R' B2 R F' R",
    "stickers": ".RBR./BUUUF/LUUUR/LUUUL/.FFB.",
    "arrows": [
     {
@@ -246,6 +251,7 @@
     "R2 F2 R' B' R F2 R' B R'",
     "R' B' R2 D R' U' R D' R' U R' B R"
    ],
+   "setup": "R' F R' B2 R F' R' B2 R2",
    "stickers": ".FBL./RUUUB/LUUUR/LUUUB/.FFR.",
    "arrows": [
     {
@@ -295,6 +301,7 @@
     "F B' D R' D2 F D R D R' D2 F' D B R' F' R",
     "R' U' R U' R' U R U R2 F' R U R U' R' F U R"
    ],
+   "setup": "U R2 F R F' R' U' F' U F R2 U R' U' R",
    "stickers": ".RBL./BUUUB/RUUUL/LUUUR/.FFF.",
    "arrows": [
     {
@@ -336,6 +343,7 @@
     "R' U' R D' U R2 U R' U R U' R U' R2 D",
     "F R U' R' U R U R2 F' R U R' F' R U R U' R' F R U' R'"
    ],
+   "setup": "U F' U' F R2 D B' U B U' B D' R2 U",
    "stickers": ".LBL./FUUUB/RUUUF/RUUUR/.BLF.",
    "arrows": [
     {
@@ -414,6 +422,7 @@
     "R2 U R' U R' U' R U' R2 D U' R' U R D'",
     "D' R2 U R' U R' U' R U' R2 D U' R' U R"
    ],
+   "setup": "R2 D B' U B' U' B D' R2 F' U F",
    "stickers": ".LRL./FUUUB/BUUUL/RUUUR/.BFF.",
    "arrows": [
     {
@@ -493,6 +502,7 @@
     "R2 F' R U R U' R' F' R U2 R' U2 R' F2 R2",
     "R U R' U' D R2 U' R U' R' U R' U R2 D'"
    ],
+   "setup": "U' B U B' R2 D' F U' F' U F' D R2 U",
    "stickers": ".LFL./FUUUB/BUUUR/RUUUR/.BLF.",
    "arrows": [
     {
@@ -572,6 +582,7 @@
     "R2 U' R U' R U R' U R2 D' U R U' R' D",
     "R2 F2 R U2 R U2 R' F R U R' U' R' F R2"
    ],
+   "setup": "R2 D' F U' F U F' D R2 B U' B' U2",
    "stickers": ".LRL./FUUUB/LUUUF/RUUUR/.BBF.",
    "arrows": [
     {
@@ -651,6 +662,7 @@
     "L' U2 L U L' U2 R U' L U R'",
     "L' U' L2 F L' U' L' U L F' L' U L"
    ],
+   "setup": "U2 F2 L' U' L F2 R' D R' D' R2 U2",
    "stickers": ".LBB./FUUUR/FUUUR/BUUUR/.LLF.",
    "arrows": [
     {
@@ -691,6 +703,7 @@
     "R U2 R' U' R U2 L' U R' U' L",
     "R U R2 F' R U R U' R' F R U' R'"
    ],
+   "setup": "U' L' U R U' L U2 R' U R U2 R' U",
    "stickers": ".BBB./LUUUR/FUUUR/FUUUF/.RLL.",
    "arrows": [
     {
@@ -732,6 +745,7 @@
     "R U2 R' U' R' F' R U2 R U2 R' F R U' R'",
     "R U' R2 D' R U R' D R U' R U' R' U R U R'"
    ],
+   "setup": "U2 L2 F' L' U' L' U L F L' U2 L U2 L' U",
    "stickers": ".BLR./LUUUF/BUUUR/LUUUB/.FFR.",
    "arrows": [
     {
@@ -773,6 +787,7 @@
     "R' U R U R' U' R' D' R U R' D R U2 R",
     "R' U2 R' D' R U' R' D R U R U' R' U' R"
    ],
+   "setup": "R2 F R U R U' R' F' R U2 R' U2 R U",
    "stickers": ".BBR./LUUUF/FUUUR/LUUUB/.FLR.",
    "arrows": [
     {
@@ -813,6 +828,7 @@
     "F R U' R' U R U R2 F' R U R U' R'",
     "L' U' L F U' R U R2 F' R U R U' R'"
    ],
+   "setup": "U F2 D' L2 D F2 R2 D B2 D' R2",
    "stickers": ".BBR./LUUUF/RUUUL/LUUUB/.FFR.",
    "arrows": [
     {
@@ -853,6 +869,7 @@
     "R2 D' R U' R' D R U' R' D' R U R' D R U R",
     "R2 U F' U R' U' R U R' U' R U R' U' R F U' R2"
    ],
+   "setup": "U F R B R' F' R B' R' F R B' R' F' R B R' U'",
    "stickers": ".RBL./BUUUB/LUUUR/FUUUF/.RFL.",
    "arrows": [
     {
@@ -894,6 +911,7 @@
     "L' F' L U2 L' F' L U2 L' F' L U2 L' F' L U2 L' F' L",
     "R U R' U2 R U R2 F' R U R U' R' F R U' R' U' R U' R'"
    ],
+   "setup": "R F U' R' U R U F' R2 F' R U R U' R' F",
    "stickers": ".BBF./LUUUL/RUUUL/RUUUR/.BFF.",
    "arrows": [
     {
@@ -935,6 +953,7 @@
     "R' U R' F R F' R U' R' F' U F R U R' U' R",
     "B U' B' U R' U R U' R' F' U F R U R' U' R"
    ],
+   "setup": "L' U R' U2 L U' R L' U R' U2 L U' R U",
    "stickers": ".FBB./RUUUR/RUUUL/LUUUL/.FFB.",
    "arrows": [
     {
@@ -976,6 +995,7 @@
     "R' B' D R D' R D R2 D' R B R U R' U' R",
     "R2 D R2 U' R2 D' U R' D R' D' R U' R' U R'"
    ],
+   "setup": "U F' R' F' R U' R U R2 F R U F U' F U'",
    "stickers": ".FRB./RUUUR/LUUUB/LUUUL/.FFB.",
    "arrows": [
     {
@@ -1017,6 +1037,7 @@
     "F U R U' R' F R U' R' U R U R2 F' R F'",
     "F R' F' R U R U' R' F R U' R' U R U R' F'"
    ],
+   "setup": "F U F' R2 F U' F' U' R2 U R2 U R2",
    "stickers": ".FLB./RUUUR/BUUUR/LUUUL/.FFB.",
    "arrows": [
     {

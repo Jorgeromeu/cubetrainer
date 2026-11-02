@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { Fragment, type ReactNode } from 'react'
 import { TRIGGER_NAMES, type AlgTrigger } from '../../../../shared/cube.ts'
 import { isRotation } from './moves.ts'
 import { groupMoves, splitMoves } from './notation.ts'
@@ -13,7 +13,9 @@ interface Props {
 
 /**
  * Moves as text, marked up the same way everywhere (see notation.ts): rotations in their
- * colour, marked triggers in theirs and in parentheses, named on hover.
+ * colour, marked triggers in theirs and in parentheses, named on hover. Each move shows
+ * the app-wide move hint on hover (MoveHint.tsx); outside triggers, an empty title keeps
+ * an enclosing element's own tooltip from showing over it.
  */
 export function Notation({ moves, triggers, wrapTrigger }: Props) {
   return groupMoves(splitMoves(moves), triggers).map(({ moves, trigger }, i) => {
@@ -21,22 +23,34 @@ export function Notation({ moves, triggers, wrapTrigger }: Props) {
     if (!trigger) {
       const [move] = moves
       return (
-        <span key={i} className={isRotation(move) ? 'rotation-move' : undefined}>
+        <Fragment key={i}>
           {space}
-          {move}
-        </span>
+          <span className={isRotation(move) ? 'rotation-move' : undefined} data-move={move} title="">
+            {move}
+          </span>
+        </Fragment>
       )
     }
+    // Its moves keep no title of their own, so the trigger's name still shows over them.
     const content = (
       <span className="trigger-moves" title={wrapTrigger ? undefined : TRIGGER_NAMES[trigger.kind]}>
-        ({moves.join(' ')})
+        (
+        {moves.map((move, k) => (
+          <Fragment key={k}>
+            {k > 0 && ' '}
+            <span data-move={move}>
+              {move}
+            </span>
+          </Fragment>
+        ))}
+        )
       </span>
     )
     return (
-      <span key={i}>
+      <Fragment key={i}>
         {space}
         {wrapTrigger ? wrapTrigger(trigger, content) : content}
-      </span>
+      </Fragment>
     )
   })
 }

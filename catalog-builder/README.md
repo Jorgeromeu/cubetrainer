@@ -9,7 +9,7 @@ npm run collect      # = fetch + parse + check + build-catalog
 npm run fetch        # download sources into raw/ (cached; add -- --force to refetch)
 npm run parse        # raw/ -> data/<source>-f2l.json
 npm run check        # verify every alg with cubing.js -> data/check-report.json
-npm run build-catalog # data/speedcubedb-f2l.json -> ../catalog/f2l.json (the app's catalog)
+npm run build-catalog # data/speedcubedb-f2l.json (+ recommended-f2l.json) -> ../catalog/f2l.json (the app's catalog)
 ```
 
 Requires Node ≥ 23.6 (runs the `.ts` files directly, no build step).
@@ -26,6 +26,7 @@ Requires Node ≥ 23.6 (runs the `.ts` files directly, no build step).
 | `raw/` | Untouched source responses (~7 MB of HTML). | no (gitignored) |
 | `data/speedcubedb-f2l.json` | **Main dataset.** 41 cases × 4 slots. | yes |
 | `data/cubicdb-f2l.json` | Secondary dataset, FR only. | yes |
+| `data/recommended-f2l.json` | Every alg line on J Perm's "Best F2L Algorithms" (FR) and CubeSkills' "F2L Algorithms – All Four Slot Angles" PDFs (`fetch/parse-recommended.ts`). No case numbers: `build-catalog` places each by the slot-case it solves, marks that alg (`recommendedBy`) or adds it, and skips what solves no basic case as-is (advanced cases, algs needing another slot empty). | yes |
 | `data/check-report.json` | Per-alg verification failures and per-slot stats. | yes |
 
 `data/*.json` is the *collected* data, kept close to its source. `build-catalog` turns

@@ -1,11 +1,14 @@
-// The PLL trainer: scrambles for the cases you pick, from catalog/pll.json.
+// The PLL trainer: timed scrambles for the cases you pick, from catalog/pll.json, with
+// times kept by ../server.
 import type { Trainer } from '../../common/trainer.ts'
 import { PllCrumb, PllTrainer } from './PllTrainer.tsx'
+import { PllSettings } from './PllSettings.tsx'
 
 export const pllTrainer: Trainer = {
   id: 'pll',
   name: 'PLL',
-  description: 'Scrambles for the 21 cases you pick',
+  description: 'Timed scrambles for the 21 cases you pick',
   View: PllTrainer,
   Crumb: PllCrumb,
+  Settings: PllSettings,
 }

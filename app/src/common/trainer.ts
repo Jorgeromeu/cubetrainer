@@ -16,7 +16,11 @@ export interface Trainer {
   View: ComponentType<TrainerProps>
   /** Its part of the top bar, after the brand and the stealth toggle. */
   Crumb?: ComponentType<TrainerProps>
-  /** Its section at the top of the settings menu (use common/ui/settings.tsx). */
+  /**
+   * Its settings menu, the only thing in it (no gear without one). Build it with
+   * common/ui/settings.tsx; add shared sections only if they apply to it, e.g.
+   * common/cube/CubeDisplaySettings.tsx if it shows 3D cubes.
+   */
   Settings?: ComponentType
 }
 

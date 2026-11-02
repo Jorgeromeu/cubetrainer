@@ -2,7 +2,12 @@
 
 The trainers, as one app: the F2L Algorithm Explorer (a viewer over `../catalog/f2l.json`,
 plus progress tracking: a main alg per slot-case; per alg a learning/learnt status and
-notes, stored by `../server`) and the PLL scramble trainer (`../catalog/pll.json`).
+notes, stored by `../server`) and the PLL scramble trainer (`../catalog/pll.json`; timed
+solves without inspection, per-case times stored by `../server`, see `src/trainers/pll/`), and PLL
+compare (cases side by side under one shared camera, each with its own U turns; named sets
+stored by `../server`, see `src/trainers/pll-compare/`), and Stats (solve history, charted: progress,
+ao12/ao100 with the spread of the same solves, spread over time, warm-up, solves per day; see `src/trainers/stats/`). Excluded solves (a DB
+mark that keeps re-imports from bringing them back) never reach the page.
 
 ## Layout
 
@@ -11,8 +16,8 @@ Each trainer is standalone; what they have in common lives in `common/`.
 | Path | What | May import |
 |---|---|---|
 | `src/shell/` | Top bar, trainer menu, settings menu, routing (`#/<trainerId>/...`). `trainers.ts` lists the trainers. | everything |
-| `src/trainers/<id>/` | One trainer, all its logic and views. `index.ts` exports its `Trainer` (`common/trainer.ts`): name, `View`, `Crumb`, `Settings`. | `common/`, `../shared/` |
-| `src/common/` | Shared by trainers: `cube/` (cubing.js player, flat 2D cube, stealth colours, cube display settings), `notation/` (move markup, rotations, triggers), `ui/` (settings rows), `stealth.ts`, `persisted.ts` (localStorage prefs), `trainer.ts` (the trainer contract). | `../shared/` only |
+| `src/trainers/<id>/` | One trainer, all its logic and views. `index.ts` exports its `Trainer` (`common/trainer.ts`): name, `View`, `Crumb`, `Settings` (the whole settings menu while it's open: only its own settings, plus shared sections that apply to it). | `common/`, `../shared/` |
+| `src/common/` | Shared by trainers: `cube/` (cubing.js player, flat 2D cube, stealth colours (a per-side palette for PLL), cube display settings and their menu section, which trainers showing 3D cubes add to their own Settings), `notation/` (move markup, rotations, triggers), `pll/` (the PLL case icon), `ui/` (settings rows), `stealth.ts`, `solveTime.ts` (penalties, averages, time formatting), `persisted.ts` (localStorage prefs), `api.ts` (server requests), `trainer.ts` (the trainer contract). | `../shared/` only |
 | `../shared/` | Contracts with server/ and catalog-builder/: `cube.ts` (slots, triggers), `f2l/`, `pll/`. | nothing |
 
 Trainers never import from each other or from `shell/`. Adding one: a folder under
@@ -35,15 +40,29 @@ without a reload. Set `API_URL` to proxy to a server on another port (default `:
 - Progress: in a cluster, ☆ on an alg makes it the slot-case's main alg (F), the circle
   next to it cycles its status: nothing → learning → learnt (K), and the note button opens
   the alg's notes under the row (N on the selected alg, Esc closes). An alg can have several
-  notes; each one's little slot grid picks where else it shows: just this alg (the default),
-  its left-right mirror, its front-back mirror, all four slots, or everywhere linked (chain
-  icon: mirrors and rotation versions, transitively). A chain icon at the end of an alg row
-  links to the same execution elsewhere (same moves, a leading rotation apart).
-- Linked algs: family links (mirrors, 180° turn: `familyId`) and execution links (same moves
-  after a leading y: `executionId`) group algs into ideas (`ideaOf` in src/trainers/f2l/catalog.ts). The
-  overview counts main and learnt algs as algs → executions → ideas.
-- Better algs: votes (▲) are SpeedCubeDB's for the alg plus its left-right mirror (votes
-  outside FR are sparse; the mirror is the same motion). Rotation moves (x, y, z) are
+  notes; each one's little map of the cluster shows where it shows, and opens a picker for
+  the link kinds it follows (none by default: just this alg).
+- Linked algs: typed links between algs of a cluster, derived from the catalog's `shapeId`
+  / `mirrorShapeId` (`linksOf` in src/trainers/f2l/catalog.ts): rotation (the same alg in
+  another grip or slot: a rotation, a `d` move or the 180° turn apart), left-right mirror,
+  front-back mirror and transpose (the mirror case in the same slot, F-U moves instead of
+  R-U). Notes spread along the kinds they follow, any number of steps (`noteReach`).
+- Family map: cells whose main algs are linked by the kinds you count as the same
+  ("Count as linked" above the map, or Settings → F2L; mirrors and rotation by default)
+  share a tint (`groupAlgs`); a main linked to nothing stays plain. Hovering a cell lists
+  its main's links to the other mains. "Go to equivalent" (G) turns the map into a picker:
+  each cell leads to the alg most like the selected one there (`equivalentIn`: your main
+  if it's linked at all, else the fewest links away). The overview counts main and learnt
+  algs as algs → shapes → ideas (ideas by the same "count as linked" kinds).
+- Picks: J Perm's and CubeSkills' recommended F2L sheets (`RECOMMENDERS` in shared/f2l/catalog.ts;
+  collected by catalog-builder's fetch/parse-recommended, each alg placed by the case it solves).
+  A row's JP / CS pill is solid when it's the sheet's exact moves for that slot, outlined when
+  it's the same alg (same shape) written with another grip in that slot (`recommendationsOf`).
+  Picks never carry over to other slots: CubeSkills' sheet covers all four; J Perm's only
+  front-right, so other slots have no JP pills.
+- Better algs: each row shows the alg's own SpeedCubeDB votes (▲) and, quieter with the
+  left-right mirror mark, its exact left-right mirror's. "More popular" (`popularity`)
+  adds the two (votes outside FR are sparse; the mirror is the same motion). Rotation moves (x, y, z) are
   coloured orange in alg text and the player's move strip (src/common/notation/). When
   a clearly more popular alg with no more rotations than your main exists (+5 votes and
   +25%), it's shown under the main alg, as ↑ on its slot-map cell and as ↑N on the overview
@@ -51,8 +70,8 @@ without a reload. Set `API_URL` to proxy to a server on another port (default `:
 - Closing triggers: an alg's closing trigger is in parentheses, `U F R' F' R U (R U R')`.
   Hovering it names it (insert / sledgehammer / hedgeslammer), says which basic case it
   solves on its own, and shows the notes that case's alg shows (its own, plus mirrored and
-  linked ones as each note's symmetry allows). It's a one-way link (this alg ends with that
-  one), so it isn't part of `ideaOf` (`AlgMoves` in src/trainers/f2l/Moves.tsx; data from the
+  linked ones as each note's links allow). It's a one-way link (this alg ends with that
+  one), so it isn't one of the alg links (`AlgMoves` in src/trainers/f2l/Moves.tsx; data from the
   catalog's `insert`).
 - Focus on what's missing (Settings → F2L, remembered per browser): learnt slot-cases are
   greyed out but still clickable (cluster cards, cubes, slot-map cells, family links); a

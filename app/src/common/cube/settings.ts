@@ -1,5 +1,5 @@
-// How cubes are displayed (Settings → Cube display), for every trainer. A per-browser
-// preference, kept in localStorage and shared live.
+// How 3D cubes are displayed (Settings → Cube display, CubeDisplaySettings.tsx), shared by
+// every trainer that shows them. A per-browser preference, kept in localStorage and shared live.
 import { persisted } from '../persisted.ts'
 
 export type HintMode = 'off' | 'pair' | 'all'

@@ -117,6 +117,14 @@ const scrambled = (scramble: string) => solved.applyAlg(scramble);
 const sameCase = (scramble: string, target: KPattern) =>
   AUFS.some((pre) => AUFS.some((post) => same(solved.applyAlg(pre).applyAlg(scramble).applyAlg(post), target)));
 
+/** The scramble with the AUFs before and after that give exactly `target`, cancelled into it. */
+function exactSetup(scramble: string, target: KPattern): string | undefined {
+  for (const pre of AUFS)
+    for (const post of AUFS)
+      if (same(scrambled(`${pre} ${scramble} ${post}`), target))
+        return new Alg(`${pre} ${scramble} ${post}`).experimentalSimplify({ cancel: true }).toString();
+}
+
 const movedPieces = (p: KPattern) =>
   Object.values(p.patternData).reduce((n, { pieces }) => n + pieces.filter((piece, i) => piece !== i).length, 0);
 
@@ -234,13 +242,18 @@ async function main() {
       if (scrambles.length >= MAX_SCRAMBLES) break;
     }
 
+    // Shortest first: slice-move algs turn into longer, clunkier face-turn scrambles.
+    scrambles.sort((a, b) => a.split(" ").length - b.split(" ").length);
+    const setup = exactSetup(scrambles[0], casePattern);
+    if (!setup) throw new Error(`${name}: no AUFs make "${scrambles[0]}" the drawn case`);
+
     cases.push({
       id: `pll-${name}`,
       name,
       group,
       algs: goodAlgs.slice(0, MAX_ALGS),
-      // Shortest first: slice-move algs turn into longer, clunkier face-turn scrambles.
-      scrambles: scrambles.sort((a, b) => a.split(" ").length - b.split(" ").length),
+      scrambles,
+      setup,
       stickers: stickerGrid(casePattern),
       arrows: arrows(casePattern),
     });

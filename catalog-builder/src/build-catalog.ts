@@ -7,14 +7,21 @@
 // - Mirrors: the mirror of case N's FR setup is an FL state; the case whose FL algs solve
 //   it is N's mirror.
 // - Alg families: each alg mirrored left-right, mirrored front-back and turned 180° lands
-//   on another slot; it's linked there when the catalog has those exact moves. Each alg
-//   also gets a familyId: the id of its front-right version (present in the catalog or not).
-// - Executions: algs of a case whose moves match once a leading y rotation is taken off
-//   are the same hand motions; they share an executionId.
+//   on another slot; it's linked there when the catalog has those exact moves.
+// - Shapes and links: each alg's local form is the alg as done on its slot, seen from
+//   front-right, with rotations taken out and wide/slice moves split (localForm). Algs
+//   with one local form are the same alg in another slot or grip: they share a shapeId
+//   (a rotation link in the app, see LinkKind). An alg's mirrorShapeId is its local
+//   form's mirror image (localMirror, on the mirror case): a mirror link (left-right or
+//   front-back neighbouring slot) or a transpose link (same or opposite slot). Checked:
+//   every exact family member gets the link its transform says.
 // - Edge orientation: good/bad edge per slot-case, from its setup. Checked to be the same
 //   across each alg family (mirrors and the 180° turn keep R/L/U/D moves R/L/U/D).
 // - Inserts: the trigger an alg ends with (X U* X', sledgehammer, hedgeslammer), with
 //   the slot-case it solves on its own: the case it would be with nothing before it.
+// - Recommendations: the algs on J Perm's and CubeSkills' sheets (data/recommended-f2l.json),
+//   each placed by checking which slot-case it solves; it marks the alg with its exact
+//   moves there, or joins the catalog.
 // - Triggers: each alg's named triggers (TRIGGER_NAMES): its closing insert, or for an
 //   alg written out in data/triggers.json, its groups in parentheses there (each must
 //   have a named trigger's shape).
@@ -22,11 +29,25 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { Alg } from "cubing/alg";
 import { FRONT_BACK_SLOT, MIRROR_SLOT, OPPOSITE_SLOT, SLOTS, type AlgTrigger, type Slot, type TriggerKind } from "../../shared/cube.ts";
-import type { AlgInsert, Case, Catalog, CatalogAlg, Cluster, InsertKind, SlotCase } from "../../shared/f2l/catalog.ts";
+import {
+  RECOMMENDERS,
+  type AlgInsert,
+  type Case,
+  type Catalog,
+  type CatalogAlg,
+  type Cluster,
+  type InsertKind,
+  type LinkKind,
+  type Recommender,
+  type SlotCase,
+} from "../../shared/f2l/catalog.ts";
+import type { RecommendedDataset } from "./parse-recommended.ts";
 import {
   conjugate,
   disturbedF2LPieces,
   isFaceTurnsOnly,
+  localForm,
+  localMirror,
   mirrorAlg,
   normaliseAlg,
   pairEdgeOriented,
@@ -51,12 +72,9 @@ const SLOT_TRANSFORM: Record<Slot, { rotation: string; steps: number }> = {
 
 const caseId = (n: number) => `f2l-${n}`;
 const slotCaseId = (n: number, slot: Slot) => `f2l-${n}-${slot}`;
-const algId = (scId: string, moves: string) =>
-  `${scId}-${createHash("sha1").update(moves).digest("hex").slice(0, 8)}`;
+const algId = (scId: string, moves: string) => `${scId}-${hash(moves)}`;
 
-/** The case plus the moves after any leading y rotation: the same hands, whatever the grip. */
-const executionId = (caseNumber: number, moves: string) =>
-  `${caseId(caseNumber)}-x-${createHash("sha1").update(moves.replace(/^(y2|y'|y) /, "")).digest("hex").slice(0, 8)}`;
+const hash = (text: string) => createHash("sha1").update(text).digest("hex").slice(0, 8);
 
 const SIDE_QUARTER = /^[RLFB]'?$/;
 const inverseMove = (m: string) => (m.endsWith("'") ? m.slice(0, -1) : `${m}'`);
@@ -171,12 +189,51 @@ async function main() {
           votes: a.votes,
           stm: a.stm,
           etm: a.etm,
-          familyId: "", // set in step 5, once mirrors are known
-          executionId: executionId(c.number, moves),
+          shapeId: "", // set in step 5, from the local form
+          mirrorShapeId: "",
         });
       }
       if (!algs.length) fail(`${scId}: no verified algs`);
       algsBySlotCase.set(scId, algs);
+    }
+  }
+
+  // 1b. Recommendations: each alg on a recommendation sheet, checked on the cube against
+  //     every slot-case. It marks the alg with exactly its moves there, or joins the
+  //     catalog if there's none (the app shows the same alg in other grips and slots as
+  //     recommended through it). Sheet algs that solve none of the 41 basic cases as-is
+  //     (the sheets' advanced cases, and algs that need another slot empty) are skipped.
+  /** The slots each sheet gives algs for (J Perm's second column is the mirror case at FR). */
+  const SHEET_SLOTS: Record<Recommender, readonly Slot[]> = { jperm: ["FR"], cubeskills: SLOTS };
+  const recommended: RecommendedDataset = JSON.parse(await readFile("data/recommended-f2l.json", "utf8"));
+  const recommendCounts = new Map<string, { marked: number; added: number; skipped: number }>();
+  for (const { id, algs } of recommended.sources) {
+    if (!(id in RECOMMENDERS)) fail(`recommendations: unknown sheet ${id}`);
+    const counts = { marked: 0, added: 0, skipped: 0 };
+    recommendCounts.set(id, counts);
+    for (const [rank, r] of algs.entries()) {
+      const moves = normaliseAlg(r.moves);
+      const scIds = [...setups].filter(([, setup]) => solves(setup, moves)).map(([scId]) => scId);
+      if (scIds.length > 1) fail(`recommendations: ${id} "${r.moves}" solves ${scIds.join(", ")}`);
+      if (!scIds.length) {
+        counts.skipped++;
+        continue;
+      }
+      // A sheet only recommends for the slots it covers; landing elsewhere is a misprint.
+      if (!SHEET_SLOTS[id as Recommender].some((slot) => scIds[0].endsWith(`-${slot}`))) {
+        warnings.push(`recommendations: ${id} "${r.moves}" (page ${r.page}) solves ${scIds[0]}, a slot the sheet doesn't cover: skipped`);
+        counts.skipped++;
+        continue;
+      }
+      const scAlgs = algsBySlotCase.get(scIds[0])!;
+      let alg = scAlgs.find((a) => a.moves === moves);
+      if (alg) counts.marked++;
+      else {
+        alg = { id: algId(scIds[0], moves), slotCaseId: scIds[0], moves, source: id, rank, shapeId: "", mirrorShapeId: "" };
+        scAlgs.push(alg);
+        counts.added++;
+      }
+      if (!alg.recommendedBy?.includes(id as Recommender)) (alg.recommendedBy ??= []).push(id as Recommender);
     }
   }
 
@@ -258,26 +315,71 @@ async function main() {
     }
   }
 
-  // 5. Family ids: carry each alg to front-right (the same transforms: each is its own
-  //    inverse) and take the id it has there.
-  const toFrontRight: Record<Slot, { mirrorCase: boolean; apply: (alg: string) => string }> = {
-    FR: { mirrorCase: false, apply: (alg) => alg },
-    FL: { mirrorCase: true, apply: (alg) => mirrorAlg(alg, "M") },
-    BR: { mirrorCase: true, apply: (alg) => mirrorAlg(alg, "S") },
-    BL: { mirrorCase: false, apply: turnAlg },
+  // 5. Shapes and links, from the local form. Checked on the cube: the local form solves
+  //    the case at front-right, its mirror solves the mirror case there.
+  const frSetup = (n: number) => setups.get(slotCaseId(n, "FR"))!;
+  const slotOf = new Map(slotCases.map((sc) => [sc.id, sc.slot]));
+  const allAlgs = new Map(slotCases.flatMap((sc) => algsBySlotCase.get(sc.id)!).map((a) => [a.id, a]));
+  /** Which side a local form mostly turns: R (with L) or F (with B), if one clearly dominates. */
+  const sideOf = (form: string): "R" | "F" | undefined => {
+    const count = (re: RegExp) => form.split(" ").filter((m) => re.test(m)).length;
+    const r = count(/^[RL]/);
+    const f = count(/^[FB]/);
+    return r > f ? "R" : f > r ? "F" : undefined;
   };
+  const local = new Map<string, string>(); // alg id -> local form
+  const byLocal = new Map<string, CatalogAlg[]>();
   for (const sc of slotCases) {
     const n = numberOf.get(sc.caseId)!;
-    const { mirrorCase, apply } = toFrontRight[sc.slot];
-    const frId = slotCaseId(mirrorCase ? mirrorOf.get(n)! : n, "FR");
-    for (const a of algsBySlotCase.get(sc.id)!) a.familyId = algId(frId, apply(a.moves));
+    for (const a of algsBySlotCase.get(sc.id)!) {
+      const form = localForm(a.moves, sc.slot);
+      const mirror = localMirror(form);
+      if (!solves(frSetup(n), form)) fail(`${a.id}: local form "${form}" does not solve the case at FR`);
+      if (!solves(frSetup(mirrorOf.get(n)!), mirror)) fail(`${a.id}: mirrored local form "${mirror}" does not solve the mirror case`);
+      if (localMirror(mirror) !== form) fail(`${a.id}: mirroring "${form}" twice gives "${localMirror(mirror)}"`);
+      a.shapeId = hash(form);
+      a.mirrorShapeId = hash(mirror);
+      const side = sideOf(form);
+      if (side) a.side = side;
+      local.set(a.id, form);
+      byLocal.set(form, [...(byLocal.get(form) ?? []), a]);
+    }
   }
-  const allAlgs = new Map(slotCases.flatMap((sc) => algsBySlotCase.get(sc.id)!).map((a) => [a.id, a]));
+  const caseOf = (a: CatalogAlg) => slotCases.find((s) => s.id === a.slotCaseId)!.caseId;
+  for (const [form, algs] of byLocal)
+    if (new Set(algs.map(caseOf)).size > 1) fail(`local form "${form}" is shared by several cases`);
+  if (new Set([...byLocal.keys()].map(hash)).size !== byLocal.size) fail("two local forms hash to the same shapeId");
+
+  // The links the app will derive (LinkKind), to check them against the exact families.
+  const links = new Map<string, { kind: LinkKind; algId: string }[]>(); // alg id -> its links
+  const linkCountsByKind = new Map<LinkKind, number>();
+  const addLink = (a: CatalogAlg, link: { kind: LinkKind; algId: string }) => {
+    links.set(a.id, [...(links.get(a.id) ?? []), link]);
+    linkCountsByKind.set(link.kind, (linkCountsByKind.get(link.kind) ?? 0) + 1);
+  };
   for (const a of allAlgs.values()) {
-    for (const id of Object.values(a.familyAlgIds ?? {}))
-      if (allAlgs.get(id)!.familyId !== a.familyId) fail(`${a.id}: family member ${id} has another familyId`);
-    if (a.slotCaseId.endsWith("-FR") && a.familyId !== a.id) fail(`${a.id}: front-right alg's familyId isn't its own id`);
+    const slot = slotOf.get(a.slotCaseId)!;
+    for (const b of byLocal.get(local.get(a.id)!)!) if (b !== a) addLink(a, { kind: "rotation", algId: b.id });
+    for (const b of byLocal.get(localMirror(local.get(a.id)!)) ?? []) {
+      if (b === a) continue;
+      const other = slotOf.get(b.slotCaseId)!;
+      const kind: LinkKind =
+        MIRROR_SLOT[slot] === other ? "mirrorLR" : FRONT_BACK_SLOT[slot] === other ? "mirrorFB" : "transpose";
+      addLink(a, { kind, algId: b.id });
+    }
   }
+  // Every exact family member is the same link the local forms give.
+  const FAMILY_KIND = (from: Slot, to: Slot): LinkKind =>
+    MIRROR_SLOT[from] === to ? "mirrorLR" : FRONT_BACK_SLOT[from] === to ? "mirrorFB" : "rotation";
+  for (const a of allAlgs.values())
+    for (const [slot, id] of Object.entries(a.familyAlgIds ?? {}) as [Slot, string][]) {
+      const kind = FAMILY_KIND(slotOf.get(a.slotCaseId)!, slot);
+      if (!links.get(a.id)?.some((l) => l.algId === id && l.kind === kind)) fail(`${a.id}: family member ${id} isn't linked as ${kind}`);
+    }
+  for (const a of allAlgs.values())
+    for (const l of links.get(a.id) ?? [])
+      if (!links.get(l.algId)?.some((back) => back.algId === a.id && back.kind === l.kind))
+        fail(`${a.id}: ${l.kind} link to ${l.algId} isn't mutual`);
 
   // 6. Inserts: the alg's closing trigger, and the one slot-case it solves on its own.
   const insertCache = new Map<string, Omit<AlgInsert, "kind" | "length"> | null>();
@@ -330,7 +432,10 @@ async function main() {
     `Wrote ${OUT_PATH}: ${clusters.length} clusters (${clusters.length - selfMirror.length} pairs, ` +
       `self-mirror: ${selfMirror.join(", ")}), ${slotCases.length} slot-cases, ${catalog.algs.length} algs, ` +
       `family links: ${transforms.map(({ name }) => `${name} ${linkCounts.get(name) ?? 0}`).join(", ")}, ` +
-      `closing triggers: ${[...insertKinds].map(([k, n]) => `${k} ${n}`).join(", ")}.`,
+      `${new Set(catalog.algs.map((a) => a.shapeId)).size} shapes, ` +
+      `links: ${[...linkCountsByKind].map(([k, n]) => `${k} ${n}`).join(", ")}, ` +
+      `closing triggers: ${[...insertKinds].map(([k, n]) => `${k} ${n}`).join(", ")}, ` +
+      `recommendations: ${[...recommendCounts].map(([k, c]) => `${k} ${c.marked} marked + ${c.added} added (${c.skipped} skipped: advanced, multi-slot or misprinted)`).join(", ")}.`,
   );
   if (warnings.length) console.log(`${warnings.length} warnings:\n  ${warnings.join("\n  ")}`);
 }

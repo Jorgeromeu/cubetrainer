@@ -4,11 +4,17 @@ import { useSyncExternalStore } from 'react'
 /**
  * A per-browser preference kept in localStorage and shared live by every component that
  * reads it. Falls back to the defaults if storage is unavailable or holds something invalid.
+ * `migrate` brings what an older version stored up to date before it's checked.
  */
-export function persisted<T extends object>(key: string, defaults: T, valid: (value: T) => boolean) {
+export function persisted<T extends object>(
+  key: string,
+  defaults: T,
+  valid: (value: T) => boolean,
+  migrate: (stored: Record<string, unknown>) => Partial<T> = (stored) => stored as Partial<T>,
+) {
   let current: T = defaults
   try {
-    const merged = { ...defaults, ...(JSON.parse(localStorage.getItem(key) ?? '{}') as Partial<T>) }
+    const merged = { ...defaults, ...migrate(JSON.parse(localStorage.getItem(key) ?? '{}')) }
     if (valid(merged)) current = merged
   } catch {
     // Unreadable: keep the defaults.

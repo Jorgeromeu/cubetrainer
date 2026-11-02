@@ -1,11 +1,16 @@
 // Stealth mode: an app-wide switch that keeps the page from looking like a cubing app at
-// a glance. Cubes turn grey and only show while hovered. A per-browser preference, kept
+// a glance. Visual only: a greyscale theme that keeps colour only where it means something
+// (status, chart data), and cubes in grey, drawn flat and dimmed until hovered. The one
+// text change is the brand (top bar and tab title); trainer names and content stay. A per-browser preference, kept
 // in localStorage (index.html applies it before first paint) and mirrored as
 // `data-stealth` on <html>, so CSS can react anywhere. Every visual feature needs a
 // stealth variant.
 import { useSyncExternalStore } from 'react'
 
 export const STEALTH_KEY = 'cubetrainer.stealth'
+/** The app's name, and the one shown in stealth (index.html uses it too, before first paint). */
+export const BRAND = 'Cubetrainer'
+export const STEALTH_BRAND = 'Workbench'
 /** Toggles stealth mode from anywhere on the page (except while typing). */
 export const STEALTH_HOTKEY = '`'
 

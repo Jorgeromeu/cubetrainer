@@ -3,8 +3,10 @@
 import type { Trainer } from '../common/trainer.ts'
 import { f2lTrainer } from '../trainers/f2l/index.ts'
 import { pllTrainer } from '../trainers/pll/index.ts'
+import { pllCompareTrainer } from '../trainers/pll-compare/index.ts'
+import { statsTrainer } from '../trainers/stats/index.ts'
 
-export const TRAINERS: Trainer[] = [f2lTrainer, pllTrainer]
+export const TRAINERS: Trainer[] = [f2lTrainer, pllTrainer, pllCompareTrainer, statsTrainer]
 
 /** Where #/ goes. */
 export const DEFAULT_TRAINER = f2lTrainer

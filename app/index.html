@@ -6,9 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cubetrainer · F2L</title>
     <script>
-      // Stealth mode before first paint, so cubes never flash in colour (see src/stealth.ts).
+      // Stealth mode before first paint, so cubes and the title never flash (see src/common/stealth.ts).
       try {
-        if (localStorage.getItem('cubetrainer.stealth') === 'on') document.documentElement.setAttribute('data-stealth', '')
+        if (localStorage.getItem('cubetrainer.stealth') === 'on') {
+          document.documentElement.setAttribute('data-stealth', '')
+          // Neutral until the app sets the real title (STEALTH_BRAND in src/common/stealth.ts).
+          document.title = 'Workbench'
+        }
       } catch {}
     </script>
   </head>

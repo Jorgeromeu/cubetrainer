@@ -1,12 +1,23 @@
 // Loads the static catalog and builds lookup indexes over it.
 import catalogJson from '../../../../catalog/f2l.json'
-import { FRONT_BACK_SLOT, MIRROR_SLOT, type Slot } from '../../../../shared/cube.ts'
-import type { Case, Catalog, CatalogAlg, Cluster, SlotCase } from '../../../../shared/f2l/catalog.ts'
-import { isRotation } from '../../common/notation/moves.ts'
+import { FRONT_BACK_SLOT, MIRROR_SLOT, OPPOSITE_SLOT, type Slot } from '../../../../shared/cube.ts'
+import {
+  LINK_KINDS,
+  RECOMMENDERS,
+  type Case,
+  type Catalog,
+  type CatalogAlg,
+  type Cluster,
+  type LinkKind,
+  type Recommender,
+  type SlotCase,
+} from '../../../../shared/f2l/catalog.ts'
+import { isRotation, joinMoves } from '../../common/notation/moves.ts'
 import type { SetupMode } from './settings.ts'
 
 export { SLOTS, type Slot } from '../../../../shared/cube.ts'
-export type { Case, CatalogAlg, Cluster, SlotCase }
+export { LINK_KINDS, RECOMMENDERS }
+export type { Case, CatalogAlg, Cluster, LinkKind, Recommender, SlotCase }
 
 export const catalog = catalogJson as unknown as Catalog
 
@@ -28,12 +39,13 @@ const SETUP_ROTATION: Record<Slot, string> = { FR: '', FL: 'y', BR: "y'", BL: 'y
 
 /**
  * The setup shown for a slot-case (see SetupMode), and the slot whose home pieces make up
- * the pair: after a rotation setup that's always FR's corner and edge.
+ * the pair: after a rotation setup that's always FR's corner and edge. An `auf` turns the
+ * case to another angle (before the rotation, so the setup reads as FR moves, then a y).
  */
-export function caseSetup(slotCase: SlotCase, mode: SetupMode): { setup: string; pairSlot: Slot } {
-  if (mode === 'colours' || slotCase.slot === 'FR') return { setup: slotCase.setup, pairSlot: slotCase.slot }
+export function caseSetup(slotCase: SlotCase, mode: SetupMode, auf = ''): { setup: string; pairSlot: Slot } {
+  if (mode === 'colours' || slotCase.slot === 'FR') return { setup: joinMoves(slotCase.setup, auf), pairSlot: slotCase.slot }
   const frSetup = getSlotCase(slotCaseIdFor(slotCase.caseId, 'FR')).setup
-  return { setup: `${frSetup} ${SETUP_ROTATION[slotCase.slot]}`, pairSlot: 'FR' }
+  return { setup: `${joinMoves(frSetup, auf)} ${SETUP_ROTATION[slotCase.slot]}`, pairSlot: 'FR' }
 }
 
 /** Whole-cube rotations in an alg (wherever they are). */
@@ -74,55 +86,150 @@ export const mainHasBetter = (mainAlgId: string | undefined) => {
   return main ? betterAlg(main) : undefined
 }
 
-/** execution id -> the algs with those hand motions (same case, any slot, any leading y). */
-const algsByExecution = new Map<string, CatalogAlg[]>()
-for (const a of catalog.algs) algsByExecution.set(a.executionId, [...(algsByExecution.get(a.executionId) ?? []), a])
-
-/** Other algs that are the same execution as `alg` (a leading y rotation apart). */
-export const executionPeers = (alg: CatalogAlg) => algsByExecution.get(alg.executionId)!.filter((a) => a.id !== alg.id)
+/** A recommendation sheet an alg is on (see CatalogAlg.recommendedBy), as printed or in another grip. */
+export interface Recommendation {
+  by: Recommender
+  /** The sheet's spelling, when this alg is the same alg (same shape) written with another grip, in the same slot-case. */
+  via?: CatalogAlg
+}
 
 /**
- * alg id -> its idea: every alg reachable from it through family links (mirrors, 180°
- * turn: shared familyId) and execution links (shared executionId), in any number of steps.
- * Not stored anywhere, so it doesn't need to be stable across catalog rebuilds.
+ * The sheets that recommend this alg for its slot-case: with exactly its moves
+ * (recommendedBy), or as the same alg (same shape) in another grip there. Never from
+ * another slot: a sheet's pick in one slot isn't a pick in another (J Perm's sheet is
+ * front-right only), so other slots only show what a sheet picked for them.
  */
-export const ideaOf: ReadonlyMap<string, string> = (() => {
-  const parent = new Map<string, string>()
-  const find = (x: string): string => {
-    const p = parent.get(x) ?? x
-    if (p === x) return x
-    const root = find(p)
-    parent.set(x, root)
-    return root
+export function recommendationsOf(alg: CatalogAlg): Recommendation[] {
+  const direct = alg.recommendedBy ?? []
+  const sameSlot = (algsByShape.get(alg.shapeId) ?? []).filter((b) => b !== alg && b.slotCaseId === alg.slotCaseId)
+  return (Object.keys(RECOMMENDERS) as Recommender[]).flatMap((by) => {
+    if (direct.includes(by)) return [{ by }]
+    const via = sameSlot.find((b) => b.recommendedBy?.includes(by))
+    return via ? [{ by, via }] : []
+  })
+}
+
+/** shape id -> the algs with that shape (same case, any slot, any grip). */
+const algsByShape = new Map<string, CatalogAlg[]>()
+for (const a of catalog.algs) algsByShape.set(a.shapeId, [...(algsByShape.get(a.shapeId) ?? []), a])
+
+/** One of an alg's links: how `alg` relates to the alg it's listed on (see LinkKind). */
+export interface AlgLink {
+  kind: LinkKind
+  alg: CatalogAlg
+}
+
+const linksCache = new Map<string, AlgLink[]>()
+
+/**
+ * Every alg linked to `alg`, with how: the same shape is a rotation link, the mirror
+ * shape a mirror (neighbouring slot) or transpose (same or opposite slot) link.
+ */
+export function linksOf(alg: CatalogAlg): AlgLink[] {
+  const cached = linksCache.get(alg.id)
+  if (cached) return cached
+  const slot = getSlotCase(alg.slotCaseId).slot
+  const links: AlgLink[] = [
+    ...(algsByShape.get(alg.shapeId) ?? []).filter((b) => b !== alg).map((b) => ({ kind: 'rotation' as const, alg: b })),
+    ...(algsByShape.get(alg.mirrorShapeId) ?? [])
+      .filter((b) => b !== alg)
+      .map((b) => {
+        const other = getSlotCase(b.slotCaseId).slot
+        const kind: LinkKind = MIRROR_SLOT[slot] === other ? 'mirrorLR' : FRONT_BACK_SLOT[slot] === other ? 'mirrorFB' : 'transpose'
+        return { kind, alg: b }
+      }),
+  ]
+  linksCache.set(alg.id, links)
+  return links
+}
+
+export const LINK_LABEL: Record<LinkKind, string> = {
+  mirrorLR: 'Left-right mirror',
+  mirrorFB: 'Front-back mirror',
+  rotation: 'Rotation / d move',
+  transpose: 'Transpose',
+}
+
+export const LINK_HINT: Record<LinkKind, string> = {
+  mirrorLR: 'The same alg with the other hand, in the slot beside it',
+  mirrorFB: 'The same alg mirrored to the slot in front / behind',
+  rotation: 'The same alg in another grip or slot: a rotation, a d move or a 180° turn apart',
+  transpose: 'The mirror case in the same slot, done with F-U moves instead of R-U ones (or the other way)',
+}
+
+/** A short "what's on" for tooltips: "left-right mirror, rotation / d move", or `none`. */
+export const linkSetSummary = (kinds: readonly LinkKind[], none: string) =>
+  kinds.length ? kinds.map((k) => LINK_LABEL[k].toLowerCase()).join(', ') : none
+
+/** What a link is, said from the alg it's listed on: "left-right mirror", "transpose (F-U version)"… */
+export function linkPhrase(from: CatalogAlg, link: AlgLink): string {
+  if (link.kind === 'transpose') return link.alg.side ? `transpose (${link.alg.side}-U version)` : 'transpose'
+  if (link.kind !== 'rotation') return LINK_LABEL[link.kind].toLowerCase()
+  const [a, b] = [from, link.alg].map((x) => getSlotCase(x.slotCaseId).slot)
+  if (a === b) return 'same alg, another grip (rotation / d move)'
+  if (OPPOSITE_SLOT[a] === b) return 'same alg, cube turned 180°'
+  return 'same alg in another slot'
+}
+
+/** Breadth-first over links of the given kinds: alg id -> steps from `alg` (0 for itself). */
+export function reachable(alg: CatalogAlg, kinds: readonly LinkKind[]): Map<string, number> {
+  const steps = new Map([[alg.id, 0]])
+  const queue = [alg]
+  for (let i = 0; i < queue.length; i++) {
+    for (const link of linksOf(queue[i])) {
+      if (!kinds.includes(link.kind) || steps.has(link.alg.id)) continue
+      steps.set(link.alg.id, steps.get(queue[i].id)! + 1)
+      queue.push(link.alg)
+    }
   }
-  const union = (a: string, b: string) => parent.set(find(a), find(b))
-  for (const a of catalog.algs) {
-    union(a.id, `family:${a.familyId}`)
-    union(a.id, `execution:${a.executionId}`)
+  return steps
+}
+
+/** The links of the given kinds between two algs, if any. */
+export const linksBetween = (a: CatalogAlg, b: CatalogAlg, kinds: readonly LinkKind[] = LINK_KINDS) =>
+  linksOf(a).filter((l) => l.alg === b && kinds.includes(l.kind))
+
+/**
+ * Splits a set of algs into groups: algs linked directly (by a link of the given kinds)
+ * share a group, and so does anything linked to those, within the set. Only links
+ * between members count, so leaving a kind out really splits groups apart.
+ */
+export function groupAlgs(algs: CatalogAlg[], kinds: readonly LinkKind[]): CatalogAlg[][] {
+  const parent = new Map(algs.map((a) => [a.id, a.id]))
+  const find = (x: string): string => (parent.get(x) === x ? x : find(parent.get(x)!))
+  for (const a of algs)
+    for (const l of linksOf(a)) if (parent.has(l.alg.id) && kinds.includes(l.kind)) parent.set(find(a.id), find(l.alg.id))
+  const groups = new Map<string, CatalogAlg[]>()
+  for (const a of algs) groups.set(find(a.id), [...(groups.get(find(a.id)) ?? []), a])
+  return [...groups.values()]
+}
+
+/**
+ * The alg in `slotCaseId` that's most like `alg`, through links of any kind: your main
+ * there if it's linked at all, else the fewest links away (a direct link first, the exact
+ * mirrored / turned version among those, then the most popular). Undefined when nothing
+ * there is linked.
+ */
+export function equivalentIn(alg: CatalogAlg, slotCaseId: string, mainId?: string) {
+  const steps = reachable(alg, LINK_KINDS)
+  const candidates = getSlotCase(slotCaseId).algIds.filter((id) => steps.has(id) && id !== alg.id).map(getAlg)
+  if (!candidates.length) return undefined
+  const exact = new Set(Object.values(alg.familyAlgIds ?? {}))
+  const rank = (a: CatalogAlg) => [a.id === mainId ? 0 : 1, steps.get(a.id)!, exact.has(a.id) ? 0 : 1, -popularity(a)]
+  const byRank = (a: CatalogAlg, b: CatalogAlg) => {
+    const [ra, rb] = [rank(a), rank(b)]
+    const i = ra.findIndex((x, k) => x !== rb[k])
+    return i === -1 ? 0 : ra[i] - rb[i]
   }
-  return new Map(catalog.algs.map((a) => [a.id, find(a.id)]))
-})()
+  const best = candidates.sort(byRank)[0]
+  return { alg: best, steps: steps.get(best.id)!, links: linksBetween(alg, best) }
+}
 
 export const SLOT_NAMES: Record<Slot, string> = {
   FR: 'Front right',
   FL: 'Front left',
   BR: 'Back right',
   BL: 'Back left',
-}
-
-/** How a slot relates to another for the same alg family: the alg itself, a mirror, or turned. */
-export function slotRelation(from: Slot, to: Slot): 'same' | 'lr' | 'fb' | 'turned' {
-  if (from === to) return 'same'
-  if (MIRROR_SLOT[from] === to) return 'lr'
-  if (FRONT_BACK_SLOT[from] === to) return 'fb'
-  return 'turned'
-}
-
-/** How an alg in `from` relates to its family member in `to` (see CatalogAlg.familyAlgIds). */
-export function familyRelation(from: Slot, to: Slot): string {
-  if (MIRROR_SLOT[from] === to) return 'Left-right mirror'
-  if (FRONT_BACK_SLOT[from] === to) return 'Front-back mirror'
-  return 'Same alg, cube turned 180°'
 }
 
 /** Groups in the order cases are usually learnt, with their clusters. */
@@ -144,6 +251,16 @@ export const clustersByGroup: { group: string; clusters: Cluster[] }[] = (() => 
     .sort(([a], [b]) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99))
     .map(([group, clusters]) => ({ group, clusters }))
 })()
+
+/** Clusters in overview order: by group, then as listed. */
+const clusterOrder = clustersByGroup.flatMap((g) => g.clusters)
+
+/** The clusters before and after this one in overview order, wrapping around at the ends. */
+export function neighbourClusters(cluster: Cluster): { previous: Cluster; next: Cluster } {
+  const i = clusterOrder.indexOf(cluster)
+  const at = (k: number) => clusterOrder[(k + clusterOrder.length) % clusterOrder.length]
+  return { previous: at(i - 1), next: at(i + 1) }
+}
 
 export const clusterTitle = (cluster: Cluster) =>
   cluster.caseIds.map((id) => getCase(id).number).join(' · ')

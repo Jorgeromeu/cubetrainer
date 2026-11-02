@@ -12,13 +12,18 @@ let lastRequestAt = 0;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export async function fetchCached(
-  url: string,
-  path: string,
-  { force = false } = {},
-): Promise<string> {
+export async function fetchCached(url: string, path: string, { force = false } = {}): Promise<string> {
   if (!force && existsSync(path)) return readFile(path, "utf8");
+  return (await download(url, path)).toString("utf8");
+}
 
+/** Like fetchCached, for binary files (PDFs). */
+export async function fetchCachedBinary(url: string, path: string, { force = false } = {}): Promise<Buffer> {
+  if (!force && existsSync(path)) return readFile(path);
+  return download(url, path);
+}
+
+async function download(url: string, path: string): Promise<Buffer> {
   const wait = lastRequestAt + DELAY_MS - Date.now();
   if (wait > 0) await sleep(wait);
   lastRequestAt = Date.now();
@@ -27,7 +32,7 @@ export async function fetchCached(
     try {
       const res = await fetch(url, { headers: { "User-Agent": USER_AGENT } });
       if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
-      const body = await res.text();
+      const body = Buffer.from(await res.arrayBuffer());
       await mkdir(dirname(path), { recursive: true });
       await writeFile(path, body);
       return body;

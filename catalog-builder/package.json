@@ -7,8 +7,8 @@
     "node": ">=23.6"
   },
   "scripts": {
-    "fetch": "node src/fetch-speedcubedb.ts && node src/fetch-cubicdb.ts",
-    "parse": "node src/parse-speedcubedb.ts && node src/parse-cubicdb.ts",
+    "fetch": "node src/fetch-speedcubedb.ts && node src/fetch-cubicdb.ts && node src/fetch-recommended.ts",
+    "parse": "node src/parse-speedcubedb.ts && node src/parse-cubicdb.ts && node src/parse-recommended.ts",
     "check": "node src/check.ts",
     "build-catalog": "node src/build-catalog.ts",
     "build-pll": "node src/build-pll.ts",
@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "cheerio": "^1.2.0",
-    "cubing": "^0.63.8"
+    "cubing": "^0.63.8",
+    "pdfjs-dist": "^4.10.38"
   }
 }

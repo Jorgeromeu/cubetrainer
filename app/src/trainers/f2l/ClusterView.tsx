@@ -1,23 +1,29 @@
-import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import {
   SLOTS,
   SLOT_NAMES,
   clusterTitle,
-  familyRelation,
+  clustersById,
+  neighbourClusters,
+  equivalentIn,
   getAlg,
   getCase,
   getSlotCase,
+  groupAlgs,
+  linkPhrase,
+  linkSetSummary,
+  linksBetween,
   slotCaseIdFor,
   slotCasesById,
-  slotRelation,
-  executionPeers,
   betterAlg,
   caseSetup,
   leftRightMirror,
   mainHasBetter,
-  popularity,
+  recommendationsOf,
+  RECOMMENDERS,
   type CatalogAlg,
   type Cluster,
+  type Recommender,
   type Slot,
 } from './catalog.ts'
 import { Cube } from '../../common/cube/Cube.tsx'
@@ -25,33 +31,53 @@ import { EdgeTag } from './EdgeTag.tsx'
 import { AlgMoves } from './Moves.tsx'
 import { Notation } from '../../common/notation/Notation.tsx'
 import { startsWithMoves } from '../../common/notation/moves.ts'
+import { useF2lFilter } from './filter.ts'
 import { useF2lFocus } from './focus.ts'
 import { updateF2lSettings, useF2lSettings, type SetupMode } from './settings.ts'
 import { StatusMark } from './ProgressBits.tsx'
 import {
   STATUS_LABEL,
   ALG_STATUS_LABEL,
+  addUserAlg,
   algStateOf,
+  deleteUserAlg,
+  fillUserAlg,
+  isPlaceholder,
   nextAlgStatus,
-  notesFor,
+  notesOn,
+  sameAlg,
   saveNote,
   setAlgStatus,
   setMainAlg,
+  setVideoLink,
   statusOf,
   useProgress,
   type AlgRef,
   type AlgState,
   type AlgStatus,
+  noteReach,
   type Note,
-  type NoteSymmetry,
+  type NoteFollows,
   type SlotCaseState,
+  type UserAlg,
+  type VideoLink,
+  algKey,
+  userAlgsOf,
+  userRef,
 } from './progress.ts'
-import { MAX_NOTE_LENGTH, NOTE_SYMMETRIES } from '../../../../shared/f2l/progress.ts'
+import { MAX_NOTE_LENGTH, MAX_USER_ALG_LENGTH, MAX_VIDEO_URL_LENGTH } from '../../../../shared/f2l/progress.ts'
+import { checkAlg, readMoves, simplifyMoves, useKPuzzle, type AlgCheck } from './checkAlg.ts'
+import { isRotation } from '../../common/notation/moves.ts'
+import { useDismiss } from '../../common/ui/dismiss.ts'
+import { LinkKindsPicker, LinkSetIcon } from './LinkKindsPicker.tsx'
 import { f2lHref } from './route.ts'
-import { SlotGridKey, SlotIcon } from './SlotIcon.tsx'
+import { SlotGridKey } from './SlotIcon.tsx'
 
-/** Keys for the selected alg: toggle main, cycle status, edit its note; and focusing the search. */
-const SHORTCUTS = { main: 'f', status: 'k', note: 'n', search: '/' }
+/**
+ * Keys for the selected alg: toggle main, cycle status, edit its note, edit its video
+ * link, go to its equivalent in another case; focusing the search, and adding an alg of your own.
+ */
+const SHORTCUTS = { main: 'f', status: 'k', note: 'n', video: 'v', equivalent: 'g', search: '/', add: 'a' }
 
 const catalogRef = (alg: CatalogAlg): AlgRef => ({ kind: 'catalog', id: alg.id })
 
@@ -85,21 +111,58 @@ export function ClusterView({ cluster, slotCaseId, algId }: Props) {
   const progress = useProgress()
   const slotProgress = progress.bySlotCase.get(slotCase.id)
   const mainAlgId = slotProgress?.mainAlg?.kind === 'catalog' ? slotProgress.mainAlg.id : undefined
-  // With no alg in the URL, open on the user's main alg.
-  const alg = algs.find((a) => a.id === algId) ?? algs.find((a) => a.id === mainAlgId) ?? algs[0]
+  const userAlgs = progress.load === 'ready' ? userAlgsOf(progress.userAlgs, slotCase.id) : []
+  const userMain = userAlgs.find((u) => sameAlg(slotProgress?.mainAlg, userRef(u)))
+  // With no alg in the URL, open on the user's main alg (a catalog one or one of yours).
+  const urlAlg = algs.find((a) => a.id === algId)
+  const selectedUser = urlAlg ? undefined : (userAlgs.find((u) => u.id === algId) ?? (mainAlgId ? undefined : userMain))
+  // The catalog alg the family map works from: the selected one, else the main or the first.
+  // With one of your algs selected, the map just shows the cluster (no family to mark).
+  const alg = urlAlg ?? algs.find((a) => a.id === mainAlgId) ?? algs[0]
   const caseInfo = getCase(slotCase.caseId)
   const { setupMode } = useF2lSettings()
   const { setup, pairSlot } = caseSetup(slotCase, setupMode)
-  /** slot-case id -> the selected alg's family member there. */
-  const familyAlgIds = new Map(Object.values(alg.familyAlgIds ?? {}).map((id) => [getAlg(id).slotCaseId, id]))
+  /** slot-case id -> the selected alg's exact mirrored/turned version there. */
+  const familyAlgIds = new Map(
+    selectedUser ? [] : Object.values(alg.familyAlgIds ?? {}).map((id) => [getAlg(id).slotCaseId, id] as const),
+  )
+  // Adding an alg of your own: the cube previews the moves typed so far (see AddAlg).
+  const [draft, setDraft] = useState<{ slotCaseId: string; moves: string }>()
+  const preview = draft?.slotCaseId === slotCase.id ? draft.moves : undefined
 
   const href = (scId: string, aId?: string) => f2lHref({ clusterId: cluster.id, slotCaseId: scId, algId: aId })
 
   // Setup mode plays the setup from a solved cube instead of the alg. It's tied to the
   // current slot-case + alg, so picking another one drops back to the alg.
-  const viewKey = `${slotCase.id}/${alg.id}`
+  const viewKey = `${slotCase.id}/${selectedUser?.id ?? alg.id}`
   const [setupViewKey, setSetupViewKey] = useState<string | null>(null)
   const showingSetup = setupViewKey === viewKey
+
+  // "Go to equivalent" (the button on an alg's row, or G for the selected alg): a mode on
+  // the family map, tied to the alg it started from, so landing on another alg ends it.
+  // Esc or a click outside the map cancels.
+  const [pickKey, setPickKey] = useState<string | null>(null)
+  const picking = pickKey === viewKey
+  const familyRef = useRef<HTMLElement>(null)
+  useDismiss(familyRef, picking, () => setPickKey(null), '.equivalent-toggle')
+  const togglePicking = (from: CatalogAlg) => {
+    const key = `${slotCase.id}/${from.id}`
+    if (pickKey === key) return setPickKey(null)
+    setPickKey(key)
+    // Picking from another row selects that alg first: the map works from the selected alg.
+    if (from.id !== alg.id) location.hash = href(slotCase.id, from.id)
+  }
+  const onKey = useEffectEvent((e: KeyboardEvent) => {
+    if (e.key.toLowerCase() !== SHORTCUTS.equivalent || e.altKey || e.ctrlKey || e.metaKey) return
+    if (e.target instanceof HTMLElement && e.target.closest('input, textarea, select, [contenteditable]')) return
+    if (selectedUser) return // your own algs have no links to follow
+    e.preventDefault()
+    togglePicking(alg)
+  })
+  useEffect(() => {
+    addEventListener('keydown', onKey)
+    return () => removeEventListener('keydown', onKey)
+  }, [])
 
   return (
     // Three areas the stylesheet arranges: viewer left of family map + algs when wide;
@@ -110,16 +173,23 @@ export function ClusterView({ cluster, slotCaseId, algId }: Props) {
         <div className="selected-title">
           F2L {caseInfo.number} · {SLOT_NAMES[slotCase.slot]}
           <EdgeTag slotCase={slotCase} />
+          {preview !== undefined && <span className="tag preview-tag" title="The cube shows the moves typed so far">
+              Preview
+            </span>}
         </div>
-        <Cube
-          setup={showingSetup ? '' : setup}
-          alg={showingSetup ? setup : alg.moves}
-          triggers={showingSetup ? undefined : alg.triggers}
-          slot={slotCase.slot}
-          pairSlot={pairSlot}
-          size={380}
-          interactive
-        />
+        {preview !== undefined ? (
+          <Cube setup={setup} alg={preview} slot={slotCase.slot} pairSlot={pairSlot} size={380} interactive at="end" />
+        ) : (
+          <Cube
+            setup={showingSetup ? '' : setup}
+            alg={showingSetup ? setup : (selectedUser?.moves ?? alg.moves)}
+            triggers={showingSetup || selectedUser ? undefined : alg.triggers}
+            slot={slotCase.slot}
+            pairSlot={pairSlot}
+            size={380}
+            interactive
+          />
+        )}
         <div className={'setup-line' + (showingSetup ? ' active' : '')}>
           <div className="setup-head">
             <span className="setup-label">Setup</span>
@@ -145,40 +215,85 @@ export function ClusterView({ cluster, slotCaseId, algId }: Props) {
         </div>
       </section>
 
-      <section className="family">
-        <FamilyMap
-          cluster={cluster}
-          selectedId={slotCase.id}
-          familyIds={familyAlgIds}
-          hrefFor={(scId) => href(scId, familyAlgIds.get(scId))}
-        />
+      <section className="family" ref={familyRef}>
+        <div className="family-tools">
+          <LinkFilter />
+        </div>
+        {picking && (
+          <div className="pick-hint">
+            Pick a case to go to the alg most like{' '}
+            <code>
+              <Notation moves={alg.moves} />
+            </code>{' '}
+            there · <kbd>Esc</kbd> cancels
+          </div>
+        )}
+        <FamilyMap cluster={cluster} selected={alg} familyIds={familyAlgIds} hrefFor={href} picking={picking} />
       </section>
 
       <AlgList
         key={slotCase.id}
         algs={algs}
-        selectedId={alg.id}
-        mainId={mainAlgId}
+        userAlgs={userAlgs}
+        setup={slotCase.setup}
+        onDraft={(moves) => setDraft(moves === undefined ? undefined : { slotCaseId: slotCase.id, moves })}
+        selectedId={selectedUser?.id ?? alg.id}
+        mainId={mainAlgId ?? userMain?.id}
         stateOf={(a) => algStateOf(slotProgress, catalogRef(a))}
         showProgress={progress.load === 'ready'}
-        hrefFor={(a) => href(slotCase.id, a.id)}
-        familyHrefFor={(id) => href(getAlg(id).slotCaseId, id)}
-        isDone={focus.isDone}
+        hrefFor={(id) => href(slotCase.id, id)}
+        pickingId={picking ? alg.id : undefined}
+        onPick={togglePicking}
       />
     </main>
   )
 }
 
-/** The cluster's place in the top bar: back to the overview, its title and tags. */
+/** Shift+← / Shift+→: the previous / next cluster in overview order (plain arrows step the cube). */
+const NEIGHBOUR_KEYS: Record<string, 'previous' | 'next'> = { ArrowLeft: 'previous', ArrowRight: 'next' }
+
+const clusterName = (cluster: Cluster) => `${cluster.caseIds.length === 2 ? 'Cases' : 'Case'} ${clusterTitle(cluster)}`
+
+/**
+ * The cluster's place in the top bar: back to the overview, its title between previous /
+ * next arrows (also Shift+←/→), and tags.
+ */
 export function ClusterCrumb({ cluster }: { cluster: Cluster }) {
+  const neighbours = neighbourClusters(cluster)
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const direction = NEIGHBOUR_KEYS[e.key]
+      if (!direction || !e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return
+      if (e.target instanceof HTMLElement && e.target.closest('input, textarea, select, [contenteditable]')) return
+      e.preventDefault()
+      location.hash = f2lHref({ clusterId: neighbourClusters(cluster)[direction].id })
+    }
+    addEventListener('keydown', onKey)
+    return () => removeEventListener('keydown', onKey)
+  }, [cluster])
+
+  const step = (direction: 'previous' | 'next') => (
+    <a
+      className="cluster-step"
+      href={f2lHref({ clusterId: neighbours[direction].id })}
+      title={`${direction === 'previous' ? 'Previous' : 'Next'}: ${clusterName(neighbours[direction])} (Shift+${direction === 'previous' ? '←' : '→'})`}
+      aria-label={`${direction === 'previous' ? 'Previous' : 'Next'} cluster`}
+    >
+      {direction === 'previous' ? '‹' : '›'}
+    </a>
+  )
+
   return (
     <nav className="crumb">
       <a href={f2lHref({})} className="back" title="All cases">
         ← <span>All cases</span>
       </a>
-      <h1>
-        {cluster.caseIds.length === 2 ? 'Cases' : 'Case'} {clusterTitle(cluster)}
-      </h1>
+      <div className="cluster-steps">
+        {step('previous')}
+        <h1>{clusterName(cluster)}</h1>
+        {step('next')}
+      </div>
       <span className="tag">{getCase(cluster.caseIds[0]).group}</span>
       {cluster.caseIds.length === 1 && <span className="tag">self-mirror</span>}
     </nav>
@@ -188,12 +303,39 @@ export function ClusterCrumb({ cluster }: { cluster: Cluster }) {
 /** Slots as they sit on the cube seen from above: back row on top, front row below. */
 const MAP_ORDER = ['BL', 'BR', 'FL', 'FR'] as const
 
+/**
+ * The cluster's family grids, cells in MAP_ORDER: one grid per case of the cluster, with
+ * that case at front-right and back-left and its mirror in the other two slots.
+ */
+function familyGrids(cluster: Cluster) {
+  return cluster.caseIds.map((caseId) => {
+    const mirrorId = getCase(caseId).mirrorCaseId
+    return {
+      caseId,
+      cells: MAP_ORDER.map((slot) => ({
+        slot: slot as Slot,
+        slotCaseId: slotCaseIdFor(slot === 'FR' || slot === 'BL' ? caseId : mirrorId, slot),
+      })),
+    }
+  })
+}
+
+/** Group tints for the family map (index.css: --group-0 …); more groups reuse them. */
+const GROUP_TINTS = 5
+
+const cellName = (slotCaseId: string) => {
+  const sc = getSlotCase(slotCaseId)
+  return `F2L ${getCase(sc.caseId).number} ${SLOT_NAMES[sc.slot].toLowerCase()}`
+}
+
 interface FamilyMapProps {
   cluster: Cluster
-  selectedId: string
-  /** Slot-cases holding the selected alg's family, mapped to that alg. */
+  selected: CatalogAlg
+  /** Slot-cases holding the selected alg's exact mirrored/turned versions, mapped to that alg. */
   familyIds: Map<string, string>
-  hrefFor: (slotCaseId: string) => string
+  hrefFor: (slotCaseId: string, algId?: string) => string
+  /** "Go to equivalent": cells link to the selected alg's equivalent there (see equivalentIn). */
+  picking: boolean
 }
 
 /**
@@ -202,32 +344,76 @@ interface FamilyMapProps {
  * the same case turned 180°. So the case X at front-right also sits back-left, and its
  * mirror fills the other diagonal. A pair gets two grids (each case at front-right once);
  * a self-mirror case only one, since both would be the same.
+ *
+ * Cells whose main algs are linked, by the kinds you count as the same (settings
+ * linkKinds), share a tint: one tint per group, across both grids. A main linked to no
+ * other stays plain.
  */
-function FamilyMap({ cluster, selectedId, familyIds, hrefFor }: FamilyMapProps) {
+function FamilyMap({ cluster, selected, familyIds, hrefFor, picking }: FamilyMapProps) {
   const { load, bySlotCase } = useProgress()
+  const filter = useF2lFilter()
   const focus = useF2lFocus()
-  const { setupMode } = useF2lSettings()
-  const cell = (caseId: string, slot: Slot) => {
-    const sc = getSlotCase(slotCaseIdFor(caseId, slot))
+  const { setupMode, linkKinds } = useF2lSettings()
+  const grids = familyGrids(cluster)
+  const mainOf = (slotCaseId: string) => {
+    const main = load === 'ready' ? bySlotCase.get(slotCaseId)?.mainAlg : undefined
+    return main?.kind === 'catalog' ? getAlg(main.id) : undefined
+  }
+  const slotCaseIds = [...new Set(grids.flatMap((g) => g.cells.map((c) => c.slotCaseId)))]
+  const mains = slotCaseIds.flatMap((id) => mainOf(id) ?? [])
+  // Biggest group first, so the same situation gets the same tint in every cluster.
+  const groups = groupAlgs(mains, linkKinds)
+    .filter((g) => g.length > 1)
+    .sort((a, b) => b.length - a.length)
+  const groupOf = new Map(groups.flatMap((g, i) => g.map((a) => [a.slotCaseId, i % GROUP_TINTS])))
+
+  const cell = (slot: Slot, slotCaseId: string) => {
+    const sc = getSlotCase(slotCaseId)
+    const caseNumber = getCase(sc.caseId).number
     const status = statusOf(bySlotCase.get(sc.id))
-    const main = bySlotCase.get(sc.id)?.mainAlg
-    const better = load === 'ready' ? mainHasBetter(main?.kind === 'catalog' ? main.id : undefined) : undefined
+    const main = mainOf(sc.id)
+    const better = load === 'ready' ? mainHasBetter(main?.id) : undefined
     const statusNote =
       (load === 'ready' ? ` · ${STATUS_LABEL[status]}` : '') +
-      (better ? ` · more popular alg: ${better.moves} (▲${popularity(better)})` : '')
-    // How the selected alg's version in this cell relates to the main alg chosen there.
+      (better ? ` · more popular alg: ${better.moves} (${votesText(better)})` : '')
+    // How the selected alg's exact version in this cell relates to the main alg chosen there.
     const familyAlgId = familyIds.get(sc.id)
     const mark = load === 'ready' && familyAlgId ? mainMark(bySlotCase.get(sc.id), familyAlgId) : undefined
-    const familyNote = familyIds.has(sc.id)
-      ? ` · ${familyRelation(getSlotCase(selectedId).slot, slot).toLowerCase()} of the selected alg`
+    const familyLink = familyAlgId && linksBetween(selected, getAlg(familyAlgId))[0]
+    const familyNote = familyLink ? ` · the selected alg's ${linkPhrase(selected, familyLink)}` : ''
+    // Every direct link from this main to the other cells' mains; uncounted kinds say so.
+    const linkNote = main
+      ? mains
+          .filter((other) => other !== main)
+          .flatMap((other) =>
+            linksBetween(main, other).map(
+              (l) => ` · ${cellName(other.slotCaseId)}: ${linkPhrase(main, l)}${linkKinds.includes(l.kind) ? '' : ' (not counted)'}`,
+            ),
+          )
+          .join('')
       : ''
-    const title = `F2L ${getCase(caseId).number} · ${SLOT_NAMES[slot]}${statusNote}${familyNote}${mark ? ` · ${MAIN_MARK_NOTE[mark]}` : ''}`
+
+    // Picking: the cell leads to the selected alg's equivalent there, if anything is linked.
+    const here = sc.id === selected.slotCaseId
+    const equivalent = picking && !here ? equivalentIn(selected, sc.id, main?.id) : undefined
+    const pickNote = !picking
+      ? ''
+      : here
+        ? ' · you are here'
+        : equivalent
+          ? ` · go to ${equivalent.links[0] ? linkPhrase(selected, equivalent.links[0]) : `an alg ${equivalent.steps} links away`}` +
+            `${equivalent.alg === main ? ' (your main)' : ''}: ${equivalent.alg.moves}`
+          : ' · nothing linked to the selected alg here'
+
+    const title = picking
+      ? `F2L ${caseNumber} · ${SLOT_NAMES[slot]}${pickNote}`
+      : `F2L ${caseNumber} · ${SLOT_NAMES[slot]}${statusNote}${familyNote}${mark ? ` · ${MAIN_MARK_NOTE[mark]}` : ''}${linkNote}`
     const content = (
       <>
         {mark === 'main' && <MainBadge />}
         <Cube {...caseSetup(sc, setupMode)} slot={slot} size={76} />
         <span className="slot-cell-label">
-          F2L {getCase(caseId).number}
+          F2L {caseNumber}
           {load === 'ready' && <StatusMark status={status} />}
           {better && (
             <span className="better-mark" aria-label="A more popular alg exists">
@@ -237,48 +423,94 @@ function FamilyMap({ cluster, selectedId, familyIds, hrefFor }: FamilyMapProps) 
         </span>
       </>
     )
-    // Focus mode: a learnt slot-case is greyed out (still clickable).
-    const className = 'slot-cell' + (sc.id === selectedId ? ' selected' : '') + (focus.isDone(sc.id) ? ' done' : '')
+    // Focus mode: a learnt slot-case is greyed out (still clickable); so is one outside the overview's filter.
+    const className =
+      'slot-cell' +
+      (here ? ' selected' : '') +
+      (focus.isDone(sc.id) && !picking ? ' done' : '') +
+      (!filter.matches(sc.id) && !picking ? ' filtered-out' : '') +
+      (picking ? (equivalent ? ' pickable' : ' unpickable') : '')
+    const group = groupOf.get(sc.id)
+    const common = { className, 'data-reveal': true, 'data-slot': slot, 'data-group': group, title }
+    if (picking && !equivalent)
+      return (
+        <span key={slot} {...common} aria-disabled>
+          {content}
+        </span>
+      )
     return (
-      <a key={slot} href={hrefFor(sc.id)} className={className} data-reveal data-slot={slot} title={title}>
+      <a key={slot} {...common} href={equivalent ? hrefFor(sc.id, equivalent.alg.id) : hrefFor(sc.id)}>
         {content}
       </a>
     )
   }
 
   return (
-    <div className="family-map">
-      {cluster.caseIds.map((caseId) => {
-        const mirrorId = getCase(caseId).mirrorCaseId
-        const caseAt = (slot: Slot) => (slot === 'FR' || slot === 'BL' ? caseId : mirrorId)
-        return (
-          <div key={caseId} className="family-grid">
-            {MAP_ORDER.map((slot) => cell(caseAt(slot), slot))}
-            <SlotGridKey selected={MAP_ORDER.find((slot) => slotCaseIdFor(caseAt(slot), slot) === selectedId)} />
-          </div>
-        )
-      })}
+    <div className={'family-map' + (picking ? ' picking' : '')}>
+      {grids.map(({ caseId, cells }) => (
+        <div key={caseId} className="family-grid">
+          {cells.map(({ slot, slotCaseId }) => cell(slot, slotCaseId))}
+          <SlotGridKey selected={cells.find((c) => c.slotCaseId === selected.slotCaseId)?.slot} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/** "Count as linked" next to the family map: which link kinds group (tint) the cells. */
+function LinkFilter() {
+  const { linkKinds } = useF2lSettings()
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useDismiss(ref, open, () => setOpen(false))
+  return (
+    <div className="popover-anchor" ref={ref}>
+      <button
+        className={'family-tool' + (open ? ' active' : '')}
+        onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        title={`Counted as the same alg: ${linkSetSummary(linkKinds, 'nothing')}. Cells whose main algs are linked this way share a tint`}
+      >
+        <LinkSetIcon kinds={linkKinds} size={16} />
+        Count as linked
+      </button>
+      {open && (
+        <div className="popover" role="dialog" aria-label="Count as linked">
+          <div className="popover-title">Count as the same alg</div>
+          <LinkKindsPicker value={linkKinds} onChange={(kinds) => updateF2lSettings({ linkKinds: kinds })} />
+          <p className="popover-note">Tints group cells whose main algs are linked this way. Also in Settings → F2L.</p>
+        </div>
+      )}
     </div>
   )
 }
 
 interface AlgListProps {
   algs: CatalogAlg[]
+  /** The algs you added for this slot-case (empty while progress isn't loaded). */
+  userAlgs: UserAlg[]
+  /** The slot-case's setup (face turns), to check an alg being added against. */
+  setup: string
+  /** The moves typed so far while adding an alg (undefined when not adding), for the cube's preview. */
+  onDraft: (moves?: string) => void
+  /** The selected alg: a catalog alg or one of yours. */
   selectedId: string
+  /** The main alg: a catalog alg or one of yours. */
   mainId?: string
-  /** Focus mode: whether a slot-case is learnt (its family links are then greyed out). */
-  isDone: (slotCaseId: string) => boolean
   /** The user's status and note for an alg, if any. */
   stateOf: (alg: CatalogAlg) => AlgState | undefined
   /** False while progress is loading or the server is unreachable: no star/learnt toggles. */
   showProgress: boolean
-  hrefFor: (alg: CatalogAlg) => string
-  familyHrefFor: (algId: string) => string
+  hrefFor: (algId: string) => string
+  /** The alg "Go to equivalent" is picking from, if it's on. */
+  pickingId?: string
+  /** Starts (or stops) "Go to equivalent" from an alg. */
+  onPick: (alg: CatalogAlg) => void
 }
 
-function AlgList({ algs, selectedId, mainId, stateOf, showProgress, hrefFor, familyHrefFor, isDone }: AlgListProps) {
+function AlgList({ algs, userAlgs, setup, onDraft, selectedId, mainId, stateOf, showProgress, hrefFor, pickingId, onPick }: AlgListProps) {
   const [showAll, setShowAll] = useState(false)
-  const { bySlotCase, notes } = useProgress()
+  const { bySlotCase, notes, videos } = useProgress()
   // Search by moves: the other algs narrow to those starting with what's typed. It's for
   // this slot-case's list, so moving to another case clears it.
   const [query, setQuery] = useState('')
@@ -290,9 +522,15 @@ function AlgList({ algs, selectedId, mainId, stateOf, showProgress, hrefFor, fam
     setQuery('')
   }
   const searching = query.trim() !== ''
-  // The main alg always comes first, in its own section; the rest keep the catalog's order.
+  // The main alg always comes first, in its own section; then yours, oldest first; the rest
+  // keep the catalog's order.
   const main = algs.find((a) => a.id === mainId)
+  const userMain = userAlgs.find((u) => u.id === mainId)
   const others = algs.filter((a) => a.id !== mainId)
+  const userOthers = userAlgs.filter((u) => u.id !== mainId)
+  const [adding, setAdding] = useState(false)
+  /** The placeholder whose moves are being typed in. */
+  const [fillingId, setFillingId] = useState<string>()
 
   // When a star moves a row between sections, it slides from where it was clicked to
   // where it lands (FLIP), then glows, so the eye can follow it.
@@ -302,10 +540,15 @@ function AlgList({ algs, selectedId, mainId, stateOf, showProgress, hrefFor, fam
   /** The alg whose note box is open (one at a time), and whether it should take focus. */
   const [openNote, setOpenNote] = useState<{ id: string; focus: boolean }>()
   const noteOpenId = openNote?.id
+  /** The alg whose video link popover is open (one at a time). */
+  const [videoOpenId, setVideoOpenId] = useState<string>()
+  // The selected alg, as a ref: a catalog alg or one of yours.
+  const selectedCatalog = algs.find((a) => a.id === selectedId)
+  const selectedOwn = userAlgs.find((u) => u.id === selectedId)
+  const selectedRef = selectedCatalog ? catalogRef(selectedCatalog) : selectedOwn && userRef(selectedOwn)
   // Selecting an alg that has a note shows it, without taking focus (so F/K/N still work).
   // Closing it keeps it closed until the selection changes.
-  const selectedAlg = algs.find((a) => a.id === selectedId)
-  const selectedHasNote = !!selectedAlg && notesFor(notes, selectedAlg).length > 0
+  const selectedHasNote = !!selectedRef && notesOn(notes, selectedRef).length > 0
   const autoNoteId = showProgress && selectedHasNote ? selectedId : undefined
   const [lastAutoNoteId, setLastAutoNoteId] = useState<string>()
   if (autoNoteId !== lastAutoNoteId) {
@@ -316,8 +559,7 @@ function AlgList({ algs, selectedId, mainId, stateOf, showProgress, hrefFor, fam
   const beforeMainToggle = (id: string) => {
     // With no alg in the URL the selection follows the main alg; pin it first so unsetting
     // the main alg doesn't move the selection (and the next F/K) to another alg.
-    const alg = algs.find((a) => a.id === id)
-    if (id === selectedId && alg && location.hash !== hrefFor(alg)) location.replace(hrefFor(alg))
+    if (id === selectedId && location.hash !== hrefFor(id)) location.replace(hrefFor(id))
     const el = rowEl(id)
     if (el) flip.current = { id, top: el.getBoundingClientRect().top }
     setMovedId(id)
@@ -339,7 +581,7 @@ function AlgList({ algs, selectedId, mainId, stateOf, showProgress, hrefFor, fam
   }, [mainId])
 
   // Keyboard: F = make the selected alg main (or unset it), K = cycle its status,
-  // N = edit its note.
+  // N = edit its note, V = edit its video link, A = add an alg of your own.
   // Text fields keep their keys, like the player's shortcuts in Cube.tsx.
   const onKey = useEffectEvent((e: KeyboardEvent) => {
     if (e.altKey || e.ctrlKey || e.metaKey) return
@@ -351,22 +593,31 @@ function AlgList({ algs, selectedId, mainId, stateOf, showProgress, hrefFor, fam
       return
     }
     if (!showProgress) return
-    const selected = algs.find((a) => a.id === selectedId)
-    if (!selected) return
     const key = e.key.toLowerCase()
+    if (key === SHORTCUTS.add) {
+      e.preventDefault()
+      setAdding(true)
+      return
+    }
+    if (!selectedRef) return
+    const { id } = selectedRef
+    const slotCaseId = (selectedCatalog ?? selectedOwn)!.slotCaseId
     if (key === SHORTCUTS.main) {
       e.preventDefault()
-      const isMain = selected.id === mainId
-      beforeMainToggle(selected.id)
-      setMainAlg(selected.slotCaseId, isMain ? null : { kind: 'catalog', id: selected.id })
+      const isMain = id === mainId
+      beforeMainToggle(id)
+      setMainAlg(slotCaseId, isMain ? null : selectedRef)
     } else if (key === SHORTCUTS.status) {
       e.preventDefault()
-      setAlgStatus(selected.slotCaseId, catalogRef(selected), nextAlgStatus(stateOf(selected)?.status))
+      setAlgStatus(slotCaseId, selectedRef, nextAlgStatus(algStateOf(bySlotCase.get(slotCaseId), selectedRef)?.status))
     } else if (key === SHORTCUTS.note) {
       e.preventDefault()
       // Opens (and focuses) the note; if it's already open, just focuses it.
-      if (noteOpenId === selected.id) [...(listRef.current?.querySelectorAll<HTMLTextAreaElement>('.alg-note textarea') ?? [])].at(-1)?.focus()
-      else setOpenNote({ id: selected.id, focus: true })
+      if (noteOpenId === id) [...(listRef.current?.querySelectorAll<HTMLTextAreaElement>('.alg-note textarea') ?? [])].at(-1)?.focus()
+      else setOpenNote({ id, focus: true })
+    } else if (key === SHORTCUTS.video) {
+      e.preventDefault()
+      setVideoOpenId(videoOpenId === id ? undefined : id)
     }
   })
   useEffect(() => {
@@ -428,7 +679,7 @@ function AlgList({ algs, selectedId, mainId, stateOf, showProgress, hrefFor, fam
 
   const row = (a: CatalogAlg) => {
     const state = stateOf(a)
-    const algNotes = showProgress ? notesFor(notes, a) : []
+    const algNotes = showProgress ? notesOn(notes, catalogRef(a)) : []
     const noteOpen = showProgress && noteOpenId === a.id
     return [
       <li
@@ -440,46 +691,44 @@ function AlgList({ algs, selectedId, mainId, stateOf, showProgress, hrefFor, fam
         <>
           <MainStar
             slotCaseId={a.slotCaseId}
-            algId={a.id}
+            alg={catalogRef(a)}
             isMain={a.id === mainId}
             onBeforeToggle={() => beforeMainToggle(a.id)}
           />
-          <StatusToggle slotCaseId={a.slotCaseId} algId={a.id} status={state?.status ?? null} />
+          <StatusToggle slotCaseId={a.slotCaseId} alg={catalogRef(a)} status={state?.status ?? null} />
           <NoteToggle
             notes={algNotes}
             open={noteOpen}
             onClick={() => setOpenNote(noteOpen ? undefined : { id: a.id, focus: true })}
           />
+          <VideoToggle
+            owner={{ alg: catalogRef(a), slotCaseId: a.slotCaseId }}
+            video={videos.get(algKey(catalogRef(a)))}
+            open={videoOpenId === a.id}
+            onOpenChange={(open) => setVideoOpenId(open ? a.id : undefined)}
+          />
         </>
       )}
-      <a href={hrefFor(a)} className="alg-moves" title={a.moves}>
+      <a href={hrefFor(a.id)} className="alg-moves" title={a.moves}>
         <AlgMoves alg={a} />
       </a>
       {/* Votes and move count: numbers right-aligned on their digits, so they line up. */}
       <span className="alg-metrics">
-        <span className="alg-votes" title={votesHint(a)}>
-          ▲<span className="num">{popularity(a)}</span>
-        </span>
+        <Picks alg={a} />
+        <Votes alg={a} />
         <span className="alg-stm" title={a.stm !== undefined ? 'Move count (STM)' : undefined}>
           <span className="num">{a.stm}</span>
           <span className="unit"> STM</span>
         </span>
       </span>
-      <AlgFamily
-        alg={a}
-        slot={getSlotCase(a.slotCaseId).slot}
-        bySlotCase={showProgress ? bySlotCase : undefined}
-        hrefFor={familyHrefFor}
-        isDone={isDone}
-      />
-      <ExecutionLink alg={a} hrefFor={familyHrefFor} />
+      <EquivalentToggle on={pickingId === a.id} onClick={() => onPick(a)} />
       </li>,
       // An open note sits right under its alg, across the whole row.
       noteOpen && (
         <li key={`${a.id}-note`} className="alg-note">
           <NotesStrip
             key={a.id}
-            alg={a}
+            owner={{ alg: catalogRef(a), slotCaseId: a.slotCaseId }}
             notes={algNotes}
             autoFocus={!!openNote?.focus}
             onClose={() => setOpenNote(undefined)}
@@ -489,22 +738,127 @@ function AlgList({ algs, selectedId, mainId, stateOf, showProgress, hrefFor, fam
     ]
   }
 
+  /** A row for an alg of yours: like a catalog alg's, without votes or links, and it can be deleted. */
+  const userRow = (u: UserAlg) => {
+    const ref = userRef(u)
+    const owner = { alg: ref, slotCaseId: u.slotCaseId }
+    const state = algStateOf(bySlotCase.get(u.slotCaseId), ref)
+    const algNotes = notesOn(notes, ref)
+    const noteOpen = noteOpenId === u.id
+    const placeholder = isPlaceholder(u)
+    return [
+      <li
+        key={u.id}
+        data-alg-id={u.id}
+        className={['user-alg', placeholder && 'placeholder', u.id === selectedId && 'selected', u.id === mainId && 'main', state?.status].filter(Boolean).join(' ')}
+      >
+        <MainStar
+          slotCaseId={u.slotCaseId}
+          alg={ref}
+          isMain={u.id === mainId}
+          onBeforeToggle={() => beforeMainToggle(u.id)}
+        />
+        <StatusToggle slotCaseId={u.slotCaseId} alg={ref} status={state?.status ?? null} />
+        <NoteToggle notes={algNotes} open={noteOpen} onClick={() => setOpenNote(noteOpen ? undefined : { id: u.id, focus: true })} />
+        <VideoToggle
+          owner={owner}
+          video={videos.get(algKey(ref))}
+          open={videoOpenId === u.id}
+          onOpenChange={(open) => setVideoOpenId(open ? u.id : undefined)}
+        />
+        {placeholder ? (
+          <span className="alg-moves placeholder-moves">
+            <a href={hrefFor(u.id)} title={algNotes[0]?.text}>
+              <em>No moves yet</em>
+              {algNotes[0] && <span className="placeholder-note"> · {algNotes[0].text}</span>}
+            </a>
+            <button className="link-button" onClick={() => setFillingId(u.id)} title="Type in its moves; they're checked on the cube">
+              Add moves
+            </button>
+          </span>
+        ) : (
+          <a href={hrefFor(u.id)} className="alg-moves" title={u.moves}>
+            <Notation moves={u.moves} />
+          </a>
+        )}
+        <span className="alg-metrics">
+          <span className="alg-picks">
+            <span className="pick yours" title="An alg you added">
+              YOU
+            </span>
+          </span>
+          <span className="alg-votes" />
+          <span className="alg-mirror-votes" />
+          <span className="alg-stm" title="Move count (STM)">
+            <span className="num">{placeholder ? '–' : u.moves.split(' ').filter((m) => !isRotation(m)).length}</span>
+            <span className="unit"> STM</span>
+          </span>
+        </span>
+        <DeleteUserAlg alg={u} />
+      </li>,
+      fillingId === u.id && (
+        <li key={`${u.id}-fill`} className="add-alg-row">
+          <AddAlg
+            slotCaseId={u.slotCaseId}
+            setup={setup}
+            taken={[...algs, ...userAlgs]}
+            hrefFor={hrefFor}
+            onDraft={onDraft}
+            fill={u}
+            onClose={(id) => {
+              setFillingId(undefined)
+              if (id) location.hash = hrefFor(id)
+            }}
+          />
+        </li>
+      ),
+      noteOpen && (
+        <li key={`${u.id}-note`} className="alg-note">
+          <NotesStrip key={u.id} owner={owner} notes={algNotes} autoFocus={!!openNote?.focus} onClose={() => setOpenNote(undefined)} />
+        </li>
+      ),
+    ]
+  }
+
   return (
     <div
       className="alg-list"
       ref={listRef}
-      // The votes column is as wide as this list's widest count (2 digits almost always).
-      style={{ ['--vote-chars' as string]: Math.max(...algs.map((a) => String(popularity(a)).length)) }}
+      // The vote columns are as wide as this list's widest counts (2 digits almost always).
+      style={{
+        ['--vote-chars' as string]: Math.max(...algs.map((a) => String(a.votes ?? 0).length)),
+        ['--mirror-vote-chars' as string]: Math.max(...algs.map((a) => String(leftRightMirror(a)?.votes ?? 0).length)),
+      }}
     >
       <h3>
         Algorithms ({algs.length})
         {showProgress && (
           <span className="shortcut-hint" title="Keyboard shortcuts for the selected alg">
             <kbd>{SHORTCUTS.main.toUpperCase()}</kbd> main · <kbd>{SHORTCUTS.status.toUpperCase()}</kbd> learning/learnt ·{' '}
-            <kbd>{SHORTCUTS.note.toUpperCase()}</kbd> note
+            <kbd>{SHORTCUTS.note.toUpperCase()}</kbd> note · <kbd>{SHORTCUTS.video.toUpperCase()}</kbd> video ·{' '}
+            <kbd>{SHORTCUTS.equivalent.toUpperCase()}</kbd> go to equivalent · <kbd>{SHORTCUTS.add.toUpperCase()}</kbd> add alg
           </span>
         )}
       </h3>
+      {/* Column labels for the numbers at the end of each row (Votes), shaped like a row. */}
+      <div className="alg-columns">
+        <span className="alg-metrics">
+          <span className="alg-picks" title={PICKS_HINT}>
+            <span className="col-label">Picks</span>
+          </span>
+          <span className="alg-votes" title="SpeedCubeDB votes for the alg itself">
+            <span className="col-label">Votes</span>
+          </span>
+          <span
+            className="alg-mirror-votes"
+            title={'SpeedCubeDB votes for its left-right mirror (the same alg with the other hand). "More popular" counts both'}
+          >
+            <span className="col-label">Mirror</span>
+          </span>
+          <span className="alg-stm" />
+        </span>
+        <span className="alg-columns-end" />
+      </div>
       {/* Offline there's no main alg to show, so the list is just the catalog's. */}
       {showProgress && (
         <>
@@ -518,6 +872,8 @@ function AlgList({ algs, selectedId, mainId, stateOf, showProgress, hrefFor, fam
                 {row(main)}
                 <BetterHint main={main} hrefFor={hrefFor} />
               </>
+            ) : userMain ? (
+              userRow(userMain)
             ) : (
               <li className="alg-main-empty">
                 <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden>
@@ -527,7 +883,39 @@ function AlgList({ algs, selectedId, mainId, stateOf, showProgress, hrefFor, fam
               </li>
             )}
           </ol>
-          {othersLabel(main ? 'Other algs' : 'All algs')}
+          <div className="alg-section-label">
+            Your algs
+            {!adding && (
+              <button
+                className="link-button add-alg-button"
+                onClick={() => setAdding(true)}
+                title={`Type in an alg of your own; it's checked on the cube · ${SHORTCUTS.add.toUpperCase()}`}
+              >
+                + Add alg
+              </button>
+            )}
+          </div>
+          {(userOthers.length > 0 || adding) && (
+            <ol className="alg-own">
+              {userOthers.map(userRow)}
+              {adding && (
+                <li className="add-alg-row">
+                  <AddAlg
+                    slotCaseId={algs[0].slotCaseId}
+                    setup={setup}
+                    taken={[...algs, ...userAlgs]}
+                    hrefFor={hrefFor}
+                    onDraft={onDraft}
+                    onClose={(id) => {
+                      setAdding(false)
+                      if (id) location.hash = hrefFor(id)
+                    }}
+                  />
+                </li>
+              )}
+            </ol>
+          )}
+          {othersLabel(main || userMain ? 'Other algs' : 'All algs')}
         </>
       )}
       {!showProgress && canSearch && othersLabel('All algs')}
@@ -596,67 +984,206 @@ function UseInAllSlots({ alg, bySlotCase }: { alg: CatalogAlg; bySlotCase: Reado
   )
 }
 
-/** Fixed order for the family row: front pair, then back pair. */
-const FAMILY_ORDER = ['FL', 'FR', 'BL', 'BR'] as const
-
 /**
- * The alg in all four slots, as top-view slot icons: its own slot highlighted, the slots
- * where the catalog has its mirrored/turned version as links, the rest faded.
+ * Typing in an alg of your own. The big cube previews the moves typed so far (onDraft),
+ * so you can do it slowly, move by move; below, how far it got: unreadable, how many F2L
+ * pieces are still off, solved after an AUF, or solved. Only an alg that solves the case
+ * (and isn't in the list yet) can be added. Enter adds, Esc cancels.
  */
-interface AlgFamilyProps {
-  alg: CatalogAlg
-  slot: Slot
-  /** Progress, to mark which family members (in the other slots) are main algs. Omitted when offline. */
-  bySlotCase?: ReadonlyMap<string, SlotCaseState>
+function AddAlg({ slotCaseId, setup, taken, hrefFor, onDraft, fill, onClose }: {
+  slotCaseId: string
+  /** The slot-case's setup (face turns), to check the alg against. */
+  setup: string
+  /** The slot-case's algs already listed (catalog and yours): adding one again is refused. */
+  taken: { id: string; moves: string }[]
   hrefFor: (algId: string) => string
-  /** Focus mode: links to learnt slot-cases are greyed out. */
-  isDone: (slotCaseId: string) => boolean
+  onDraft: (moves?: string) => void
+  /** A placeholder of yours to fill in the moves of, instead of adding a new alg. */
+  fill?: UserAlg
+  /** Closes the editor; with the alg's id when one was added (or filled in). */
+  onClose: (addedId?: string) => void
+}) {
+  const [text, setText] = useState('')
+  const kpuzzle = useKPuzzle()
+  const typed = readMoves(text)
+  // The cube previews the moves as typed; what's saved (and compared) has redundant turns merged.
+  const moves = typed.moves.join(' ')
+  const saved = simplifyMoves(typed.moves).join(' ')
+  const check: AlgCheck | undefined = kpuzzle && checkAlg(kpuzzle, setup, typed)
+  const duplicate = check?.result === 'solves' ? taken.find((a) => a.moves === saved) : undefined
+  const tooLong = saved.length > MAX_USER_ALG_LENGTH
+  // A first note can go with a new alg; with a note, the moves can wait (a placeholder,
+  // filled in later). Moves that are typed must solve the case.
+  const [note, setNote] = useState('')
+  const noteText = note.trim()
+  const noMoves = check?.result === 'empty'
+  const solves = check?.result === 'solves' && !duplicate && !tooLong
+  const canAdd = fill ? solves : solves || (noMoves && !!noteText && noteText.length <= MAX_NOTE_LENGTH)
+
+  const draft = useEffectEvent((moves?: string) => onDraft(moves))
+  useEffect(() => draft(moves), [moves])
+  useEffect(() => () => draft(undefined), [])
+
+  const add = () => {
+    if (!canAdd) return
+    if (fill) {
+      fillUserAlg(fill, saved)
+      return onClose(fill.id)
+    }
+    const id = addUserAlg(slotCaseId, noMoves ? '' : saved)
+    if (id && noteText)
+      saveNote(crypto.randomUUID(), { alg: { kind: 'user', id }, slotCaseId, follows: DEFAULT_FOLLOWS, text: noteText })
+    onClose(id)
+  }
+
+  let tone: 'good' | 'bad' | '' = ''
+  let status: ReactNode
+  if (!check) status = 'Loading the cube…'
+  else if (tooLong) [tone, status] = ['bad', `Longer than ${MAX_USER_ALG_LENGTH} characters`]
+  else if (check.result === 'empty')
+    [tone, status] =
+      !fill && noteText
+        ? ['good', 'No moves yet: added with just the note, fill them in later']
+        : ['', fill ? 'Type the moves, spaces optional. The cube follows as you type.' : 'Type the moves (spaces optional; the cube follows), or leave them empty and just write a note.']
+  else if (check.result === 'unreadable')
+    [tone, status] = [
+      'bad',
+      <>
+        Not a move: <code>{check.text}</code>
+      </>,
+    ]
+  else if (check.result === 'unsolved') status = `Not solved yet: ${check.off} F2L piece${check.off === 1 ? '' : 's'} out of place`
+  else if (check.result === 'needsAuf')
+    status = (
+      <>
+        Solves it after a{' '}
+        <code>
+          <Notation moves={check.auf} />
+        </code>{' '}
+        first.{' '}
+        <button type="button" className="link-button" onClick={() => setText(`${check.auf} ${text.trimStart()}`)}>
+          Start with <Notation moves={check.auf} />
+        </button>
+      </>
+    )
+  else if (duplicate)
+    status = (
+      <>
+        Solves it, but it's already in the list:{' '}
+        <a href={hrefFor(duplicate.id)} onClick={() => onClose()}>
+          go to it
+        </a>
+      </>
+    )
+  else [tone, status] = ['good', '✓ Solves the case']
+
+  return (
+    <form
+      className="add-alg"
+      onSubmit={(e) => {
+        e.preventDefault()
+        add()
+      }}
+    >
+      <input
+        value={text}
+        autoFocus
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key !== 'Escape') return
+          e.preventDefault()
+          e.stopPropagation()
+          onClose()
+        }}
+        placeholder={fill ? "Its moves, e.g. U R U' R'" : "Your alg, e.g. U R U' R' (or leave empty)"}
+        aria-label="Moves of your alg"
+        aria-invalid={tone === 'bad'}
+        spellCheck={false}
+        autoComplete="off"
+        autoCapitalize="off"
+      />
+      {!fill && (
+        <textarea
+          className="add-alg-note"
+          value={note}
+          rows={2}
+          maxLength={MAX_NOTE_LENGTH}
+          onChange={(e) => setNote(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              e.preventDefault()
+              e.stopPropagation()
+              onClose()
+            } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+              e.preventDefault()
+              add()
+            }
+          }}
+          placeholder="Note (optional): where it's from, how to do it…"
+          aria-label="A first note on your alg"
+        />
+      )}
+      <div className="add-alg-foot">
+        <span className={'add-alg-status' + (tone ? ` ${tone}` : '')} role="status">
+          {status}
+        </span>
+        <span className="add-alg-actions">
+          <button type="button" className="link-button" onClick={() => onClose()}>
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={!canAdd}
+            title={
+              canAdd
+                ? 'Add it (Enter; Ctrl+Enter in the note)'
+                : fill
+                  ? 'Only moves that solve the case can be saved'
+                  : 'Add moves that solve the case, or leave them empty and write a note'
+            }
+          >
+            {fill ? 'Save moves' : 'Add'}
+          </button>
+        </span>
+      </div>
+    </form>
+  )
 }
 
-function AlgFamily({ alg, slot, bySlotCase, hrefFor, isDone }: AlgFamilyProps) {
+/** Deletes an alg of yours, after asking: its notes, status and video link go with it. */
+function DeleteUserAlg({ alg }: { alg: UserAlg }) {
+  const label = 'Delete this alg of yours'
   return (
-    <span className="alg-family" aria-label="This alg in each slot">
-      {FAMILY_ORDER.map((s) => {
-        if (s === slot)
-          return (
-            <span key={s} className="family-slot current" title={`${SLOT_NAMES[s]} (this alg)`}>
-              <SlotIcon slot={s} />
-            </span>
-          )
-        const id = alg.familyAlgIds?.[s]
-        if (!id)
-          return (
-            <span key={s} className="family-slot missing" title={`${SLOT_NAMES[s]}: no exact version in the catalog`}>
-              <SlotIcon slot={s} />
-            </span>
-          )
-        const mark = bySlotCase && mainMark(bySlotCase.get(getAlg(id).slotCaseId), id)
-        const note = mark ? ` · ${MAIN_MARK_NOTE[mark]}` : ''
-        return (
-          <a key={s} href={hrefFor(id)} className={'family-slot' + (isDone(getAlg(id).slotCaseId) ? ' done' : '')} title={`${SLOT_NAMES[s]}: ${familyRelation(slot, s).toLowerCase()}${note}`}>
-            <SlotIcon slot={s} />
-            {mark === 'main' && <MainBadge />}
-          </a>
-        )
-      })}
-    </span>
+    <button
+      className="alg-toggle delete-user-alg"
+      onClick={() => {
+        const what = isPlaceholder(alg) ? 'this alg with no moves yet' : `your alg ${alg.moves}`
+        if (confirm(`Delete ${what}? Its notes, status and video link are deleted too.`)) deleteUserAlg(alg)
+      }}
+      aria-label={label}
+      title={label}
+    >
+      <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden>
+        <path d="M5 7h14M10 7V4.5h4V7M7 7l1 12.5h8L17 7M10.5 10.5v6M13.5 10.5v6" />
+      </svg>
+    </button>
   )
 }
 
 interface AlgToggleProps {
   slotCaseId: string
-  algId: string
+  alg: AlgRef
 }
 
 /** Star: makes this the slot-case's main alg; click again to unset. */
-function MainStar({ slotCaseId, algId, isMain, onBeforeToggle }: AlgToggleProps & { isMain: boolean; onBeforeToggle: () => void }) {
+function MainStar({ slotCaseId, alg, isMain, onBeforeToggle }: AlgToggleProps & { isMain: boolean; onBeforeToggle: () => void }) {
   const label = `${isMain ? 'Main alg (click to unset)' : 'Make this my main alg'} · ${SHORTCUTS.main.toUpperCase()} on the selected alg`
   return (
     <button
       className={'alg-toggle alg-star' + (isMain ? ' on' : '')}
       onClick={() => {
         onBeforeToggle()
-        setMainAlg(slotCaseId, isMain ? null : { kind: 'catalog', id: algId })
+        setMainAlg(slotCaseId, isMain ? null : alg)
       }}
       aria-pressed={isMain}
       aria-label={label}
@@ -670,25 +1197,27 @@ function MainStar({ slotCaseId, algId, isMain, onBeforeToggle }: AlgToggleProps 
 }
 
 const STATUS_HINT: Record<AlgStatus | 'none', string> = {
-  none: 'Mark as learning',
+  none: 'Mark as want to learn',
+  wanted: 'Want to learn (click: mark learning)',
   learning: 'Learning (click: mark learnt)',
   learnt: 'Learnt (click: clear)',
 }
 
-/** Status of this alg, independent of which alg is main. Cycles nothing → learning → learnt. */
-function StatusToggle({ slotCaseId, algId, status }: AlgToggleProps & { status: AlgStatus | null }) {
+/** Status of this alg, independent of which alg is main. Cycles nothing → want to learn → learning → learnt. */
+function StatusToggle({ slotCaseId, alg, status }: AlgToggleProps & { status: AlgStatus | null }) {
   const label = `${STATUS_HINT[status ?? 'none']} · ${SHORTCUTS.status.toUpperCase()} on the selected alg`
   return (
     <button
       className={'alg-toggle alg-status' + (status ? ` ${status}` : '')}
-      onClick={() => setAlgStatus(slotCaseId, { kind: 'catalog', id: algId }, nextAlgStatus(status))}
+      onClick={() => setAlgStatus(slotCaseId, alg, nextAlgStatus(status))}
       aria-label={`${status ? ALG_STATUS_LABEL[status] : 'No status'}. ${label}`}
       title={label}
     >
       <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden>
         <circle cx="12" cy="12" r="8.5" />
+        {status === 'wanted' && <circle className="dot" cx="12" cy="12" r="3" />}
         {status === 'learning' && <path className="half" d="M12 3.5a8.5 8.5 0 0 0 0 17z" />}
-        {status !== 'learning' && <path d="m8.2 12.3 2.6 2.6 5-5.3" />}
+        {status !== 'learning' && status !== 'wanted' && <path d="m8.2 12.3 2.6 2.6 5-5.3" />}
       </svg>
     </button>
   )
@@ -714,12 +1243,120 @@ function NoteToggle({ notes, open, onClick }: { notes: Note[]; open: boolean; on
   )
 }
 
-/** Symmetry for a new note: just this alg; widening it is one click on its grid. */
-const DEFAULT_SYMMETRY: NoteSymmetry = 'none'
+/** The link as the server stores it, or undefined if it isn't an http(s) link. */
+function normalizeVideoUrl(text: string): string | undefined {
+  try {
+    const url = new URL(text.trim())
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : undefined
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * The alg's video link. Filled when it has one; click opens a small popover to open,
+ * change or remove it (or paste one). Enter saves, Esc closes.
+ */
+/** The alg a note or video belongs to, with its slot-case. */
+interface AlgOwner {
+  alg: AlgRef
+  slotCaseId: string
+}
+
+function VideoToggle({ owner, video, open, onOpenChange }: {
+  owner: AlgOwner
+  video?: VideoLink
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  useDismiss(ref, open, () => onOpenChange(false))
+  const label = `${video ? 'Video link' : 'Add a video link'} · ${SHORTCUTS.video.toUpperCase()} on the selected alg`
+  return (
+    <div className="popover-anchor" ref={ref}>
+      <button
+        className={'alg-toggle alg-video-toggle' + (video ? ' has-video' : '') + (open ? ' open' : '')}
+        onClick={() => onOpenChange(!open)}
+        aria-expanded={open}
+        aria-label={label}
+        title={video ? `${video.url}\n\n${label}` : label}
+      >
+        <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden>
+          <rect className="screen" x="3.5" y="5.5" width="17" height="13" rx="3" />
+          <path className="play" d="m10.2 9.4 4.6 2.6-4.6 2.6z" />
+        </svg>
+      </button>
+      {open && <VideoPopover key={video?.url} owner={owner} video={video} onClose={() => onOpenChange(false)} />}
+    </div>
+  )
+}
+
+function VideoPopover({ owner, video, onClose }: { owner: AlgOwner; video?: VideoLink; onClose: () => void }) {
+  const [text, setText] = useState(video?.url ?? '')
+  const url = normalizeVideoUrl(text)
+  const invalid = text.trim() !== '' && !url
+  const save = () => {
+    if (text.trim() === '') setVideoLink(owner.slotCaseId, owner.alg, null)
+    else if (url) setVideoLink(owner.slotCaseId, owner.alg, url)
+    else return
+    onClose()
+  }
+  return (
+    <form
+      className="popover video-popover"
+      role="dialog"
+      aria-label="Video link"
+      onSubmit={(e) => {
+        e.preventDefault()
+        save()
+      }}
+    >
+      <div className="popover-title">Video for this alg</div>
+      {video && (
+        <a className="video-open" href={video.url} target="_blank" rel="noreferrer noopener" title={video.url}>
+          Open video ↗
+        </a>
+      )}
+      <input
+        type="url"
+        value={text}
+        autoFocus
+        maxLength={MAX_VIDEO_URL_LENGTH}
+        placeholder="Paste a link (YouTube, …)"
+        aria-label="Video link"
+        aria-invalid={invalid}
+        spellCheck={false}
+        autoComplete="off"
+        onChange={(e) => setText(e.target.value)}
+      />
+      {invalid && <p className="popover-note video-error">Not an http(s) link</p>}
+      <div className="video-actions">
+        {video && (
+          <button
+            type="button"
+            className="link-button video-remove"
+            onClick={() => {
+              setVideoLink(owner.slotCaseId, owner.alg, null)
+              onClose()
+            }}
+          >
+            Remove
+          </button>
+        )}
+        <button type="submit" className="video-save" disabled={invalid || (url ?? null) === (video?.url ?? null)}>
+          Save
+        </button>
+      </div>
+    </form>
+  )
+}
+
+/** A new note shows only on its own alg; its picker widens it to linked algs. */
+const DEFAULT_FOLLOWS: NoteFollows = []
 
 interface NotesStripProps {
-  alg: CatalogAlg
-  /** The notes shown on this alg (notesFor). */
+  owner: AlgOwner
+  /** The notes shown on this alg (notesOn). */
   notes: Note[]
   /** Focus the "add a note" row on open: when opened on purpose, not for a selected alg. */
   autoFocus: boolean
@@ -732,7 +1369,7 @@ interface NotesStripProps {
  * the empty one shows straight away. A new note's row keeps its React key (its id) once
  * saved, so typing is never interrupted. Esc closes the strip.
  */
-function NotesStrip({ alg, notes, autoFocus, onClose }: NotesStripProps) {
+function NotesStrip({ owner: own, notes, autoFocus, onClose }: NotesStripProps) {
   const [draftId, setDraftId] = useState(() => crypto.randomUUID())
   // An empty note to type in: shown straight away when the alg has no notes yet, otherwise
   // only after "+" (on the last note's bar).
@@ -741,7 +1378,6 @@ function NotesStrip({ alg, notes, autoFocus, onClose }: NotesStripProps) {
   const draftSaved = notes.some((n) => n.id === draftId)
   const rows = notes.filter((n) => n.id !== draftId)
   const showDraft = adding || draftSaved
-  const own = { alg: catalogRef(alg), slotCaseId: alg.slotCaseId }
   const startAdding = () => {
     setAdding(true)
     setFocusDraft(true)
@@ -754,7 +1390,7 @@ function NotesStrip({ alg, notes, autoFocus, onClose }: NotesStripProps) {
           id={n.id}
           owner={ownerOf(n)}
           note={n}
-          viewSlot={slotOf(alg)}
+          viewSlotCaseId={own.slotCaseId}
           onAdd={!showDraft && i === rows.length - 1 ? startAdding : undefined}
           onClose={onClose}
         />
@@ -765,7 +1401,7 @@ function NotesStrip({ alg, notes, autoFocus, onClose }: NotesStripProps) {
           id={draftId}
           owner={own}
           note={notes.find((n) => n.id === draftId)}
-          viewSlot={slotOf(alg)}
+          viewSlotCaseId={own.slotCaseId}
           draft
           autoFocus={focusDraft}
           onAdd={draftSaved ? startAdding : undefined}
@@ -782,16 +1418,15 @@ function NotesStrip({ alg, notes, autoFocus, onClose }: NotesStripProps) {
   )
 }
 
-const slotOf = (alg: CatalogAlg) => getSlotCase(alg.slotCaseId).slot
 const ownerOf = (n: Note) => ({ alg: n.alg, slotCaseId: n.slotCaseId })
 
 interface NoteRowProps {
   id: string
   /** The alg the note is (or will be) written on. */
-  owner: { alg: AlgRef; slotCaseId: string }
+  owner: AlgOwner
   note?: Note
-  /** The slot of the alg being viewed, outlined in the symmetry grid. */
-  viewSlot: Slot
+  /** The slot-case of the alg being viewed, outlined in the note's map. */
+  viewSlotCaseId: string
   /** The empty "add a note" row (until it's saved). */
   draft?: boolean
   autoFocus?: boolean
@@ -802,14 +1437,14 @@ interface NoteRowProps {
 }
 
 /**
- * One note: its symmetry grid and its text. Grows with the text, saves a moment after
+ * One note: where it shows (FollowsPicker) and its text. Grows with the text, saves a moment after
  * typing stops (never deleting mid-edit), and on blur/close, when empty text deletes it.
  * Keeps its own draft, so saves coming back never disturb what's being typed.
  */
-function NoteRow({ id, owner, note, viewSlot, draft, autoFocus, onAdd, onBlur, onClose }: NoteRowProps) {
+function NoteRow({ id, owner, note, viewSlotCaseId, draft, autoFocus, onAdd, onBlur, onClose }: NoteRowProps) {
   const [text, setText] = useState(note?.text ?? '')
-  const [symmetry, setSymmetry] = useState<NoteSymmetry>(note?.symmetry ?? DEFAULT_SYMMETRY)
-  const latest = useRef({ text, symmetry })
+  const [follows, setFollows] = useState<NoteFollows>(note?.follows ?? DEFAULT_FOLLOWS)
+  const latest = useRef({ text, follows })
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const ref = useRef<HTMLTextAreaElement>(null)
 
@@ -839,19 +1474,21 @@ function NoteRow({ id, owner, note, viewSlot, draft, autoFocus, onAdd, onBlur, o
     el.style.height = `${el.scrollHeight}px`
   }, [text])
 
-  const ownerSlot = getSlotCase(owner.slotCaseId).slot
   return (
     <div className={'note-row' + (draft && !note ? ' note-draft' : '')}>
-      <SymmetryPicker
-        symmetry={symmetry}
-        ownerSlot={ownerSlot}
-        viewSlot={viewSlot}
-        onChange={(next) => {
-          setSymmetry(next)
-          latest.current = { ...latest.current, symmetry: next }
-          save(false)
-        }}
-      />
+      {/* Your own algs have no links, so their notes stay on them. */}
+      {owner.alg.kind === 'catalog' && (
+        <FollowsPicker
+          owner={owner}
+          follows={follows}
+          viewSlotCaseId={viewSlotCaseId}
+          onChange={(next) => {
+            setFollows(next)
+            latest.current = { ...latest.current, follows: next }
+            save(false)
+          }}
+        />
+      )}
       <textarea
         ref={ref}
         rows={1}
@@ -887,105 +1524,156 @@ function NoteRow({ id, owner, note, viewSlot, draft, autoFocus, onAdd, onBlur, o
 /** How long typing pauses before a note saves. Leaving the field saves straight away. */
 const NOTE_SAVE_DELAY_MS = 700
 
-const SYMMETRY_LABEL: Record<NoteSymmetry, string> = {
-  none: 'Only on the alg it was written on',
-  lr: 'Also on its left-right mirror',
-  fb: 'Also on its front-back mirror',
-  both: 'On the alg in all four slots',
-  linked: 'Everywhere linked: mirrors, rotation versions, and theirs',
+/**
+ * Where a note shows: the link kinds it follows (LinkSetIcon); click to pick them. The
+ * popover previews the result on a tiny map of the cluster's family grids (filled =
+ * slot-cases where it shows on some alg, outlined = the one being viewed).
+ */
+function FollowsPicker({ owner, follows, viewSlotCaseId, onChange }: {
+  owner: { alg: AlgRef; slotCaseId: string }
+  follows: NoteFollows
+  viewSlotCaseId: string
+  onChange: (next: NoteFollows) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useDismiss(ref, open, () => setOpen(false))
+  const reach = noteReach(owner.alg, follows)
+  const reachedSlotCases = new Set([...reach].map((id) => getAlg(id).slotCaseId))
+  const grids = familyGrids(clustersById.get(getCase(getSlotCase(owner.slotCaseId).caseId).clusterId)!)
+  const where = reach.size > 1 ? `${reach.size} algs in ${reachedSlotCases.size} slot-cases` : 'just this alg'
+  return (
+    <div className="popover-anchor" ref={ref}>
+      <button
+        className={'follows-picker' + (follows.length ? ' on' : '')}
+        onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        title={`Also shows on: ${linkSetSummary(follows, 'nothing else')} (${where}). Click to change`}
+        aria-label={`Note shows on ${where}. Change`}
+      >
+        <LinkSetIcon kinds={follows} />
+      </button>
+      {open && (
+        <div className="popover" role="dialog" aria-label="Where this note shows">
+          <div className="popover-title">Also show this note on</div>
+          <LinkKindsPicker value={follows} onChange={onChange} />
+          <div className="reach-preview">
+            <svg viewBox={`0 0 ${grids.length * 18 - 2} 16`} width={(grids.length * 18 - 2) * 1.5} height="24" aria-hidden>
+              {grids.flatMap(({ caseId, cells }, g) =>
+                cells.map(({ slotCaseId }, i) => (
+                  <rect
+                    key={`${caseId}-${i}`}
+                    x={g * 18 + (i % 2 ? 9 : 1)}
+                    y={i < 2 ? 1 : 9}
+                    width="6"
+                    height="6"
+                    rx="1.5"
+                    className={(reachedSlotCases.has(slotCaseId) ? 'on' : 'off') + (slotCaseId === viewSlotCaseId ? ' here' : '')}
+                  />
+                )),
+              )}
+            </svg>
+            <span>
+              Shows on {where}, following these links any number of steps. Mirrors and transposes land on the
+              mirror case.
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
-/** Slots as seen from above: back row on top, as in the slot icons. */
-const GRID_SLOTS = ['BL', 'BR', 'FL', 'FR'] as const
-
-/**
- * A note's symmetry as a tiny top view: filled squares are the slots the note shows in,
- * the viewed alg's slot is outlined. Click cycles none → lr → fb → both.
- */
-function SymmetryPicker({ symmetry, ownerSlot, viewSlot, onChange }: {
-  symmetry: NoteSymmetry
-  ownerSlot: Slot
-  viewSlot: Slot
-  onChange: (next: NoteSymmetry) => void
-}) {
-  const shows = (slot: Slot) => {
-    const relation = slotRelation(ownerSlot, slot)
-    return relation === 'same' || symmetry === 'both' || symmetry === relation
-  }
-  const next = NOTE_SYMMETRIES[(NOTE_SYMMETRIES.indexOf(symmetry) + 1) % NOTE_SYMMETRIES.length]
+/** Starts "Go to equivalent" from the alg: then a case picked on the family map leads to its equivalent there. */
+function EquivalentToggle({ on, onClick }: { on: boolean; onClick: () => void }) {
+  const label = `${on ? 'Picking: click a case on the map (click again to cancel)' : 'Go to the equivalent alg in another case or slot'} · ${SHORTCUTS.equivalent.toUpperCase()} on the selected alg`
   return (
-    <button
-      className={'symmetry-picker' + (symmetry === 'linked' ? ' linked' : '')}
-      onClick={() => onChange(next)}
-      title={`${SYMMETRY_LABEL[symmetry]}. Click: ${SYMMETRY_LABEL[next].toLowerCase()}`}
-      aria-label={`Note shows: ${SYMMETRY_LABEL[symmetry]}. Change`}
-    >
-      {symmetry === 'linked' ? (
-        <LinkIcon />
-      ) : (
-      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden>
-        {GRID_SLOTS.map((slot, i) => (
-          <rect
-            key={slot}
-            x={i % 2 ? 9 : 1}
-            y={i < 2 ? 1 : 9}
-            width="6"
-            height="6"
-            rx="1.5"
-            className={(shows(slot) ? 'on' : 'off') + (slot === viewSlot ? ' here' : '')}
-          />
-        ))}
+    <button className={'alg-toggle equivalent-toggle' + (on ? ' on' : '')} onClick={onClick} aria-pressed={on} aria-label={label} title={label}>
+      <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden>
+        <rect x="3.5" y="3.5" width="7" height="7" rx="1.5" />
+        <rect x="13.5" y="13.5" width="7" height="7" rx="1.5" />
+        <path d="M10.5 7h4.5a2.5 2.5 0 0 1 2.5 2.5v1.5m-2-2 2 2 2-2" />
       </svg>
-      )}
     </button>
   )
 }
 
-function LinkIcon() {
-  return (
-    <svg className="link-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden>
-      <path d="M6.8 9.2a2.6 2.6 0 0 0 3.7 0l2.2-2.2a2.6 2.6 0 0 0-3.7-3.7l-.9.9 M9.2 6.8a2.6 2.6 0 0 0-3.7 0L3.3 9a2.6 2.6 0 0 0 3.7 3.7l.9-.9" />
-    </svg>
-  )
-}
-
 /**
- * Same execution elsewhere: the alg's moves with a different leading y rotation (or none),
- * in another slot of the case. Links to the first; the tooltip lists them all. Keeps its
- * column even when empty, so rows stay aligned.
+ * An alg's SpeedCubeDB votes, as two numbers: its own (▲), and its left-right mirror's
+ * (the mirror mark), which `popularity` adds in since votes outside front-right are
+ * sparse. The mirror column stays (empty) when the catalog has no exact mirror, so rows
+ * line up.
  */
-function ExecutionLink({ alg, hrefFor }: { alg: CatalogAlg; hrefFor: (algId: string) => string }) {
-  const peers = executionPeers(alg)
-  if (!peers.length) return <span className="execution-link" />
-  const list = peers.map((p) => `${SLOT_NAMES[getSlotCase(p.slotCaseId).slot]}: ${p.moves}`).join('\n')
+function Votes({ alg }: { alg: CatalogAlg }) {
+  const mirror = leftRightMirror(alg)
+  const mirrorSlot = mirror && SLOT_NAMES[getSlotCase(mirror.slotCaseId).slot].toLowerCase()
   return (
-    <a className="execution-link" href={hrefFor(peers[0].id)} title={`Same execution, a rotation apart:\n${list}`}>
-      <LinkIcon />
-    </a>
+    <>
+      <span className="alg-votes" title="SpeedCubeDB votes for this alg">
+        ▲<span className="num">{alg.votes ?? 0}</span>
+      </span>
+      <span
+        className="alg-mirror-votes"
+        title={mirror ? `SpeedCubeDB votes for its left-right mirror (${mirror.moves}, ${mirrorSlot}). "More popular" counts both` : undefined}
+      >
+        {mirror && (
+          <>
+            <LinkSetIcon kinds={['mirrorLR']} only="mirrorLR" size={11} />
+            <span className="num">{mirror.votes ?? 0}</span>
+          </>
+        )}
+      </span>
+    </>
   )
 }
 
-/** Tooltip for an alg's vote count: pooled with its left-right mirror (see popularity). */
-function votesHint(alg: CatalogAlg) {
+/** Recommendation sheets, as short pill labels (full names in the tooltips). */
+const PICK_LABEL: Record<Recommender, string> = { jperm: 'JP', cubeskills: 'CS' }
+
+const PICKS_HINT = (Object.keys(RECOMMENDERS) as Recommender[])
+  .map((r) => `${PICK_LABEL[r]}: ${RECOMMENDERS[r].name}'s ${RECOMMENDERS[r].sheet}`)
+  .join('\n')
+  .concat("\nSolid: the sheet's exact moves for this slot. Outlined: the same alg as the sheet's pick for this slot, in another grip.")
+  .concat("\nJ Perm's sheet only covers front right; CubeSkills' covers all four slots.")
+
+/** The sheets recommending the alg for its slot (recommendationsOf): solid as written, outlined in another grip. */
+function Picks({ alg }: { alg: CatalogAlg }) {
+  return (
+    <span className="alg-picks">
+      {recommendationsOf(alg).map(({ by, via }) => {
+        const { name, sheet } = RECOMMENDERS[by]
+        const title = via
+          ? `The same alg as ${name}'s pick here, written with another grip: ${via.moves} (${sheet})`
+          : `${name}'s pick, exactly as written on ${sheet}${alg.source === by ? '. Not on SpeedCubeDB: from the sheet' : ''}`
+        return (
+          <span key={by} className={'pick' + (via ? ' via' : '')} title={title}>
+            {PICK_LABEL[by]}
+          </span>
+        )
+      })}
+    </span>
+  )
+}
+
+/** Votes as text, for tooltips: "▲16 + 4 on its mirror". */
+function votesText(alg: CatalogAlg) {
   const mirror = leftRightMirror(alg)
-  return mirror
-    ? `SpeedCubeDB votes for this alg and its left-right mirror (this ${alg.votes ?? 0}, mirror ${mirror.votes ?? 0})`
-    : 'SpeedCubeDB votes'
+  return `▲${alg.votes ?? 0}${mirror ? ` + ${mirror.votes ?? 0} on its mirror` : ''}`
 }
 
 /** Under the main alg: a clearly more popular alternative, if there is one (see betterAlg). */
-function BetterHint({ main, hrefFor }: { main: CatalogAlg; hrefFor: (alg: CatalogAlg) => string }) {
+function BetterHint({ main, hrefFor }: { main: CatalogAlg; hrefFor: (algId: string) => string }) {
   const better = betterAlg(main)
   if (!better) return null
   return (
     <li className="alg-better">
       <span className="better-mark">↑</span>
       More popular:
-      <a href={hrefFor(better)} className="alg-better-moves">
+      <a href={hrefFor(better.id)} className="alg-better-moves">
         <AlgMoves alg={better} />
       </a>
-      <span className="alg-better-votes">
-        ▲{popularity(better)} vs ▲{popularity(main)}
+      <span className="alg-better-votes" title="SpeedCubeDB votes, each alg's own plus its left-right mirror's">
+        {votesText(better)} vs {votesText(main)}
       </span>
     </li>
   )

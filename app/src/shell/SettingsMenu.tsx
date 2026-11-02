@@ -1,25 +1,11 @@
 import { useEffect, useRef, useState, type ComponentType } from 'react'
-import {
-  DEFAULT_CUBE_SETTINGS,
-  HINT_DISTANCE,
-  updateCubeSettings,
-  useCubeSettings,
-  type HintMode,
-} from '../common/cube/settings.ts'
-import { OnOff, Segmented, Setting, SettingsSection } from '../common/ui/settings.tsx'
-
-const HINT_OPTIONS: { value: HintMode; label: string }[] = [
-  { value: 'off', label: 'Off' },
-  { value: 'pair', label: 'Pair' },
-  { value: 'all', label: 'All F2L' },
-]
 
 /**
  * Gear button at the right of the top bar opening the settings popover: the current
- * trainer's section, then cube display. Changes apply live.
+ * trainer's settings only (its own, plus any shared sections it uses, such as
+ * common/cube's Cube display). Changes apply live.
  */
-export function SettingsMenu({ TrainerSettings }: { TrainerSettings?: ComponentType }) {
-  const settings = useCubeSettings()
+export function SettingsMenu({ TrainerSettings }: { TrainerSettings: ComponentType }) {
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
 
@@ -54,36 +40,8 @@ export function SettingsMenu({ TrainerSettings }: { TrainerSettings?: ComponentT
       {open && (
         <div className="settings-panel" role="dialog" aria-label="Settings">
           <div className="settings-title">Settings</div>
-          {TrainerSettings && <TrainerSettings />}
+          <TrainerSettings />
 
-          <SettingsSection title="Cube display" />
-          <Setting label="Highlight pair" hint="Only the slot's corner and edge in colour">
-            <OnOff value={settings.highlightPair} onChange={(on) => updateCubeSettings({ highlightPair: on })} />
-          </Setting>
-
-          <Setting label="Hint stickers" hint="Floating copies of hidden faces (big cube)">
-            <Segmented options={HINT_OPTIONS} value={settings.hints} onChange={(hints) => updateCubeSettings({ hints })} />
-          </Setting>
-
-          <Setting label="Hint distance" disabled={settings.hints === 'off'}>
-            <div className="range-row">
-              <span>Close</span>
-              <input
-                type="range"
-                min={HINT_DISTANCE.min}
-                max={HINT_DISTANCE.max}
-                step={HINT_DISTANCE.step}
-                value={settings.hintDistance}
-                disabled={settings.hints === 'off'}
-                onChange={(e) => updateCubeSettings({ hintDistance: Number(e.target.value) })}
-              />
-              <span>Far</span>
-            </div>
-          </Setting>
-
-          <button className="link-button" onClick={() => updateCubeSettings(DEFAULT_CUBE_SETTINGS)}>
-            Reset cube display
-          </button>
         </div>
       )}
     </div>

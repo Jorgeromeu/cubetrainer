@@ -24,8 +24,25 @@
   --learnt-soft: #e2f4e9;
   --learning: #8a63d2;
   --learning-soft: #efe9fa;
+  /* Want to learn: a paler violet, the step before learning. */
+  --wanted: #bba5e6;
   --danger: #c23b3b;
   --danger-soft: #fbe6e6;
+  /* Family map group tints (ClusterView FamilyMap): cells whose main algs are linked.
+     Matplotlib tab10 hues without its green/orange/red, which read as good/bad; blue
+     last, since selection is blue. Each a soft mix into the surface, so dark mode and
+     stealth (quieter) only change the mix. */
+  --group-0-hue: #9467bd;
+  --group-1-hue: #17becf;
+  --group-2-hue: #e377c2;
+  --group-3-hue: #8c564b;
+  --group-4-hue: #1f77b4;
+  --group-mix: 22%;
+  --group-0: color-mix(in srgb, var(--group-0-hue) var(--group-mix), var(--surface));
+  --group-1: color-mix(in srgb, var(--group-1-hue) var(--group-mix), var(--surface));
+  --group-2: color-mix(in srgb, var(--group-2-hue) var(--group-mix), var(--surface));
+  --group-3: color-mix(in srgb, var(--group-3-hue) var(--group-mix), var(--surface));
+  --group-4: color-mix(in srgb, var(--group-4-hue) var(--group-mix), var(--surface));
   --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   --topbar-height: 52px;
 
@@ -53,15 +70,17 @@
     --learnt-soft: #1d3527;
     --learning: #b195f0;
     --learning-soft: #2c2540;
+    --wanted: #7a65ad;
     --danger: #f07a7a;
     --danger-soft: #3d2222;
+    --group-mix: 30%;
   }
 }
 
 /* Stealth mode (src/stealth.ts): a monochrome UI, not a desaturated one. Everything
    structural (selection, the current move, primary buttons, sliders, links at rest) is
    ink on grey; colour is kept, at full strength, only for small signals: status marks
-   and markers (learnt, learning, main, mirror, rotation, bad edge), link hovers, focus
+   and markers (learnt, learning, want to learn, main, mirror, rotation, bad edge), link hovers, focus
    rings and errors. */
 :root[data-stealth] {
   --bg: #f4f4f4;
@@ -73,6 +92,8 @@
   --select-soft: #e8e8e8;
   --on-select: var(--surface);
   --link: var(--text);
+  /* Group tints stay, just quieter. */
+  --group-mix: 12%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -84,6 +105,7 @@
     --border: #333333;
     --select-soft: #2e2e2e;
     --on-select: var(--bg);
+    --group-mix: 18%;
   }
 }
 
@@ -154,6 +176,32 @@ button {
   font-size: 17px;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+/* Previous / next cluster around the title (also Shift+←/→). */
+.cluster-steps {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cluster-step {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1;
+  transition: color 0.12s, background 0.12s;
+}
+
+.cluster-step:hover {
+  color: var(--select);
+  background: var(--select-soft);
 }
 
 @media (max-width: 520px) {
@@ -470,10 +518,11 @@ button {
   pointer-events: none;
 }
 
-/* cubing.js's cubie bodies: translucent black, darker where layers overlap. */
+/* cubing.js's cubie bodies: translucent black, darker where layers overlap. Not drawn: at
+   rest in stealth the stickers are loose tiles, so the drawing reads as a grid rather than
+   a cube (the real one comes back on hover). Kept in FlatCube.tsx for a closer match. */
 .flat-cube-body {
-  fill: #000;
-  fill-opacity: 0.3;
+  display: none;
 }
 
 .cube:has(> .flat-cube) > twisty-player {
@@ -481,6 +530,52 @@ button {
 }
 
 [data-stealth] :is([data-reveal]:hover .cube, .cube:hover) > twisty-player {
+  opacity: 1;
+}
+
+/* PLL case icon (src/common/pll/PllIcon.tsx), shared by the PLL trainers */
+
+.pll-icon {
+  flex: none;
+  display: block;
+}
+
+.pll-icon-body {
+  fill: #1d1d1f;
+}
+
+.pll-arrow-line {
+  fill: none;
+  stroke: #1d1d1f;
+  stroke-width: 0.11;
+  stroke-linecap: round;
+}
+
+.pll-arrow-head {
+  fill: #1d1d1f;
+}
+
+/* Stealth (src/stealth.ts): greys from PllIcon, no dark body behind the stickers (loose
+   tiles, like the F2L drawings), light arrows on the black last layer, and dimmed until
+   their card or line is hovered, like the F2L cubes. */
+[data-stealth] .pll-icon-body {
+  display: none;
+}
+
+[data-stealth] .pll-arrow-line {
+  stroke: #c8c8c8;
+}
+
+[data-stealth] .pll-arrow-head {
+  fill: #c8c8c8;
+}
+
+[data-stealth] .pll-icon {
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+[data-stealth] :is([data-reveal]:hover .pll-icon, .pll-icon:hover) {
   opacity: 1;
 }
 
@@ -971,12 +1066,259 @@ button {
   background: var(--select-soft);
 }
 
+/* Linked mains share a tint; the selected one keeps it and gets a ring instead. */
+.slot-cell[data-group='0'] {
+  background: var(--group-0);
+}
+
+.slot-cell[data-group='1'] {
+  background: var(--group-1);
+}
+
+.slot-cell[data-group='2'] {
+  background: var(--group-2);
+}
+
+.slot-cell[data-group='3'] {
+  background: var(--group-3);
+}
+
+.slot-cell[data-group='4'] {
+  background: var(--group-4);
+}
+
+.slot-cell[data-group].selected {
+  box-shadow: inset 0 0 0 2px var(--select);
+}
+
+.slot-cell[data-group]:hover {
+  filter: brightness(0.97);
+}
+
+/* Go to equivalent: cells with a linked alg invite a click, the rest step back. */
+.family-map.picking .slot-cell.pickable {
+  box-shadow: inset 0 0 0 1.5px var(--select);
+}
+
+.family-map.picking .slot-cell.pickable:hover {
+  box-shadow: inset 0 0 0 2.5px var(--select);
+}
+
+.family-map.picking .slot-cell.selected {
+  box-shadow: none;
+  opacity: 0.5;
+}
+
+.family-map.picking .slot-cell.unpickable {
+  opacity: 0.3;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
+/* Above the family map: go to equivalent, and which links count. */
+.family-tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.family-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  transition: color 0.12s, background 0.12s, border-color 0.12s;
+}
+
+.family-tool:hover {
+  color: var(--text);
+}
+
+.family-tool.active {
+  border-color: var(--select);
+  background: var(--select-soft);
+  color: var(--select);
+}
+
+.family-tool kbd {
+  min-width: 14px;
+  line-height: 14px;
+  font-size: 10px;
+}
+
+.pick-hint {
+  margin: -2px 0 8px;
+  font-size: 12px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.pick-hint code {
+  font-family: var(--mono);
+  color: var(--text);
+}
+
+/* A small panel under its button (link kinds for the map filter and for notes). */
+.popover-anchor {
+  position: relative;
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 10;
+  width: min(290px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.16);
+  text-align: left;
+}
+
+.family-tools .popover {
+  left: auto;
+  right: 0;
+}
+
+.popover-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.popover-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.link-kinds {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* One toggle row per kind: its mark (lit when on), name and hint. The checkbox is kept
+   for keyboard and screen readers but drawn by the row. */
+.link-kinds label {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.link-kinds label:hover {
+  background: var(--bg);
+}
+
+.link-kinds label:has(input:checked) {
+  background: var(--select-soft);
+}
+
+.link-kinds label:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.link-kinds input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.link-kinds .link-set-icon {
+  flex: none;
+  margin-top: 1px;
+}
+
+.link-kinds small {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+/* LinkSetIcon (LinkKindsPicker.tsx): a top view with each link kind's mark, lit when on. */
+.link-set-icon {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.link-set-icon .frame {
+  stroke: currentColor;
+  stroke-width: 1.2;
+  opacity: 0.4;
+}
+
+.link-set-icon .on {
+  stroke: var(--select);
+  stroke-width: 1.8;
+}
+
+.link-set-icon .off {
+  stroke: currentColor;
+  stroke-width: 1.2;
+  opacity: 0.2;
+}
+
+.link-set-icon .frame,
+.link-set-icon .outline.off {
+  opacity: 0.45;
+}
+
+/* Under the picker in a note's popover: where the note will show. */
+.reach-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.reach-preview svg {
+  flex: none;
+}
+
+.reach-preview rect.on {
+  fill: var(--select);
+}
+
+.reach-preview rect.off {
+  fill: var(--border);
+}
+
+.reach-preview rect.here {
+  stroke: var(--text);
+  stroke-width: 1;
+}
+
 /* Sits on the grid's centre, between the four cells. */
 .slot-grid-key {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 2;
   pointer-events: none;
 }
 
@@ -1100,9 +1442,87 @@ kbd {
   font-variant-numeric: tabular-nums;
 }
 
-/* ▲ plus the list's widest count (--vote-chars, set on .alg-list). */
+/* ▲ plus the list's widest count (--vote-chars, set on .alg-list), and room for its
+   column label. */
 .alg-votes {
   width: calc((var(--vote-chars, 2) + 1.4) * 1ch);
+  min-width: 34px;
+}
+
+/* Picks: the recommendation sheets an alg is on for its slot (JP, CS), as small pills;
+   solid when it's the sheet's exact moves, outlined when it's the same alg in another grip. */
+.alg-picks {
+  display: inline-flex;
+  gap: 3px;
+  width: 52px;
+}
+
+.pick {
+  padding: 0 4px;
+  border: 1px solid var(--text);
+  border-radius: 4px;
+  background: var(--text);
+  color: var(--surface);
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: 0.02em;
+  cursor: help;
+}
+
+.pick.via {
+  background: none;
+  color: var(--muted);
+  border-color: var(--muted);
+  opacity: 0.8;
+}
+
+/* Labels over the row numbers: laid out like a row (same padding, gap and columns, and
+   the go-to-equivalent button's room at the end), so they sit over their columns. */
+.alg-columns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 0 10px;
+  margin: -2px 0 -8px;
+}
+
+.alg-columns .alg-mirror-votes {
+  opacity: 1;
+}
+
+.alg-columns .col-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: help;
+}
+
+.alg-columns-end {
+  flex: none;
+  width: 16px;
+}
+
+/* The left-right mirror's votes: the mirror mark (as in the link pickers) and its count,
+   quieter than the alg's own. Sized like .alg-votes (--mirror-vote-chars). */
+.alg-mirror-votes {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  width: calc((var(--mirror-vote-chars, 2) + 1.6) * 1ch);
+  min-width: 34px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.alg-mirror-votes .link-set-icon {
+  flex: none;
+  position: relative;
+  top: 1px;
+}
+
+.alg-mirror-votes .link-set-icon .on {
+  stroke: currentColor;
 }
 
 .alg-votes .num {
@@ -1113,35 +1533,6 @@ kbd {
   display: inline-block;
   width: 2ch;
   text-align: right;
-}
-
-.alg-family {
-  flex: none;
-  display: flex;
-  gap: 1px;
-}
-
-.family-slot {
-  position: relative;
-  display: grid;
-  place-items: center;
-  padding: 2px;
-  border-radius: 4px;
-  color: var(--mirror);
-}
-
-a.family-slot:hover {
-  background: var(--mirror-soft);
-}
-
-.family-slot.current {
-  color: var(--select);
-  background: var(--select-soft);
-}
-
-.family-slot.missing {
-  color: var(--muted);
-  opacity: 0.35;
 }
 
 .link-button {
@@ -1179,9 +1570,14 @@ a.family-slot:hover {
   }
 
   /* Still one line per alg, just tighter: the moves give way (truncated; the cube shows them). */
-  .alg-list li {
+  .alg-list li,
+  .alg-columns {
     gap: 8px;
     padding: 6px 4px;
+  }
+
+  .alg-columns {
+    padding-block: 0;
   }
 
   .alg-moves {
@@ -1191,6 +1587,16 @@ a.family-slot:hover {
   .alg-metrics {
     gap: 4px;
     font-size: 11px;
+  }
+
+  .alg-picks {
+    width: 40px;
+    gap: 2px;
+  }
+
+  .pick {
+    padding: 0 2px;
+    font-size: 8.5px;
   }
 
   /* Just the number on a phone (the tooltip says STM): more room for the moves. */
@@ -1269,6 +1675,15 @@ a.family-slot:hover {
   stroke: none;
 }
 
+.status-mark.wanted {
+  stroke: var(--learning);
+}
+
+.status-mark circle.dot {
+  fill: var(--learning);
+  stroke: none;
+}
+
 .status-mark path {
   stroke: var(--on-accent);
   stroke-width: 2;
@@ -1294,30 +1709,270 @@ a.family-slot:hover {
   background: var(--learning);
 }
 
+.progress-bar .wanted {
+  background: var(--wanted);
+}
+
 .progress-bar .main {
   background: var(--main);
 }
 
-.overall-progress {
+/* F2L overview head (OverviewHead.tsx): the bar, then the legend as labelled filter rows,
+   then the Train bar. Flat: plain-text toggles with the soft active fill of the speed
+   buttons, uppercase muted labels like the section headings, one solid button (Train). */
+.overview-head {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 16px;
-  margin: -8px 0 28px;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0 0 32px;
 }
 
-.overall-progress .progress-bar {
-  flex-basis: 100%;
-  height: 8px;
+.overall-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.overall-bar .progress-bar {
+  height: 10px;
+}
+
+.overall-pct {
+  min-width: 3.5ch;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.overall-pct.complete {
+  color: var(--learnt);
+}
+
+.filter-rows {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 6px 16px;
+}
+
+.filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
 }
 
 .legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 4px;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.legend button {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  margin-left: auto;
-  font-size: 12px;
+  gap: 6px;
+  padding: 3px 8px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.legend button:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--muted) 10%, transparent);
+}
+
+.legend button.active {
+  background: var(--select-soft);
+  color: var(--select);
+  font-weight: 600;
+}
+
+.legend button.empty:not(.active) {
+  opacity: 0.5;
+}
+
+.legend .count {
+  color: var(--text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.legend button.active .count {
+  color: inherit;
+}
+
+.legend .swatch {
+  margin-left: 0;
+}
+
+.legend .focus-chip {
+  margin-left: 6px;
+}
+
+.case-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.case-filter {
+  width: 180px;
+  max-width: 100%;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.case-filter-clear,
+.legend .saved-filter-delete {
+  padding: 2px 6px;
+  border: none;
+  border-radius: 4px;
+  background: none;
   color: var(--muted);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.case-filter-clear:hover,
+.legend .saved-filter-delete:hover {
+  color: var(--danger);
+}
+
+/* Saved filters: like the legend's toggles, the × to delete only showing on hover/focus. */
+.saved-filter {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
+}
+
+.saved-filter.active {
+  background: var(--select-soft);
+}
+
+.legend .saved-filter.active button:first-child {
+  background: none;
+}
+
+.legend .saved-filter-delete {
+  padding: 3px 6px 3px 2px;
+  opacity: 0;
+}
+
+.saved-filter:hover .saved-filter-delete,
+.saved-filter-delete:focus-visible {
+  opacity: 1;
+}
+
+.legend .save-filter {
+  color: var(--link);
+}
+
+.save-filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.save-filter-form input {
+  width: 260px;
+  max-width: 100%;
+  padding: 3px 8px;
+  border: 1px solid var(--select);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.legend .save-filter-form button[type='submit'] {
+  background: var(--select);
+  color: var(--on-select);
+  font-weight: 600;
+}
+
+.legend .save-filter-form button[type='submit']:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.save-filter-form .link-button {
+  margin: 0;
+}
+
+/* What Train would deal, and the one solid button. */
+.train-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.train-what {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+  min-width: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.train-what strong {
+  color: var(--text);
+}
+
+.train-what .link-button {
+  margin: 0 0 0 8px;
+  font-size: 13px;
+}
+
+.train-button {
+  padding: 7px 18px;
+  border-radius: 4px;
+  background: var(--select);
+  color: var(--on-select);
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.train-button:hover {
+  filter: brightness(1.08);
+  text-decoration: none;
+}
+
+.train-button.disabled {
+  background: var(--border);
+  color: var(--muted);
+}
+
+@media (max-width: 520px) {
+  .train-button {
+    flex: 1;
+    text-align: center;
+  }
 }
 
 .swatch {
@@ -1336,6 +1991,11 @@ a.family-slot:hover {
 .swatch.learning,
 .slot-status-grid .learning {
   background: var(--learning);
+}
+
+.swatch.wanted,
+.slot-status-grid .wanted {
+  background: var(--wanted);
 }
 
 .swatch.main,
@@ -1436,12 +2096,15 @@ a.family-slot:hover {
   color: var(--learning);
 }
 
-/* Learning: violet ring, left half filled. Learnt: filled green with a check. */
+/* Want to learn: violet ring with a dot. Learning: violet ring, left half filled. Learnt:
+   filled green with a check. */
+.alg-status.wanted,
 .alg-status.learning {
   color: var(--learning);
   opacity: 1;
 }
 
+.alg-status.wanted svg circle.dot,
 .alg-status.learning svg path.half {
   fill: currentColor;
   stroke: none;
@@ -1461,6 +2124,25 @@ a.family-slot:hover {
   stroke-width: 2.2;
 }
 
+/* Go to equivalent: the end of the row; lit while the family map is picking for it. */
+.equivalent-toggle svg :is(rect, path) {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.equivalent-toggle:hover {
+  color: var(--text);
+}
+
+.equivalent-toggle.on {
+  opacity: 1;
+  color: var(--select);
+  background: var(--select-soft);
+}
+
 /* Note button: outline when empty, filled page when the alg has a note. */
 .alg-note-toggle:hover,
 .alg-note-toggle.open {
@@ -1475,6 +2157,254 @@ a.family-slot:hover {
 
 .alg-toggle.alg-note-toggle.has-note svg path.page {
   fill: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+/* Video button: a screen with a play mark; filled when the alg has a link. Ink, not a
+   brand red, so it stays quiet in stealth too. */
+.alg-video-toggle:hover,
+.alg-video-toggle.open {
+  color: var(--text);
+  opacity: 1;
+}
+
+.alg-video-toggle.has-video {
+  color: var(--text);
+  opacity: 0.85;
+}
+
+.alg-toggle.alg-video-toggle.has-video svg rect.screen {
+  fill: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.alg-toggle.alg-video-toggle svg path.play {
+  fill: currentColor;
+  stroke-width: 1.2;
+}
+
+/* The video link's popover: open it, paste or change it, remove it. */
+.video-open {
+  align-self: flex-start;
+  color: var(--link);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.video-open:hover {
+  text-decoration: underline;
+}
+
+.video-popover input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.video-popover input:focus {
+  outline: 2px solid var(--select);
+  outline-offset: -1px;
+}
+
+.video-popover input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.video-error {
+  color: var(--danger);
+}
+
+.video-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.video-remove {
+  margin: 0;
+  margin-right: auto;
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.video-save {
+  padding: 4px 14px;
+  border: none;
+  border-radius: 6px;
+  background: var(--select);
+  color: var(--on-select);
+  font-size: 13px;
+}
+
+.video-save:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Your own algs: "YOU" where a catalog alg shows its picks, and a delete button where it
+   has go-to-equivalent. */
+.pick.yours {
+  background: none;
+  color: var(--select);
+  border-color: var(--select);
+  cursor: default;
+}
+
+.delete-user-alg svg path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.delete-user-alg:hover {
+  color: var(--danger);
+}
+
+.add-alg-button {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Adding an alg: a row with the moves field and, under it, whether it solves the case. */
+/* An alg of yours with no moves yet: "No moves yet · its note", then Add moves. */
+.placeholder-moves {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.placeholder-moves a {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted);
+}
+
+.placeholder-moves em {
+  color: var(--text);
+}
+
+.placeholder-moves .link-button {
+  flex: none;
+  margin: 0;
+  font-size: 13px;
+}
+
+.alg-list li.add-alg-row,
+.alg-list li.add-alg-row:hover {
+  display: block;
+  background: var(--surface);
+}
+
+.add-alg {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.add-alg input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 15px;
+}
+
+.add-alg-note {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.add-alg-note:focus,
+.add-alg input:focus {
+  outline: 2px solid var(--select);
+  outline-offset: -1px;
+}
+
+.add-alg input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.add-alg-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.add-alg-status {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.add-alg-status.good {
+  color: var(--learnt);
+  font-weight: 600;
+}
+
+.add-alg-status.bad {
+  color: var(--danger);
+}
+
+.add-alg-status .link-button {
+  margin: 0;
+  font-size: inherit;
+}
+
+.add-alg-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.add-alg-actions .link-button {
+  margin: 0;
+  font-size: 13px;
+}
+
+.add-alg-actions button[type='submit'] {
+  padding: 4px 14px;
+  border: none;
+  border-radius: 6px;
+  background: var(--select);
+  color: var(--on-select);
+  font-size: 13px;
+}
+
+.add-alg-actions button[type='submit']:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.selected-title .preview-tag {
+  margin-left: 8px;
 }
 
 /* An open note: a light strip under its row, edge to edge, square corners. */
@@ -1531,8 +2461,8 @@ a.family-slot:hover {
   color: var(--muted);
 }
 
-/* Tiny top view: filled = slots the note shows in, outlined = the alg being viewed. */
-.symmetry-picker {
+/* A note's link kinds (LinkSetIcon); opens its picker. */
+.follows-picker {
   flex: none;
   display: grid;
   place-items: center;
@@ -1543,34 +2473,22 @@ a.family-slot:hover {
   border: none;
   border-radius: 6px;
   background: none;
+  color: var(--muted);
   cursor: pointer;
   opacity: 0.75;
 }
 
-.symmetry-picker:hover {
+.follows-picker:hover,
+.follows-picker[aria-expanded='true'] {
   opacity: 1;
   background: var(--bg);
 }
 
-.symmetry-picker rect.on {
-  fill: var(--muted);
-}
-
-.symmetry-picker rect.off {
-  fill: var(--border);
-}
-
-.symmetry-picker rect.here {
-  stroke: var(--select);
-  stroke-width: 1.5;
-}
-
-/* The empty "add a note" row stays quiet until used. */
-.note-draft .symmetry-picker {
+.note-draft .follows-picker {
   opacity: 0.35;
 }
 
-.note-draft:focus-within .symmetry-picker {
+.note-draft:focus-within .follows-picker {
   opacity: 0.75;
 }
 
@@ -1757,7 +2675,7 @@ a.family-slot:hover {
   color: var(--mirror);
 }
 
-/* PLL trainer (src/pll/) */
+/* PLL trainer (src/trainers/pll/) */
 
 .pll {
   display: flex;
@@ -1765,58 +2683,261 @@ a.family-slot:hover {
   gap: 28px;
 }
 
-.pll-drill {
+/* The drill card (common/drill/, used by PLL and F2L): moves on top (a scramble, a setup),
+   the trainer's stage in the middle, controls (common/drill/DrillNav.tsx) at the bottom. */
+.drill {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 28px 24px;
-  border-radius: 4px;
+  gap: 18px;
+  padding: 26px 28px 16px;
+  border-radius: 6px;
   background: var(--surface);
 }
 
-.pll-scramble {
+.drill-moves {
   font-family: var(--mono);
-  font-size: clamp(22px, 4vw, 34px);
+  font-size: clamp(22px, 4vw, 32px);
   font-weight: 500;
   line-height: 1.3;
   word-spacing: 0.15em;
+  text-align: center;
 }
 
-.pll-actions {
+.drill.timing .drill-moves {
+  /* No reading the case off the scramble while the timer runs. */
+  visibility: hidden;
+}
+
+.pll-stage {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
-  gap: 8px 16px;
+  gap: 6px;
+  min-height: 190px;
+  padding: 6px 0 4px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
-.pll-actions .link-button {
-  margin: 0;
-}
-
-.pll-next {
-  padding: 8px 22px;
+.pll-timer {
+  padding: 0 12px;
   border: none;
   border-radius: 8px;
-  background: var(--select);
-  color: var(--on-select);
+  background: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: clamp(56px, 11vw, 96px);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+  touch-action: manipulation;
+  user-select: none;
 }
 
-.pll-next:hover {
-  filter: brightness(1.08);
+.pll-timer.blank {
+  color: var(--border);
 }
 
-.pll-next:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+.pll-timer.counting {
+  color: var(--select);
 }
 
-.pll-keys {
+/* Hold-to-start: red while held too briefly, green once releasing will start it. */
+.pll-timer.holding {
+  color: var(--danger);
+}
+
+.pll-timer.ready {
+  color: var(--learnt);
+}
+
+.pll-timer.dnf {
+  color: var(--muted);
+}
+
+.pll-status {
+  min-height: 1.4em;
+  margin: 0;
   font-size: 13px;
   color: var(--muted);
 }
 
-.pll-empty {
+.pll-status:empty {
+  display: none;
+}
+
+/* The solve just timed (or a revealed case): case, penalty, remove; then its case's stats. */
+.pll-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.pll-result-main {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.pll-result .link-button {
+  margin: 0;
+  font-size: 13px;
+}
+
+.pll-reveal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* best / ao5 / ao12 / mean: big for all solves, one small line for a case. */
+.pll-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 28px;
+  margin: 10px 0 0;
+}
+
+.pll-stats dt {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.pll-stats dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.pll-stats.compact {
+  gap: 4px 14px;
+  margin: 0;
+  justify-content: center;
+}
+
+.pll-stats.compact > div {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.pll-stats.compact dd {
+  font-size: 13px;
+}
+
+.drill-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+}
+
+.drill-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drill-nav .link-button {
+  margin: 0 0 0 8px;
+}
+
+.drill-prev,
+.drill-next {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.drill-prev {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.drill-prev:hover:not(:disabled) {
+  border-color: var(--select);
+}
+
+.drill-next {
+  padding: 0 22px;
+  border: none;
+  background: var(--select);
+  color: var(--on-select);
+}
+
+.drill-next:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.drill-next:focus-visible,
+.drill-prev:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.drill-nav button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.pll-overall {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.pll-overall b {
+  margin-right: 12px;
+  font-family: var(--mono);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.pll-overall b:last-child {
+  margin-right: 0;
+}
+
+.drill-keys {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  word-spacing: 0.1em;
+}
+
+.drill-keys kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  margin-left: 8px;
+  padding: 0 5px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 11px;
+  text-align: center;
+  color: var(--text);
+}
+
+.drill-keys kbd:first-child,
+.drill-keys kbd + kbd {
+  margin-left: 2px;
+}
+
+.drill-keys kbd:first-child {
+  margin-left: 0;
+}
+
+.drill-empty {
   margin: 0;
   color: var(--muted);
 }
@@ -1845,14 +2966,32 @@ a.family-slot:hover {
   transition: transform 0.15s;
 }
 
-.pll-cases[open] .pll-chevron {
+.pll-cases[open] .pll-chevron,
+.pll-solves[open] .pll-chevron {
   transform: none;
+}
+
+.pll-cases-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 24px;
+  margin-top: 10px;
+}
+
+.pll-cases-bar .segmented {
+  margin-left: auto;
+  width: auto;
+}
+
+.pll-cases-bar .segmented button {
+  padding: 4px 12px;
+  white-space: nowrap;
 }
 
 .pll-cases-actions {
   display: flex;
   gap: 12px;
-  margin-top: 8px;
 }
 
 .pll-cases-head h2,
@@ -1926,52 +3065,160 @@ a.family-slot:hover {
   font-weight: 600;
 }
 
-.pll-icon {
-  flex: none;
-  display: block;
+/* A case's pace on its card: a fast → slow colour scale (green → red; --pace 0 → 1), kept
+   in stealth since it means something. The small number is its solve count. */
+.pll-pace {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: hsl(calc(130 - 130 * var(--pace)) 65% 50% / 0.2);
+  color: hsl(calc(130 - 130 * var(--pace)) 70% 30%);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
-.pll-icon-body {
-  fill: #1d1d1f;
+.pll-pace small {
+  font-family: system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.75;
 }
 
-.pll-arrow-line {
-  fill: none;
-  stroke: #1d1d1f;
-  stroke-width: 0.11;
-  stroke-linecap: round;
+.pll-pace.untimed {
+  background: none;
+  color: var(--muted);
+  font-weight: 400;
 }
 
-.pll-arrow-head {
-  fill: #1d1d1f;
+@media (prefers-color-scheme: dark) {
+  .pll-pace {
+    color: hsl(calc(130 - 130 * var(--pace)) 70% 72%);
+  }
 }
 
-/* Stealth (src/stealth.ts): greys from PllIcon, light arrows on the black last layer, and
-   dimmed until their card or line is hovered, like the F2L cubes. */
-[data-stealth] .pll-arrow-line {
-  stroke: #c8c8c8;
+/* OK / +2 / DNF: a small segmented control, the active one filled. */
+.pll-penalty {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
 }
 
-[data-stealth] .pll-arrow-head {
-  fill: #c8c8c8;
+.pll-penalty button {
+  padding: 2px 8px;
+  border: none;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
 }
 
-[data-stealth] .pll-icon {
-  opacity: 0.4;
-  transition: opacity 0.2s;
+.pll-penalty button + button {
+  border-left: 1px solid var(--border);
 }
 
-[data-stealth] :is([data-reveal]:hover .pll-icon, .pll-icon:hover) {
+.pll-penalty button:hover {
+  color: var(--text);
+}
+
+.pll-penalty button.active {
+  background: var(--select-soft);
+  color: var(--select);
+}
+
+.pll-solve-list {
+  margin: 12px 0 8px;
+  padding: 0;
+  list-style: none;
+  max-width: 460px;
+}
+
+.pll-solve-list li {
+  display: grid;
+  grid-template-columns: 3ch 7ch 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.pll-solve-n {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: right;
+}
+
+.pll-solve-time {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.pll-solve-list li.dnf .pll-solve-time {
+  color: var(--muted);
+}
+
+/* In the list a plain OK stays quiet, and the controls only come up on the row's hover;
+   a +2 or DNF stays marked. */
+.pll-solve-list .pll-penalty {
+  opacity: 0.35;
+  transition: opacity 0.12s;
+}
+
+.pll-solve-list li:hover .pll-penalty,
+.pll-solve-list .pll-penalty:focus-within {
   opacity: 1;
 }
 
+.pll-solve-list .pll-penalty button.active[data-penalty='ok'] {
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.pll-solve-remove {
+  padding: 0 4px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.pll-solve-remove:hover {
+  color: var(--danger);
+}
+
+/* Stealth: a plain number, no big coloured digits. */
+[data-stealth] .pll-timer {
+  font-size: 32px;
+  font-weight: 500;
+}
+
+[data-stealth] .pll-timer.counting {
+  color: var(--muted);
+}
+
+[data-stealth] .pll-stage {
+  min-height: 0;
+}
+
 @media (max-width: 520px) {
-  .pll-drill {
-    padding: 20px 16px;
+  .drill {
+    padding: 20px 16px 14px;
   }
 
   .pll-grid {
     grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  }
+
+  .pll-cases-bar .segmented {
+    margin-left: 0;
   }
 }
 
@@ -2003,15 +3250,6 @@ a.family-slot:hover {
 .cluster-card.done .cluster-case.done {
   opacity: 1;
   filter: none;
-}
-
-.family-slot.done {
-  opacity: 0.3;
-  filter: grayscale(1);
-}
-
-a.family-slot.done:hover {
-  opacity: 0.7;
 }
 
 .viewer.done .cube,
@@ -2051,11 +3289,11 @@ a.family-slot.done:hover {
   background: color-mix(in srgb, currentColor 15%, transparent);
 }
 
-/* "Main algs 63 → 59 executions → 25 ideas": how much there really is to learn. */
+/* Settings → F2L: "Main algs 63 → 59 shapes → 25 ideas", how much there really is to learn. */
 .distinct-stat {
-  flex-basis: 100%;
-  order: 3;
-  font-size: 12px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
@@ -2065,38 +3303,7 @@ a.family-slot.done:hover {
   font-weight: 600;
 }
 
-.distinct-stat .sep {
-  margin: 0 8px;
-}
-
 /* Same execution elsewhere (alg rows): fixed column after the family icons. */
-.execution-link {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  color: var(--muted);
-}
-
-a.execution-link:hover {
-  color: var(--text);
-  background: var(--bg);
-}
-
-.link-icon path {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.4;
-  stroke-linecap: round;
-}
-
-.symmetry-picker.linked {
-  color: var(--select);
-  opacity: 1;
-}
-
 /* Notation (Notation.tsx, notation.ts), the same in alg moves, setups, scrambles and the
    player's move strip: whole-cube rotations (x, y, z) and triggers in their own colours. */
 .rotation-move,
@@ -2217,4 +3424,1134 @@ a.execution-link:hover {
   opacity: 1;
   color: var(--text);
   background: var(--bg);
+}
+
+/* PLL compare trainer (src/trainers/pll-compare/) */
+
+/* Fills the window under the top bar, edge to edge, and the board fits every cube in it
+   (fit.ts). Everything but the cubes is in a sidebar: the cases first, then views, zoom
+   and sets. Hidden, only its » is left. */
+.app:has(> .cmp),
+:root:has(.cmp) .topbar-inner {
+  max-width: none;
+}
+
+.app:has(> .cmp) {
+  padding-bottom: 16px;
+}
+
+.cmp {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+  /* 20 + 16 padding, and the top bar's border. */
+  height: calc(100dvh - var(--topbar-height) - 37px);
+}
+
+.cmp-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 250px;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 8px 10px 12px;
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.cmp-side-show {
+  align-self: start;
+}
+
+.cmp-side-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: -8px;
+}
+
+.cmp-side h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.cmp-side-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.cmp-side .segmented button {
+  padding: 4px 6px;
+  white-space: nowrap;
+}
+
+/* Narrow: the sidebar goes above the board, and the page scrolls. */
+@media (max-width: 640px) {
+  .cmp {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+  }
+
+  .cmp-side {
+    width: auto;
+    max-height: none;
+  }
+
+  .cmp-board {
+    height: auto;
+  }
+}
+
+.cmp-empty {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.cmp-sets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cmp-note {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.cmp-error {
+  font-size: 13px;
+  color: var(--danger);
+}
+
+/* A saved set: its name (loads it) and ×, as one pill; the board's own set is selected. */
+.cmp-set {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.cmp-set.active {
+  border-color: var(--select);
+  background: var(--select-soft);
+}
+
+.cmp-set button {
+  border: none;
+  background: none;
+  color: var(--text);
+}
+
+.cmp-set-name {
+  padding: 3px 4px 3px 12px;
+  font-size: 13px;
+}
+
+.cmp-set-delete {
+  padding: 3px 10px 3px 4px;
+  color: var(--muted) !important;
+  opacity: 0.6;
+}
+
+.cmp-set-delete:hover {
+  opacity: 1;
+  color: var(--danger) !important;
+}
+
+.cmp-save {
+  display: flex;
+  gap: 6px;
+}
+
+.cmp-save input {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.cmp-save button {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 6px;
+  background: var(--select);
+  color: var(--on-select);
+  font-size: 13px;
+}
+
+.cmp-save button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.cmp-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.cmp-clear {
+  align-self: flex-start;
+  margin: 0;
+  font-size: 13px;
+}
+
+/* Its columns come from fit.ts; it only scrolls if the cubes would be tiny. */
+.cmp-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  justify-content: center;
+  align-content: start;
+  gap: 8px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* A card is just its cube, the case name and the captions (heights in fit.ts); the
+   cube's controls lie over its top while it's hovered, the cube the keys act on. */
+.cmp-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: 8px;
+}
+
+.cmp-card.hovered {
+  background: var(--surface);
+}
+
+.cmp-stage {
+  position: relative;
+}
+
+.compare-cube {
+  width: 100%;
+  aspect-ratio: 1;
+  touch-action: none;
+}
+
+.cmp-tools {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  left: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  visibility: hidden;
+}
+
+.cmp-card.hovered .cmp-tools {
+  visibility: visible;
+}
+
+.cmp-icon-button {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.cmp-icon-button:hover:not(:disabled) {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.cmp-icon-button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.cmp-tools .cmp-icon-button {
+  width: 24px;
+  height: 24px;
+  background: var(--surface);
+}
+
+.cmp-variant,
+.cmp-turn {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.cmp-variant button,
+.cmp-turn button {
+  padding: 2px 6px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.cmp-variant button:hover,
+.cmp-turn button:hover {
+  background: var(--bg);
+}
+
+.cmp-variant span {
+  min-width: 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* The case name, which is also its picker. */
+.cmp-name {
+  height: 26px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  text-align-last: center;
+  appearance: none;
+  cursor: pointer;
+}
+
+.cmp-name:hover {
+  color: var(--accent);
+}
+
+/* A block's caption, in its colour (inline --ink, dark on light; --frame, bright on
+   dark): edited in place; × unpaints it. */
+.cmp-caption {
+  position: relative;
+  display: flex;
+  height: 22px;
+  color: var(--ink);
+}
+
+@media (prefers-color-scheme: dark) {
+  .cmp-caption {
+    color: var(--frame);
+  }
+}
+
+.cmp-caption input {
+  width: 100%;
+  min-width: 0;
+  padding: 0 22px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.cmp-caption input::placeholder {
+  color: inherit;
+  opacity: 0.5;
+}
+
+.cmp-caption input:focus {
+  outline: 1px solid currentColor;
+}
+
+.cmp-caption button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  visibility: hidden;
+}
+
+.cmp-caption:hover button {
+  visibility: visible;
+}
+
+.cmp-caption button:hover {
+  color: var(--danger);
+}
+
+/* The paint colours (marks.ts PALETTE); the one Shift+click paints with is ringed. */
+.cmp-palette {
+  display: flex;
+  gap: 8px;
+}
+
+.cmp-palette button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  outline: 2px solid transparent;
+}
+
+.cmp-palette button.active {
+  outline-color: var(--text);
+}
+
+.cmp-copy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cmp-copy button {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 6px;
+  background: var(--select);
+  color: var(--on-select);
+  font-size: 13px;
+}
+
+.cmp-copy button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.cmp-add-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+  gap: 4px;
+}
+
+.cmp-add-grid button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 4px 0 2px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.cmp-add-grid button:hover:not(:disabled) {
+  background: var(--bg);
+}
+
+.cmp-add-grid button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* Stealth (src/stealth.ts): the cubes are dimmed (.cube, above) until the board is
+   hovered, but don't lie flat: comparing the angles is the point. The bank's icons
+   come up with their own button. */
+[data-stealth] .cmp-add-grid button:hover .pll-icon {
+  opacity: 1;
+}
+
+/* Stats trainer (src/trainers/stats/). Flat like the F2L overview: uppercase section
+   headings, numbers inline, hairline rows, no cards or pills. Marks are data, so they keep
+   the accent in stealth too (not --select, which goes ink). */
+.stats {
+  --stats-mark: var(--accent);
+  --stats-dot: color-mix(in srgb, var(--muted) 45%, var(--bg));
+  /* Pinned periods (Charts.tsx pinStyle), one hue each in this order, never reused while
+     pinned. The categorical palette minus its blue (the bars'); checked for colour-blind
+     separation on --bg in both modes, and kept in stealth (they mean something, and
+     aren't cube colours). Each pin also carries its number. */
+  --stats-pin-1: #eb6834;
+  --stats-pin-2: #1baf7a;
+  --stats-pin-3: #eda100;
+  --stats-pin-4: #e87ba4;
+  --stats-pin-5: #008300;
+  --stats-pin-6: #6250d6;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.stats-empty {
+  color: var(--muted);
+}
+
+
+.stats-range button {
+  white-space: nowrap;
+}
+
+
+
+
+
+
+/* The headline numbers: a flat row, label over value over a quieter line. */
+.stats-figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 40px;
+  margin: 0;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.stats-figure dt {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.stats-figure dd {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.stats-figure .stats-figure-sub {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.stats-section {
+  min-width: 0;
+}
+
+.stats-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 20px;
+  margin-bottom: 10px;
+}
+
+/* As the F2L overview's group headings. */
+.stats-section-head h2 {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.stats-count {
+  margin-left: 4px;
+  font-weight: 400;
+}
+
+.stats-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.stats-legend-sep {
+  padding: 0 4px;
+}
+
+/* Plain-text toggles, as the cube player's speed buttons. */
+.stats-legend-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 6px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+}
+
+.stats-legend-toggle:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+
+.stats-legend-toggle.off {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+.stats-window-key {
+  fill: var(--stats-mark);
+  fill-opacity: 0.15;
+  stroke: var(--stats-mark);
+  stroke-width: 1;
+}
+
+.stats-plot {
+  position: relative;
+}
+
+.stats-plot svg {
+  display: block;
+  overflow: visible;
+}
+
+.stats-grid line {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.stats-grid text,
+.stats-axis text {
+  fill: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-dot {
+  fill: var(--stats-dot);
+}
+
+.stats-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+
+
+.stats-crosshair line {
+  stroke: var(--muted);
+  stroke-width: 1;
+}
+
+/* The solves the window at the hovered point covers (Charts.tsx ProgressChart). */
+
+
+.stats-bracket {
+  fill: none;
+  stroke-width: 2;
+}
+
+
+
+.stats-end,
+.stats-hover-dot {
+  stroke: var(--bg);
+  stroke-width: 2;
+}
+
+.stats-hover-dot {
+  fill: var(--text);
+}
+
+
+
+.stats-bar {
+  fill: var(--stats-mark);
+}
+
+.stats-bar.hovered {
+  fill: color-mix(in srgb, var(--stats-mark) 70%, var(--bg));
+}
+
+.stats-hit {
+  fill: transparent;
+}
+
+.stats-tooltip {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px 10px;
+  border-radius: 4px;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 4px 14px rgb(0 0 0 / 0.1);
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.stats-tooltip strong {
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-tooltip-sub {
+  color: var(--muted);
+}
+
+
+
+
+
+
+
+
+/* Every solve: a flat list with dividers, as F2L's alg list. */
+.stats-table-wrap {
+  overflow-x: auto;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.stats-table th {
+  padding: 4px 14px 6px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stats-table td {
+  padding: 6px 14px 6px 0;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.stats-table tbody tr:hover {
+  background: var(--surface);
+}
+
+.stats-table .num {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-table .muted {
+  color: var(--muted);
+}
+
+.stats-table .stats-scramble {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.stats-section > .link-button {
+  margin-top: 8px;
+}
+
+.stats-axis line {
+  stroke: var(--border);
+}
+
+/* A long break between solves on the date axis: the line goes on, dashed and quieter. */
+.stats-line.stats-break {
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  opacity: 0.7;
+}
+
+/* By date / by solve: as the cube player's speed buttons. */
+.stats-axis-pick {
+  display: flex;
+  gap: 2px;
+}
+
+.stats-axis-pick button {
+  padding: 2px 6px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+}
+
+.stats-axis-pick button:hover {
+  color: var(--text);
+}
+
+.stats-axis-pick button.active {
+  background: var(--select-soft);
+  color: var(--select);
+  font-weight: 600;
+}
+
+
+
+
+
+
+
+
+/* The last column takes the leftover width, so the numbers stay together on the left. */
+.stats-table th:last-child {
+  width: 100%;
+}
+
+
+
+@media (prefers-color-scheme: dark) {
+  .stats {
+    --stats-pin-1: #d95926;
+    --stats-pin-2: #199e70;
+    --stats-pin-3: #c98500;
+    --stats-pin-4: #d55181;
+    --stats-pin-5: #008300;
+    --stats-pin-6: #9085e9;
+  }
+}
+
+/* The periods hovered or pinned on the solves-per chart, shaded on the timelines between
+   two edges: a pin in its colour (--pin, set inline), the hovered one in the accent. */
+.stats-focus rect {
+  fill: var(--pin, var(--stats-mark));
+  fill-opacity: 0.14;
+}
+
+.stats-focus line {
+  stroke: var(--pin, var(--stats-mark));
+  stroke-width: 1;
+}
+
+.stats-focus-badge {
+  fill: var(--pin);
+}
+
+.stats-focus-badge-text,
+.stats-pin-badge {
+  font-size: 9px;
+  font-weight: 700;
+  fill: var(--bg);
+  color: var(--bg);
+}
+
+.stats-pin-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: var(--pin);
+  vertical-align: -2px;
+}
+
+.stats-focus .hovered rect {
+  fill-opacity: 0.24;
+}
+
+.stats-focus-label {
+  fill: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 3px;
+}
+
+/* A pinned column, in its pin's colour. */
+.stats-bar.picked {
+  fill: var(--pin);
+}
+
+
+
+
+/* The spread around the progress curve: eight faint nested bands, so it shades from
+   barely there at the middle 80%'s edges to about a third of the mark in the middle. */
+.stats-range-fan {
+  fill: var(--stats-mark);
+  fill-opacity: 0.05;
+}
+
+/* The legend swatch has only four layers: each counts double. */
+.stats-range-key {
+  fill-opacity: 0.12;
+}
+
+/* The average itself: ink over the blue bands, so it reads in every theme. */
+.stats-line.stats-avg {
+  stroke: var(--text);
+}
+
+.stats-end.stats-avg-dot {
+  fill: var(--text);
+}
+
+.stats-window {
+  fill: var(--stats-mark);
+  opacity: 0.08;
+}
+
+.stats-bracket {
+  stroke: var(--stats-mark);
+}
+
+.stats-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 6px;
+}
+
+
+
+
+
+.stats-plot-empty {
+  margin: 0;
+  padding: 40px 0;
+  text-align: center;
+}
+
+/* Date-axis milestones (month and year starts) stand out from the days between. */
+.stats-axis .major text {
+  fill: var(--text);
+  font-weight: 600;
+}
+
+.stats-axis .major line {
+  stroke: var(--muted);
+}
+
+/* Milestones on the timeline (Charts.tsx MilestoneMarks): a neutral wash with a left
+   edge, so they never read as data; the label in ink. */
+.stats-milestone {
+  fill: var(--text);
+  fill-opacity: 0.06;
+}
+
+.stats-milestone-edge {
+  stroke: var(--muted);
+  stroke-width: 1;
+}
+
+.stats-milestone-label {
+  fill: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.swatch.edge-good {
+  box-shadow: inset 0 0 0 1px var(--muted);
+}
+
+.swatch.edge-bad {
+  background: var(--mirror);
+}
+
+.cluster-case.filtered-out {
+  opacity: 0.25;
+  filter: grayscale(1);
+}
+
+.slot-status-grid span.dimmed {
+  opacity: 0.2;
+}
+
+/* A cluster's slot-cases outside the overview's filter fade like learnt ones in focus mode. */
+.slot-cell.filtered-out {
+  opacity: 0.3;
+  filter: grayscale(1);
+  transition: opacity 0.15s;
+}
+
+.slot-cell.filtered-out:hover {
+  opacity: 0.55;
+}
+
+.slot-cell.filtered-out.selected {
+  opacity: 0.65;
+  filter: grayscale(0.8);
+}
+
+/* F2L train (src/trainers/f2l/Train.tsx), in the shared drill card. The cube dims and lies
+   flat in stealth like any other (Cube.tsx, data-reveal on the stage). */
+.f2l-train {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Revealed, when your main alg there has no moves yet: its notes instead. */
+.f2l-train-placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 300px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.f2l-train-placeholder p {
+  margin: 0;
+}
+
+.f2l-train-note {
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.f2l-train-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0 14px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.f2l-train-answer {
+  color: inherit;
+  font-size: 17px;
+}
+
+.f2l-train-hint {
+  min-height: 3em;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.f2l-train-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.f2l-train-rating button {
+  padding: 3px 9px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+}
+
+.f2l-train-rating button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.f2l-train-rating span {
+  margin-left: 8px;
+  font-size: 11px;
+}
+
+.f2l-train-round {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* The app-wide move hint (common/notation/MoveHint.tsx): hover any move for an icon of
+   the turn. The cube is drawn in the UI's greys, the turning layer in the
+   select colour (ink in stealth), so it never looks like a real cube. */
+[data-move] {
+  cursor: help;
+}
+
+.move[data-move] {
+  cursor: pointer;
+}
+
+.move-hint {
+  position: fixed;
+  z-index: 50;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.16);
+  line-height: 0;
+  pointer-events: none;
+}
+
+.move-icon {
+  --move-colour: var(--select);
+  flex: none;
+  overflow: visible;
+}
+
+/* Rotations in their own colour, like their notation (kept in stealth: a small signal). */
+.move-icon.rotation {
+  --move-colour: var(--rotation);
+}
+
+.move-icon-sticker {
+  stroke: var(--surface);
+  stroke-width: 0.08;
+  stroke-linejoin: round;
+}
+
+.move-icon-sticker.top {
+  fill: color-mix(in srgb, var(--muted) 18%, var(--surface));
+}
+
+.move-icon-sticker.front {
+  fill: color-mix(in srgb, var(--muted) 32%, var(--surface));
+}
+
+.move-icon-sticker.right {
+  fill: color-mix(in srgb, var(--muted) 46%, var(--surface));
+}
+
+.move-icon-sticker.moving {
+  fill: color-mix(in srgb, var(--move-colour) 30%, var(--surface));
+}
+
+.move-icon-sticker.front.moving {
+  fill: color-mix(in srgb, var(--move-colour) 42%, var(--surface));
+}
+
+.move-icon-sticker.right.moving {
+  fill: color-mix(in srgb, var(--move-colour) 54%, var(--surface));
+}
+
+.move-icon-arrow path {
+  fill: none;
+  stroke: var(--move-colour);
+  stroke-width: 0.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.move-icon-arrow path.head {
+  fill: var(--move-colour);
+  stroke-width: 0.08;
+}
+
+.move-icon-double {
+  fill: var(--move-colour);
+  font-size: 0.95px;
+  font-weight: 700;
+  text-anchor: middle;
 }

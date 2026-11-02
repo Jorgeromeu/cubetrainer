@@ -1,105 +1,41 @@
 import { f2lHref } from './route.ts'
 import {
   SLOTS,
-  algsById,
   catalog,
-  ideaOf,
   mainHasBetter,
   clustersByGroup,
   clusterTitle,
   getCase,
   getSlotCase,
   slotCaseIdFor,
-  type CatalogAlg,
   type Cluster,
 } from './catalog.ts'
 import { Cube } from '../../common/cube/Cube.tsx'
+import { useF2lFilter } from './filter.ts'
 import { useF2lFocus } from './focus.ts'
 import { ProgressBar, SlotStatusGrid } from './ProgressBits.tsx'
-import { tally, useProgress, type SlotCaseState } from './progress.ts'
-import { updateF2lSettings } from './settings.ts'
-import { SlotIcon } from './SlotIcon.tsx'
+import { OverviewHead } from './OverviewHead.tsx'
+import { tally, useProgress } from './progress.ts'
 
-/**
- * How many distinct things a set of algs really is: as algs, as executions (a leading
- * rotation apart counts once) and as ideas (mirrors and rotation versions count once).
- */
-function distinct(algs: CatalogAlg[]) {
-  return {
-    algs: algs.length,
-    executions: new Set(algs.map((a) => a.executionId)).size,
-    ideas: new Set(algs.map((a) => ideaOf.get(a.id))).size,
-  }
-}
-
-/** Main algs (one per slot-case that has one) and learnt algs, as catalog algs. */
-function chosenAlgs(bySlotCase: ReadonlyMap<string, SlotCaseState>) {
-  const main: CatalogAlg[] = []
-  const learnt: CatalogAlg[] = []
-  for (const p of bySlotCase.values()) {
-    const m = p.mainAlg?.kind === 'catalog' ? algsById.get(p.mainAlg.id) : undefined
-    if (m) main.push(m)
-    for (const a of p.algs) {
-      const alg = a.status === 'learnt' && a.alg.kind === 'catalog' ? algsById.get(a.alg.id) : undefined
-      if (alg) learnt.push(alg)
-    }
-  }
-  return { main: distinct(main), learnt: distinct(learnt) }
-}
-
-const DISTINCT_HINT =
-  'Algs: one per slot. Executions: the same moves a leading rotation apart count once. ' +
-  'Ideas: mirrors and rotation versions count once too: roughly what you actually memorise.'
-
-const slotCaseIdsOf = (clusters: Cluster[]) =>
+const allSlotCaseIds = (clusters: Cluster[]) =>
   clusters.flatMap((c) => c.caseIds.flatMap((caseId) => SLOTS.map((slot) => slotCaseIdFor(caseId, slot))))
 
 export function Overview() {
   const { load, bySlotCase } = useProgress()
-  const pairs = catalog.clusters.filter((c) => c.caseIds.length === 2).length
+  const { active: filtering, matches, caseMatches } = useF2lFilter()
+  /** The clusters' slot-cases that pass the filters. */
+  const slotCaseIdsOf = (clusters: Cluster[]) => allSlotCaseIds(clusters).filter(matches)
   const overall = tally(bySlotCase, slotCaseIdsOf(catalog.clusters))
   const focus = useF2lFocus()
-  const chosen = chosenAlgs(bySlotCase)
   return (
     <main className="overview">
-      <p className="lede">
-        {catalog.cases.length} cases in {catalog.clusters.length} mirror clusters ({pairs} mirror pairs,{' '}
-        {catalog.clusters.length - pairs} self-mirror). Shown in the front-right slot{' '}
-        <span className="inline-icon">
-          <SlotIcon slot="FR" size={14} />
-        </span>
-        .
-      </p>
-      {load === 'ready' && (
-        <div className="overall-progress">
-          <ProgressBar {...overall} />
-          <span>
-            <strong>{overall.learnt}</strong> / {overall.total} slot-cases learnt ·{' '}
-            <strong>{overall.learning}</strong> learning · <strong>{overall.main}</strong> more with a main alg
-          </span>
-          {focus.active && (
-            <span className="focus-chip" title="Learnt cases are greyed out (Settings → F2L)">
-              Focus: {overall.total - overall.learnt} missing
-              <button onClick={() => updateF2lSettings({ focusMissing: false })} aria-label="Turn off focus mode">
-                ×
-              </button>
-            </span>
-          )}
-          <span className="distinct-stat" title={DISTINCT_HINT}>
-            Main algs <strong>{chosen.main.algs}</strong> → {chosen.main.executions} executions →{' '}
-            <strong>{chosen.main.ideas}</strong> ideas
-            <span className="sep">·</span>
-            Learnt <strong>{chosen.learnt.algs}</strong> → {chosen.learnt.executions} →{' '}
-            <strong>{chosen.learnt.ideas}</strong> ideas
-          </span>
-          <span className="legend">
-            <span className="swatch learnt" /> learnt <span className="swatch learning" /> learning{' '}
-            <span className="swatch main" /> main alg <span className="swatch none" /> not chosen
-          </span>
-        </div>
-      )}
-      {clustersByGroup.map(({ group, clusters }) => {
-        const groupTally = tally(bySlotCase, slotCaseIdsOf(clusters))
+      {load === 'ready' && <OverviewHead />}
+      {filtering && !overall.total && <p className="lede">No slot-case matches the filter.</p>}
+      {clustersByGroup.map(({ group, clusters: all }) => {
+        // Filtering hides clusters with no matching slot-case; a case with none is faded.
+        const clusters = all.filter((c) => c.caseIds.some(caseMatches))
+        if (!clusters.length) return null
+        const groupTally = tally(bySlotCase, slotCaseIdsOf(all))
         return (
           <section key={group}>
             <h2>
@@ -122,9 +58,16 @@ export function Overview() {
                   <>
                     <div className="cluster-cubes">
                       {cluster.caseIds.map((caseId) => (
-                        <div key={caseId} className={'cluster-case' + (focus.isCaseDone(caseId) ? ' done' : '')}>
+                        <div
+                          key={caseId}
+                          className={
+                            'cluster-case' +
+                            (focus.isCaseDone(caseId) ? ' done' : '') +
+                            (caseMatches(caseId) ? '' : ' filtered-out')
+                          }
+                        >
                           <Cube setup={getSlotCase(slotCaseIdFor(caseId, 'FR')).setup} size={110} />
-                          {load === 'ready' && <SlotStatusGrid caseId={caseId} label={`F2L ${getCase(caseId).number}`} />}
+                          {load === 'ready' && <SlotStatusGrid caseId={caseId} label={`F2L ${getCase(caseId).number}`} dimmed={(id) => !matches(id)} />}
                         </div>
                       ))}
                     </div>
@@ -140,7 +83,7 @@ export function Overview() {
                     {load === 'ready' && (
                       <div
                         className="cluster-progress"
-                        title={`${t.learnt} learnt, ${t.learning} learning, ${t.main} more with a main alg, of ${t.total} slot-cases`}
+                        title={`${t.learnt} learnt, ${t.learning} learning, ${t.wanted} want to learn, ${t.main} more with a main alg, of ${t.total} slot-cases`}
                       >
                         <ProgressBar {...t} />
                         {upgrades > 0 && (

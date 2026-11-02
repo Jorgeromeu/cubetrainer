@@ -1,12 +1,14 @@
 // The brand in the top bar, with the current trainer's name. Hovering (or focusing) the
-// name opens a menu to switch to another trainer.
+// name opens a menu to switch to another trainer. In stealth the brand goes neutral.
+import { BRAND, STEALTH_BRAND, useStealth } from '../common/stealth.ts'
 import { trainerHref, type Trainer } from '../common/trainer.ts'
 import { TRAINERS } from './trainers.ts'
 
 export function TrainerSwitch({ current }: { current: Trainer }) {
+  const stealth = useStealth()
   return (
     <div className="brand">
-      <a href={trainerHref(current.id)}>Cubetrainer</a>
+      <a href={trainerHref(current.id)}>{stealth ? STEALTH_BRAND : BRAND}</a>
       <div className="trainer-switch">
         <button className="trainer-current" aria-haspopup="menu">
           {current.name}

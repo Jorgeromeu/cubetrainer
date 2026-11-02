@@ -68,17 +68,23 @@ export interface CatalogAlg {
    */
   familyAlgIds?: Partial<Record<Slot, string>>;
   /**
-   * Identifies the alg's family (the alg in all four slots): the id its front-right
-   * version has, or would have if the catalog lacked it. Shared by every family member
-   * and content-derived, so it survives catalog rebuilds. Family-wide notes key on it.
+   * The alg's shape: a hash of its local form, the alg as done at front-right with whole-
+   * cube rotations taken out and wide/slice moves as face turns plus a rotation. Algs with
+   * one shape are the same alg in another grip or slot (`y' U R' …` and `d R' …`; the
+   * 180° turn). Content-derived, so it survives catalog rebuilds.
    */
-  familyId: string;
+  shapeId: string;
+  /** The shape of the local form's mirror image: algs of the mirror case with that shape are its mirrors and transposes (see LinkKind). */
+  mirrorShapeId: string;
+  /** The side the local form mostly turns, R (with L) or F (with B), when one clearly dominates. */
+  side?: "R" | "F";
   /**
-   * Identifies the alg's execution: the same hand motions once a leading y rotation is
-   * taken off (`y2 U L U' L'` and `U L U' L'` are one execution). Shared by the algs of
-   * the same case, in any slot, whose moves after the rotation match. Content-derived.
+   * The published recommendation sheets (RECOMMENDERS) with exactly these moves for this
+   * slot-case. A sheet's alg that no other source spells that way is in the catalog with
+   * the sheet as its `source`. (The app counts the same alg in other grips and slots as
+   * recommended through it.)
    */
-  executionId: string;
+  recommendedBy?: Recommender[];
   /** The trigger the alg ends with, if it ends with one (see AlgInsert). */
   insert?: AlgInsert;
   /**
@@ -88,6 +94,38 @@ export interface CatalogAlg {
    */
   triggers?: AlgTrigger[];
 }
+
+/**
+ * Published recommendation sheets, collected by catalog-builder (fetch/parse-recommended).
+ * J Perm's is for the front-right slot (its second column is the mirror case at FR, done
+ * with a y and the left hand); CubeSkills' covers all four slots.
+ */
+export const RECOMMENDERS = {
+  jperm: {
+    name: "J Perm",
+    sheet: "Best F2L Algorithms (2021)",
+    url: "https://bit.ly/bestf2l",
+  },
+  cubeskills: {
+    name: "CubeSkills",
+    sheet: "F2L Algorithms – All Four Slot Angles, by Feliks Zemdegs and Andy Klise",
+    url: "https://www.cubeskills.com/uploads/pdf/tutorials/f2l-algorithms-different-slot-positions.pdf",
+  },
+} as const;
+export type Recommender = keyof typeof RECOMMENDERS;
+
+/**
+ * How two algs of a cluster relate, from their shapes (see CatalogAlg.shapeId). Not
+ * stored: the app derives the links from shapeId and mirrorShapeId.
+ * - rotation: the same shape, so the same alg in another grip or slot of the case (a
+ *   rotation or a `d` move apart, or turned 180°);
+ * - mirrorLR / mirrorFB: mirror-image shapes in the left-right / front-back neighbouring
+ *   slot (on the mirror case);
+ * - transpose: mirror-image shapes in the same slot (or the opposite one): the mirror case
+ *   done with F-U moves instead of R-U ones (or the other way), not rotated.
+ */
+export const LINK_KINDS = ["mirrorLR", "mirrorFB", "rotation", "transpose"] as const;
+export type LinkKind = (typeof LINK_KINDS)[number];
 
 /** The kinds of trigger an alg can end with as its closing insert. */
 export type InsertKind = Exclude<TriggerKind, "sexy">;

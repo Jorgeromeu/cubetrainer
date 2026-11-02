@@ -4,8 +4,16 @@ A personal web app for learning Rubik's cube algorithms. It runs locally, has on
 
 - **F2L explorer.** All 41 F2L cases in all four slots, grouped into mirror clusters, with 3D
   cubes, setups and algs from SpeedCubeDB. You can pick a main alg per case, mark algs as
-  learning or learnt, and keep notes that carry over to an alg's mirrored versions.
+  learning or learnt, and keep notes that carry over to an alg's mirrored versions. You can
+  add algs of your own: type them in with a live cube preview, and only ones that solve the
+  case are accepted.
 - **PLL trainer.** Scrambles for the PLL cases you pick.
+- **PLL compare.** PLL cases side by side under one camera, each with its own U turns, to spot
+  recognition tricks. Comparisons can be saved under a name.
+- **Stats.** Your solve history (imported one-off from timer exports, see the server
+  README): progress with running averages, how consistent you are (the spread of your
+  last 12 or 100 around the average, and over time), how much warming up matters, solves per day, and every solve
+  in a table.
 - **Stealth mode.** Press `` ` `` (or use the button next to the brand) and the page turns grey
   and stops looking like a cubing app.
 
@@ -28,7 +36,7 @@ just without progress.
 |---|---|
 | [`app/`](app/README.md) | The web app (Vite + React + [cubing.js](https://js.cubing.net/cubing/)): a shell, `src/common/` (cube rendering, notation, UI) and one folder per trainer in `src/trainers/`. |
 | [`server/`](server/README.md) | User-data API, no dependencies (`node:http` + `node:sqlite`). One module, API prefix (`/api/<trainer>/`) and SQLite file per trainer. |
-| `shared/` | Types shared by app, server and catalog builder: `cube.ts`, `f2l/`, `pll/`. |
+| `shared/` | Types shared by app, server and catalog builder: `cube.ts`, `f2l/`, `pll/`, `pll-compare/`, `stats/`. |
 | `catalog/` | The alg catalogs the app ships with (`f2l.json`, `pll.json`), generated and committed. |
 | [`catalog-builder/`](catalog-builder/README.md) | A one-off tool that scrapes the alg sources, checks every alg with cubing.js and writes `catalog/`. |
 | [`docs/requirements.md`](docs/requirements.md) | What the app is meant to do, the concepts, and the data model. |

@@ -1,8 +1,9 @@
 // A PLL case seen from above: the last layer's face, each side's top row folded out
-// around it, and arrows for where the pieces go. Plain SVG, no cubing.js.
-import { useStealth } from '../../common/stealth.ts'
-import { stealthScreenColor } from '../../common/cube/stealthCube.ts'
-import type { PllCase } from './catalog.ts'
+// around it, and arrows for where the pieces go. Plain SVG, no cubing.js. Shared by the
+// PLL trainers.
+import { useStealth } from '../stealth.ts'
+import { stealthScreenColor, stealthSideColor } from '../cube/stealthCube.ts'
+import type { PllCase } from '../../../../shared/pll/catalog.ts'
 
 type Face = 'U' | 'F' | 'R' | 'B' | 'L'
 
@@ -16,13 +17,14 @@ const COLORS: Record<Face, string> = {
 }
 
 // Stealth: last layer black as on the F2L cubes, the four sides as four distinct greys
-// (PLL is read from the side colours, so opposite faces must still differ).
+// (PLL is read from the side colours, so opposite faces must still differ), the same as
+// the 3D cubes' 'sides' palette.
 const STEALTH_COLORS: Record<Face, string> = {
   U: stealthScreenColor('lastLayer'),
-  F: '#a0a0a0',
-  B: '#d4d4d4',
-  R: '#454545',
-  L: '#707070',
+  F: stealthSideColor('green'),
+  B: stealthSideColor('blue'),
+  R: stealthSideColor('orange'),
+  L: stealthSideColor('red'),
 }
 
 // Layout, in top-sticker units: the 3x3 face from 0.6 to 3.6, side strips around it.

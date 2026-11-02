@@ -26,6 +26,8 @@ export interface PllCase {
   algs: string[];
   /** Face turns only, from solved; each gives this case, possibly needing an AUF. */
   scrambles: string[];
+  /** Face turns only, from solved: exactly the case as drawn (stickers, arrows), no AUF needed. */
+  setup: string;
   /** 5x5 grid of face letters, rows joined by "/": the U face plus each side's top row. */
   stickers: string;
   arrows: PllArrow[];

@@ -80,13 +80,13 @@ function facesOf({ latitude, longitude }: View): FlatView {
 
 // tempoScale per speed; 1 is cubing.js's default (~1s per quarter turn).
 const SPEEDS = [
-  { label: 'Slow', tempo: 1.5 },
-  { label: 'Normal', tempo: 3 },
-  { label: 'Fast', tempo: 5 },
+  { label: 'Slow', tempo: 0.75 },
+  { label: 'Normal', tempo: 1.5 },
+  { label: 'Fast', tempo: 3 },
 ]
-const DEFAULT_SPEED = 3
-/** Manual stepping always turns at the fastest speed; the speed setting is for playback. */
-const STEP_SPEED = SPEEDS[SPEEDS.length - 1].tempo
+const DEFAULT_SPEED = 1.5
+/** Manual stepping always turns this fast (quicker than any playback speed); the speed setting is for playback. */
+const STEP_SPEED = 5
 const SPEED_KEY = 'cubetrainer.tempo'
 
 const FORWARDS = 1
@@ -101,10 +101,31 @@ interface Props {
   /** Whose home corner + edge are the pair (see caseSetup); defaults to `slot`. */
   pairSlot?: Slot
   size: number
+  /** Drag to turn the view; with `controls`, the player (play, step, move strip, keys) too. */
   interactive?: boolean
+  /** Interactive only: show the player controls (default). Off, the cube can still be turned. */
+  controls?: boolean
+  /** The wheel (or a trackpad pinch) over the cube zooms it, instead of scrolling the page. */
+  zoomable?: boolean
+  /** Where the player rests when the alg changes: before it (default) or after it, e.g. to preview moves as they're typed. */
+  at?: 'start' | 'end'
 }
 
-export function Cube({ setup, alg = '', triggers, slot = 'FR', pairSlot = slot, size, interactive = false }: Props) {
+/** How far the wheel can zoom the camera in and out. */
+const ZOOM_RANGE = [3.5, 12] as const
+
+export function Cube({
+  setup,
+  alg = '',
+  triggers,
+  slot = 'FR',
+  pairSlot = slot,
+  size,
+  interactive = false,
+  controls = true,
+  zoomable = false,
+  at = 'start',
+}: Props) {
   const [player, setPlayer] = useState<TwistyPlayer | null>(null)
   const [hovered, setHovered] = useState(false)
   const stealth = useStealth()
@@ -153,8 +174,24 @@ export function Cube({ setup, alg = '', triggers, slot = 'FR', pairSlot = slot, 
   )
 
   useEffect(() => {
-    if (player) showCase(player, setup, alg)
-  }, [player, setup, alg])
+    if (player) showCase(player, setup, alg, at)
+  }, [player, setup, alg, at])
+
+  // Wheel zoom: moves the camera nearer or further (a new player starts at the default).
+  useEffect(() => {
+    if (!player || !zoomable) return
+    let distance = CAMERA_DISTANCE
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      distance = Math.min(ZOOM_RANGE[1], Math.max(ZOOM_RANGE[0], distance * Math.exp(e.deltaY * 0.002)))
+      player.cameraDistance = distance
+    }
+    player.addEventListener('wheel', onWheel, { passive: false })
+    return () => {
+      player.removeEventListener('wheel', onWheel)
+      player.cameraDistance = CAMERA_DISTANCE
+    }
+  }, [player, zoomable])
 
   const settings = useCubeSettings()
   useEffect(() => {
@@ -224,7 +261,7 @@ export function Cube({ setup, alg = '', triggers, slot = 'FR', pairSlot = slot, 
       )}
     </div>
   )
-  if (!interactive) return cube
+  if (!interactive || !controls) return cube
   return (
     <div className="player">
       {cube}
@@ -233,10 +270,10 @@ export function Cube({ setup, alg = '', triggers, slot = 'FR', pairSlot = slot, 
   )
 }
 
-function showCase(player: TwistyPlayer, setup: string, alg: string) {
+function showCase(player: TwistyPlayer, setup: string, alg: string, at: 'start' | 'end') {
   player.experimentalSetupAlg = `${HOLD_CROSS_ON_D} ${setup}`
   player.alg = alg
-  player.timestamp = 'start'
+  player.timestamp = at
 }
 
 function setMask(player: TwistyPlayer, mask: StickeringMask) {
@@ -428,7 +465,8 @@ function PlayerControls({ player, alg, triggers }: { player: TwistyPlayer; alg: 
   // Keyboard: space = play/pause, ←/→ = step, Home/End = jump. Works even when a player
   // button or the scrubber has focus (after a click); only text fields keep their keys.
   const onKey = useEffectEvent((e: KeyboardEvent) => {
-    if (e.altKey || e.ctrlKey || e.metaKey) return
+    // Shift+arrows are left to the page (e.g. F2L's previous/next cluster).
+    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
     if (
       e.target instanceof HTMLElement &&
       e.target.closest('input:not([type=range]), textarea, select, [contenteditable]')
@@ -478,6 +516,7 @@ function PlayerControls({ player, alg, triggers }: { player: TwistyPlayer; alg: 
                 className={'move' + state + (kinds[i] === 'turn' ? '' : ` ${kinds[i]}-move`)}
                 onClick={() => jumpAfterMove(i)}
                 title="Jump to after this move"
+                data-move={m}
               >
                 {m}
               </button>
