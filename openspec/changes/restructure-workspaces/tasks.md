@@ -4,10 +4,10 @@ Each group is one commit. After each: `npm run build` in `app/`, start the serve
 
 ## 1. Scaffolding
 
-- [ ] 1.1 Root `package.json` with npm workspaces (`app`, `server`, `catalog-builder`, `packages/*`); one `npm install` at the root
-- [ ] 1.2 Widen Vite `server.fs.allow` and the `tsconfig` includes to `packages/` and `tools/`
-- [ ] 1.3 Check that Node's type stripping runs `.ts` from `packages/` and `tools/` (not under `node_modules`)
-- [ ] 1.4 Import boundary check script (`check:imports`), wired into the app build; starts with the rules from the architecture spec
+- [x] 1.1 Root `package.json` with npm workspaces (`app`, `server`, `catalog-builder`, `packages/*`); one `npm install` at the root
+- [x] 1.2 Widen Vite `server.fs.allow` and the `tsconfig` includes to `packages/` and `tools/`
+- [x] 1.3 Check that Node's type stripping runs `.ts` from `packages/` and `tools/` (not under `node_modules`)
+- [x] 1.4 Import boundary check script (`check:imports`), wired into the app build; starts with the rules from the architecture spec
 
 ## 2. packages/core
 

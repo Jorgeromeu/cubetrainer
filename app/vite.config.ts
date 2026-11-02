@@ -7,7 +7,8 @@ const api = process.env.API_URL ?? 'http://localhost:3001'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // The catalog (../catalog) and its types (../shared) live outside the app folder.
+  // Tools (../tools), shared libraries (../packages) and the catalog (../catalog) live outside
+  // the app folder.
   server: {
     fs: { allow: ['..'] },
     // User data comes from ../server (npm run dev there).

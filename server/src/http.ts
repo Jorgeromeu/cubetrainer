@@ -37,7 +37,11 @@ export function compileRoute(route: ApiRoute): CompiledRoute {
 }
 
 /** The route for a path, with its decoded params; `methodMismatch` when only the method is wrong. */
-export function matchRoute(routes: CompiledRoute[], method: string, path: string) {
+export function matchRoute(
+  routes: CompiledRoute[],
+  method: string,
+  path: string,
+): { route: CompiledRoute; params: Record<string, string> } | { methodMismatch: boolean } {
   let methodMismatch = false;
   for (const route of routes) {
     const match = route.pattern.exec(path);

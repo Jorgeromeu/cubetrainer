@@ -1,0 +1,27 @@
+{
+  "name": "cubetrainer",
+  "private": true,
+  "type": "module",
+  "description": "Personal cubing tools. One npm install here installs every workspace; see README.md.",
+  "engines": {
+    "node": ">=23.6"
+  },
+  "workspaces": [
+    "app",
+    "server",
+    "catalog-builder",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w app",
+    "server": "npm run dev -w server",
+    "build": "tsc -p server/tsconfig.json && npm run build -w app",
+    "check:imports": "node scripts/check-imports.ts",
+    "typecheck": "tsc -p server/tsconfig.json && tsc -b app",
+    "lint": "npm run lint -w app"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "typescript": "~6.0.2"
+  }
+}
