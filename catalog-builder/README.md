@@ -1,10 +1,10 @@
 # catalog-builder
 
-Collects F2L alg data (requirements §4.1, stage 1) from external sources and stores
-it locally. It's a one-off tool and is separate from the app.
+Collects alg data from external sources and builds `../catalog/`. It's a one-off tool and is
+separate from the app (behaviour: `openspec/specs/catalog-builder`). Run these inside
+`catalog-builder/`, after one `npm install` at the repo root.
 
 ```sh
-npm install
 npm run collect      # = fetch + parse + check + build-catalog
 npm run fetch        # download sources into raw/ (cached; add -- --force to refetch)
 npm run parse        # raw/ -> data/<source>-f2l.json
@@ -21,7 +21,7 @@ Requires Node ≥ 23.6 (runs the `.ts` files directly, no build step).
 | `src/fetch-*.ts` | Download a source into `raw/`. Every response is cached on disk, so a re-run only fetches missing files. | yes |
 | `src/parse-*.ts` | Turn raw files into one normalised JSON per source (`src/types.ts` → `SourceDataset`). | yes |
 | `src/check.ts` | cubing.js verification of every setup and alg. | yes |
-| `src/build-catalog.ts` | Builds `../catalog/f2l.json` (types in `../shared/f2l/catalog.ts`, slots and triggers in `../shared/cube.ts`). | yes |
+| `src/build-catalog.ts` | Builds `../catalog/f2l.json` (types in `../packages/core/catalog/f2l.ts`, slots and triggers in `../packages/core/cube.ts`). | yes |
 | `src/cube.ts` | cubing.js helpers: F2L-solved check, normalise, mirror, relabel, edge orientation (good/bad edge). | yes |
 | `raw/` | Untouched source responses (~7 MB of HTML). | no (gitignored) |
 | `data/speedcubedb-f2l.json` | **Main dataset.** 41 cases × 4 slots. | yes |

@@ -37,5 +37,5 @@ Each group is one commit. After each: `npm run build` in `app/`, start the serve
 
 - [x] 5.1 Delete `shared/`, `app/src/common/`, `app/src/trainers/`, `server/src/trainers/`
 - [x] 5.2 Make `check:imports` strict (no allowlist left)
-- [ ] 5.3 Update root, app and server READMEs; replace `docs/requirements.md` with a pointer to `openspec/specs/`
-- [ ] 5.4 Verify migrations still apply to existing `data/*.sqlite` (copy the files first) and that no data changed
+- [x] 5.3 Update root, app and server READMEs; replace `docs/requirements.md` with a pointer to `openspec/specs/`
+- [x] 5.4 Verify migrations still apply to existing `data/*.sqlite` (copy the files first) and that no data changed
