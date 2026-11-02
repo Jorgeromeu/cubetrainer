@@ -4,7 +4,7 @@
 // removals too.
 // Changes still waiting for the server are lost on reload.
 import { useSyncExternalStore } from 'react'
-import { Rejected, request } from '../../../../packages/core/api.ts'
+import { type Load, Rejected, request } from '../../../../packages/core/api.ts'
 import type { PatchSolveBody, PutSolveBody, Solve, SolvesResponse } from '../../../../shared/pll/solves.ts'
 import { averageOf, effectiveMs, formatTime, type Penalty } from '../../../../packages/core/solve.ts'
 
@@ -16,7 +16,7 @@ const API = '/api/pll'
 
 export interface SolvesState {
   /** loading: first fetch in flight · offline: no server, new solves wait · ready: loaded. */
-  load: 'loading' | 'ready' | 'offline'
+  load: Load
   /** Oldest first, saved and unsaved. */
   solves: readonly Solve[]
   /** Ids of solves not on the server yet. */

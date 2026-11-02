@@ -10,7 +10,7 @@ import {
   slotCaseIdFor,
   type Cluster,
 } from './catalog.ts'
-import { Cube } from '../../common/cube/Cube.tsx'
+import { Cube } from '../../../../packages/ui/cube/Cube.tsx'
 import { useF2lFilter } from './filter.ts'
 import { useF2lFocus } from './focus.ts'
 import { ProgressBar, SlotStatusGrid } from './ProgressBits.tsx'

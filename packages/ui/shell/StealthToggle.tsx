@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { STEALTH_HOTKEY, isStealth, setStealth, useStealth } from '../common/stealth.ts'
+import { STEALTH_HOTKEY, isStealth, setStealth, useStealth } from '../stealth.ts'
 
 /**
  * Button next to the brand that switches stealth mode, plus its page-wide hotkey. Shows a

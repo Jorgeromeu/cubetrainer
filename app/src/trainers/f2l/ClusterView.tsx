@@ -26,10 +26,10 @@ import {
   type Recommender,
   type Slot,
 } from './catalog.ts'
-import { Cube } from '../../common/cube/Cube.tsx'
+import { Cube } from '../../../../packages/ui/cube/Cube.tsx'
 import { EdgeTag } from './EdgeTag.tsx'
 import { AlgMoves } from './Moves.tsx'
-import { Notation } from '../../common/notation/Notation.tsx'
+import { Notation } from '../../../../packages/ui/notation/Notation.tsx'
 import { startsWithMoves } from '../../../../packages/core/notation/moves.ts'
 import { useF2lFilter } from './filter.ts'
 import { useF2lFocus } from './focus.ts'
@@ -68,10 +68,10 @@ import {
 import { MAX_NOTE_LENGTH, MAX_USER_ALG_LENGTH, MAX_VIDEO_URL_LENGTH } from '../../../../shared/f2l/progress.ts'
 import { checkAlg, readMoves, simplifyMoves, useKPuzzle, type AlgCheck } from './checkAlg.ts'
 import { isRotation } from '../../../../packages/core/notation/moves.ts'
-import { useDismiss } from '../../common/ui/dismiss.ts'
+import { useDismiss } from '../../../../packages/ui/dismiss.ts'
 import { LinkKindsPicker, LinkSetIcon } from './LinkKindsPicker.tsx'
 import { f2lHref } from './route.ts'
-import { SlotGridKey } from './SlotIcon.tsx'
+import { SlotGridKey } from './SlotGridKey.tsx'
 
 /**
  * Keys for the selected alg: toggle main, cycle status, edit its note, edit its video

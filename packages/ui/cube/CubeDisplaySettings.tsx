@@ -1,6 +1,6 @@
 // The Cube display section of the settings menu, for trainers that show 3D cubes (Cube.tsx).
 // A trainer that does includes it in its own Settings; the values are shared by all of them.
-import { OnOff, Segmented, Setting, SettingsSection } from '../ui/settings.tsx'
+import { OnOff, Segmented, Setting, SettingsSection } from '../settings.tsx'
 import { DEFAULT_CUBE_SETTINGS, HINT_DISTANCE, updateCubeSettings, useCubeSettings, type HintMode } from './settings.ts'
 
 const HINT_OPTIONS: { value: HintMode; label: string }[] = [

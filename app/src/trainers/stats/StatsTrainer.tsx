@@ -2,7 +2,7 @@
 // it, the headline numbers, the charts (Charts.tsx) and every solve as a table. Solves
 // are imported one-off through the server's API (solves.ts).
 import { useMemo, useState } from 'react'
-import { Notation } from '../../common/notation/Notation.tsx'
+import { Notation } from '../../../../packages/ui/notation/Notation.tsx'
 import { formatSolve, formatTime } from '../../../../packages/core/solve.ts'
 import {
   AVERAGES,

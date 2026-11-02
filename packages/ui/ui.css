@@ -1,0 +1,1067 @@
+/* Shared styles (packages/ui): theme tokens, base elements, the shell, stealth, cube, notation,
+   settings blocks, and the patterns several tools build with (crumb, drill card, server notice).
+   A tool's own styles live in its folder, imported by its index.ts. */
+
+:root {
+  --bg: #f6f6f4;
+  --surface: #ffffff;
+  --text: #1d1d1f;
+  --muted: #6b6b70;
+  --border: #e2e2de;
+  --accent: #2f6fd6;
+  --accent-soft: #e6eefb;
+  /* Text and icons on an --accent fill. */
+  --on-accent: #fff;
+  /* Structural emphasis (selection, current item, primary buttons) and text links: the
+     accent normally, ink in stealth. */
+  --select: var(--accent);
+  --select-soft: var(--accent-soft);
+  --on-select: var(--on-accent);
+  --link: var(--accent);
+  /* A slot-case's main alg (star, status marks, progress). */
+  --main: var(--accent);
+  --mirror: #d98a1c;
+  --mirror-soft: #fbf0df;
+  --rotation: #e0731a;
+  --trigger: #14898f;
+  --learnt: #2a9d5c;
+  --learnt-soft: #e2f4e9;
+  --learning: #8a63d2;
+  --learning-soft: #efe9fa;
+  /* Want to learn: a paler violet, the step before learning. */
+  --wanted: #bba5e6;
+  --danger: #c23b3b;
+  --danger-soft: #fbe6e6;
+  /* Family map group tints (ClusterView FamilyMap): cells whose main algs are linked.
+     Matplotlib tab10 hues without its green/orange/red, which read as good/bad; blue
+     last, since selection is blue. Each a soft mix into the surface, so dark mode and
+     stealth (quieter) only change the mix. */
+  --group-0-hue: #9467bd;
+  --group-1-hue: #17becf;
+  --group-2-hue: #e377c2;
+  --group-3-hue: #8c564b;
+  --group-4-hue: #1f77b4;
+  --group-mix: 22%;
+  --group-0: color-mix(in srgb, var(--group-0-hue) var(--group-mix), var(--surface));
+  --group-1: color-mix(in srgb, var(--group-1-hue) var(--group-mix), var(--surface));
+  --group-2: color-mix(in srgb, var(--group-2-hue) var(--group-mix), var(--surface));
+  --group-3: color-mix(in srgb, var(--group-3-hue) var(--group-mix), var(--surface));
+  --group-4: color-mix(in srgb, var(--group-4-hue) var(--group-mix), var(--surface));
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --topbar-height: 52px;
+
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.45;
+  color: var(--text);
+  background: var(--bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17171a;
+    --surface: #212125;
+    --text: #ececef;
+    --muted: #9a9aa2;
+    --border: #34343a;
+    --accent: #7aa7f0;
+    --accent-soft: #24324a;
+    --mirror: #e7a548;
+    --mirror-soft: #3a2e1c;
+    --rotation: #f0954a;
+    --trigger: #4cc4c9;
+    --learnt: #5cc98a;
+    --learnt-soft: #1d3527;
+    --learning: #b195f0;
+    --learning-soft: #2c2540;
+    --wanted: #7a65ad;
+    --danger: #f07a7a;
+    --danger-soft: #3d2222;
+    --group-mix: 30%;
+  }
+}
+
+/* Stealth mode (stealth.ts): a monochrome UI, not a desaturated one. Everything
+   structural (selection, the current move, primary buttons, sliders, links at rest) is
+   ink on grey; colour is kept, at full strength, only for small signals: status marks
+   and markers (learnt, learning, want to learn, main, mirror, rotation, bad edge), link hovers, focus
+   rings and errors. */
+:root[data-stealth] {
+  --bg: #f4f4f4;
+  --surface: #ffffff;
+  --text: #1e1e1e;
+  --muted: #747474;
+  --border: #e1e1e1;
+  --select: var(--text);
+  --select-soft: #e8e8e8;
+  --on-select: var(--surface);
+  --link: var(--text);
+  /* Group tints stay, just quieter. */
+  --group-mix: 12%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-stealth] {
+    --bg: #161616;
+    --surface: #1f1f1f;
+    --text: #e4e4e4;
+    --muted: #8e8e8e;
+    --border: #333333;
+    --select-soft: #2e2e2e;
+    --on-select: var(--bg);
+    --group-mix: 18%;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 20px 48px;
+}
+
+/* Sticky across the page: brand + stealth toggle, and in a cluster, its crumb. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 1200px;
+  height: var(--topbar-height);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.crumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin-left: 8px;
+  padding-left: 16px;
+  border-left: 1px solid var(--border);
+}
+
+.crumb h1 {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 17px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 520px) {
+  .topbar-inner {
+    padding: 0 16px;
+  }
+
+  .crumb {
+    margin-left: 0;
+    padding-left: 10px;
+  }
+
+  .crumb .back span,
+  .crumb .tag {
+    display: none;
+  }
+}
+
+.stealth-toggle {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  color: var(--muted);
+  transition: background 0.12s, color 0.12s;
+}
+
+.stealth-toggle:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.stealth-toggle svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.stealth-toggle svg .fill {
+  fill: currentColor;
+}
+
+/* Normal mode's icon: a little cube in its real colours. */
+.cube-icon path {
+  stroke: var(--text);
+  stroke-width: 1.3;
+}
+
+.cube-icon .top {
+  fill: #fff;
+}
+
+.cube-icon .front {
+  fill: #1fa34a;
+}
+
+.cube-icon .right {
+  fill: #e8402f;
+}
+
+.settings {
+  position: relative;
+  margin-left: auto;
+}
+
+.settings-button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  color: var(--muted);
+  transition: background 0.12s, color 0.12s;
+}
+
+.settings-button:hover,
+.settings-button[aria-expanded='true'] {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.settings-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.settings-section {
+  margin-bottom: -6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.settings-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 10;
+  width: min(300px, calc(100vw - 56px));
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.16);
+}
+
+.setting {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.setting.disabled {
+  opacity: 0.45;
+}
+
+.setting-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.setting-label span {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.segmented {
+  display: flex;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.segmented button {
+  flex: 1;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.segmented button.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+}
+
+.range-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.range-row input {
+  flex: 1;
+  accent-color: var(--select);
+}
+
+.settings-panel .link-button {
+  align-self: flex-start;
+  margin: 0;
+  font-size: 13px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+/* The trainer's name after the brand; hovering or focusing it opens the trainer menu. */
+.trainer-switch {
+  position: relative;
+}
+
+.trainer-current {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 2px;
+  padding: 2px 6px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--select);
+  font-weight: 700;
+}
+
+.trainer-current svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.7;
+  transition: transform 0.15s;
+}
+
+.trainer-switch:is(:hover, :focus-within) .trainer-current {
+  background: var(--surface);
+}
+
+.trainer-switch:is(:hover, :focus-within) .trainer-current svg {
+  transform: rotate(180deg);
+}
+
+/* Starts right under the name (padding bridges the gap) so the pointer can move onto it. */
+.trainer-menu {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: 30;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  width: max-content;
+  min-width: 220px;
+  margin-top: 4px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.16);
+  font-size: 14px;
+}
+
+.trainer-menu::before {
+  content: '';
+  position: absolute;
+  inset: -8px 0 auto;
+  height: 8px;
+}
+
+.trainer-switch:is(:hover, :focus-within) .trainer-menu {
+  display: flex;
+}
+
+.trainer-menu a {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.trainer-menu a:hover,
+.trainer-menu a:focus-visible {
+  background: var(--bg);
+}
+
+.trainer-menu a.current strong {
+  color: var(--select);
+}
+
+.trainer-menu span {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.tag {
+  display: inline-block;
+  font-size: 12px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--select-soft);
+  color: var(--select);
+  white-space: nowrap;
+}
+
+.cube {
+  flex: none;
+}
+
+/* Stealth mode (stealth.ts): cubes are dimmed and lie flat (Cube.tsx) until their
+   reveal area ([data-reveal]: overview card, slot cell) or the cube itself is hovered.
+   While flat, the 2D drawing (FlatCube.tsx) covers the player exactly. */
+[data-stealth] .cube > :is(twisty-player, .flat-cube) {
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+.cube {
+  position: relative;
+}
+
+.flat-cube {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* cubing.js's cubie bodies: translucent black, darker where layers overlap. Not drawn: at
+   rest in stealth the stickers are loose tiles, so the drawing reads as a grid rather than
+   a cube (the real one comes back on hover). Kept in FlatCube.tsx for a closer match. */
+.flat-cube-body {
+  display: none;
+}
+
+.cube:has(> .flat-cube) > twisty-player {
+  visibility: hidden;
+}
+
+[data-stealth] :is([data-reveal]:hover .cube, .cube:hover) > twisty-player {
+  opacity: 1;
+}
+
+/* PLL case icon (icons/PllIcon.tsx), shared by the PLL tools */
+
+.pll-icon {
+  flex: none;
+  display: block;
+}
+
+.pll-icon-body {
+  fill: #1d1d1f;
+}
+
+.pll-arrow-line {
+  fill: none;
+  stroke: #1d1d1f;
+  stroke-width: 0.11;
+  stroke-linecap: round;
+}
+
+.pll-arrow-head {
+  fill: #1d1d1f;
+}
+
+/* Stealth (stealth.ts): greys from PllIcon, no dark body behind the stickers (loose
+   tiles, like the F2L drawings), light arrows on the black last layer, and dimmed until
+   their card or line is hovered, like the F2L cubes. */
+[data-stealth] .pll-icon-body {
+  display: none;
+}
+
+[data-stealth] .pll-arrow-line {
+  stroke: #c8c8c8;
+}
+
+[data-stealth] .pll-arrow-head {
+  fill: #c8c8c8;
+}
+
+[data-stealth] .pll-icon {
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+[data-stealth] :is([data-reveal]:hover .pll-icon, .pll-icon:hover) {
+  opacity: 1;
+}
+
+.back {
+  color: var(--link);
+  white-space: nowrap;
+  transition: color 0.12s;
+}
+
+.player {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.controls {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.move-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  font-family: var(--mono);
+  font-size: 16px;
+}
+
+.move {
+  min-width: 30px;
+  padding: 3px 5px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  opacity: 0.55;
+  font: inherit;
+  transition: background 0.1s, color 0.1s, opacity 0.1s;
+}
+
+.move:hover {
+  background: var(--bg);
+}
+
+.move.done {
+  color: var(--text);
+  opacity: 1;
+  font-weight: 600;
+}
+
+.move.current {
+  opacity: 1;
+  background: var(--select);
+  color: var(--on-select);
+}
+
+.scrubber-track {
+  --thumb: 16px;
+  --progress: 0%;
+  position: relative;
+  width: 100%;
+  margin: 4px 0;
+}
+
+/* The bar spans only where the thumb's centre can go (half a thumb in from each end), so
+   the first and last dots sit on its ends and the fill ends exactly under the thumb. */
+.scrubber-track::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: calc(var(--thumb) / 2);
+  right: calc(var(--thumb) / 2);
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--select) var(--progress), var(--border) var(--progress));
+  transform: translateY(-50%);
+}
+
+.scrubber-track:has(.scrubber:disabled) {
+  opacity: 0.5;
+}
+
+/* Dots at each move boundary. Inset by half the thumb width so they line up with
+   where the thumb's centre sits at that value. The dot under the thumb isn't rendered. */
+.scrubber-stop {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--thumb) / 2 + var(--at) * (100% - var(--thumb)));
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  box-shadow: 0 0 0 2px var(--surface);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.scrubber-stop.passed {
+  background: var(--select);
+}
+
+.scrubber {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 4px;
+  margin: 0;
+  appearance: none;
+  background: none;
+  cursor: pointer;
+}
+
+.scrubber:disabled {
+  cursor: default;
+}
+
+.scrubber::-webkit-slider-thumb {
+  appearance: none;
+  box-sizing: border-box;
+  width: var(--thumb);
+  height: var(--thumb);
+  border-radius: 50%;
+  background: var(--select);
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--select);
+}
+
+.scrubber::-moz-range-thumb {
+  box-sizing: border-box;
+  width: var(--thumb);
+  height: var(--thumb);
+  border-radius: 50%;
+  background: var(--select);
+  border: 2px solid var(--surface);
+}
+
+.control-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+@media (max-width: 520px) {
+  .control-row {
+    justify-content: center;
+  }
+}
+
+.transport {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--text);
+  transition: background 0.12s, opacity 0.12s;
+}
+
+.icon-button:hover:not(:disabled) {
+  background: var(--bg);
+}
+
+.icon-button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* Play/pause: the same plain button as the rest, just in the accent colour. */
+.icon-button.primary {
+  color: var(--select);
+}
+
+.speed {
+  display: flex;
+  gap: 2px;
+}
+
+.speed button {
+  padding: 3px 7px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.speed button:hover {
+  color: var(--text);
+}
+
+.speed button.active {
+  background: var(--select-soft);
+  color: var(--select);
+  font-weight: 600;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 18px;
+  padding: 0 4px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 16px;
+  text-align: center;
+}
+
+.pick {
+  padding: 0 4px;
+  border: 1px solid var(--text);
+  border-radius: 4px;
+  background: var(--text);
+  color: var(--surface);
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: 0.02em;
+  cursor: help;
+}
+
+.link-button {
+  margin-top: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--link);
+}
+
+@media (max-width: 520px) {
+  .app {
+    padding: 16px 16px 32px;
+  }
+
+  .pick {
+    padding: 0 2px;
+    font-size: 8.5px;
+  }
+}
+
+/* Bottom-right notice: no server (quiet, stays) or a failed save (red, fades). */
+.server-notice {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
+}
+
+.server-notice::before {
+  content: '';
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mirror);
+}
+
+.server-notice.save-error {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.server-notice.save-error::before {
+  background: var(--danger);
+}
+
+/* The drill card (packages/ui/drill/, used by PLL and F2L): moves on top (a scramble, a setup),
+   the trainer's stage in the middle, controls (drill/DrillNav.tsx) at the bottom. */
+.drill {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 26px 28px 16px;
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.drill-moves {
+  font-family: var(--mono);
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 500;
+  line-height: 1.3;
+  word-spacing: 0.15em;
+  text-align: center;
+}
+
+.drill-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+}
+
+.drill-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drill-nav .link-button {
+  margin: 0 0 0 8px;
+}
+
+.drill-prev,
+.drill-next {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.drill-prev {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.drill-prev:hover:not(:disabled) {
+  border-color: var(--select);
+}
+
+.drill-next {
+  padding: 0 22px;
+  border: none;
+  background: var(--select);
+  color: var(--on-select);
+}
+
+.drill-next:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.drill-next:focus-visible,
+.drill-prev:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.drill-nav button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.drill-keys {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  word-spacing: 0.1em;
+}
+
+.drill-keys kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  margin-left: 8px;
+  padding: 0 5px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 11px;
+  text-align: center;
+  color: var(--text);
+}
+
+.drill-keys kbd:first-child,
+.drill-keys kbd + kbd {
+  margin-left: 2px;
+}
+
+.drill-keys kbd:first-child {
+  margin-left: 0;
+}
+
+.drill-empty {
+  margin: 0;
+  color: var(--muted);
+}
+
+@media (max-width: 520px) {
+  .drill {
+    padding: 20px 16px 14px;
+  }
+}
+
+/* Same execution elsewhere (alg rows): fixed column after the family icons. */
+/* Notation (Notation.tsx, notation.ts), the same in alg moves, setups, scrambles and the
+   player's move strip: whole-cube rotations (x, y, z) and triggers in their own colours. */
+.rotation-move,
+.move.rotation-move:not(.current) {
+  color: var(--rotation);
+}
+
+.trigger-moves,
+.move.trigger-move:not(.current) {
+  color: var(--trigger);
+}
+
+/* The app-wide move hint (notation/MoveHint.tsx): hover any move for an icon of
+   the turn. The cube is drawn in the UI's greys, the turning layer in the
+   select colour (ink in stealth), so it never looks like a real cube. */
+[data-move] {
+  cursor: help;
+}
+
+.move[data-move] {
+  cursor: pointer;
+}
+
+.move-hint {
+  position: fixed;
+  z-index: 50;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.16);
+  line-height: 0;
+  pointer-events: none;
+}
+
+.move-icon {
+  --move-colour: var(--select);
+  flex: none;
+  overflow: visible;
+}
+
+/* Rotations in their own colour, like their notation (kept in stealth: a small signal). */
+.move-icon.rotation {
+  --move-colour: var(--rotation);
+}
+
+.move-icon-sticker {
+  stroke: var(--surface);
+  stroke-width: 0.08;
+  stroke-linejoin: round;
+}
+
+.move-icon-sticker.top {
+  fill: color-mix(in srgb, var(--muted) 18%, var(--surface));
+}
+
+.move-icon-sticker.front {
+  fill: color-mix(in srgb, var(--muted) 32%, var(--surface));
+}
+
+.move-icon-sticker.right {
+  fill: color-mix(in srgb, var(--muted) 46%, var(--surface));
+}
+
+.move-icon-sticker.moving {
+  fill: color-mix(in srgb, var(--move-colour) 30%, var(--surface));
+}
+
+.move-icon-sticker.front.moving {
+  fill: color-mix(in srgb, var(--move-colour) 42%, var(--surface));
+}
+
+.move-icon-sticker.right.moving {
+  fill: color-mix(in srgb, var(--move-colour) 54%, var(--surface));
+}
+
+.move-icon-arrow path {
+  fill: none;
+  stroke: var(--move-colour);
+  stroke-width: 0.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.move-icon-arrow path.head {
+  fill: var(--move-colour);
+  stroke-width: 0.08;
+}
+
+.move-icon-double {
+  fill: var(--move-colour);
+  font-size: 0.95px;
+  font-weight: 700;
+  text-anchor: middle;
+}

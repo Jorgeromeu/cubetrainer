@@ -3,6 +3,9 @@
 
 const TIMEOUT_MS = 5000
 
+/** Where a tool's server data stands: still loading, no server (retrying), or loaded. */
+export type Load = 'loading' | 'offline' | 'ready'
+
 /** The server answered and refused the request (a 4xx/5xx with its JSON error). */
 export class Rejected extends Error {}
 

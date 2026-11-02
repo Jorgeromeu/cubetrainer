@@ -1,4 +1,4 @@
-// What a trainer gives the shell (shell/trainers.ts lists them). A trainer is standalone:
+// What a trainer gives the shell (the host's registry, app/src/tools.ts, lists them). A trainer is standalone:
 // it owns everything under #/<id>/, and only uses the shell through this interface.
 import type { ComponentType } from 'react'
 
@@ -18,8 +18,8 @@ export interface Trainer {
   Crumb?: ComponentType<TrainerProps>
   /**
    * Its settings menu, the only thing in it (no gear without one). Build it with
-   * common/ui/settings.tsx; add shared sections only if they apply to it, e.g.
-   * common/cube/CubeDisplaySettings.tsx if it shows 3D cubes.
+   * settings.tsx; add shared sections only if they apply to it, e.g.
+   * cube/CubeDisplaySettings.tsx if it shows 3D cubes.
    */
   Settings?: ComponentType
 }

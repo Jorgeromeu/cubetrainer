@@ -1,5 +1,5 @@
 // What the progress and solves-per charts show, picked in their legends and remembered per browser.
-import { persisted } from '../../common/persisted.ts'
+import { persisted } from '../../../../packages/ui/persisted.ts'
 import type { Period } from './analysis.ts'
 
 export interface ProgressSettings {

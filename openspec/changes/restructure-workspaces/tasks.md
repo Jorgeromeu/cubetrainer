@@ -18,9 +18,9 @@ Each group is one commit. After each: `npm run build` in `app/`, start the serve
 
 ## 3. packages/ui
 
-- [ ] 3.1 Move `app/src/shell/` (except the registry) and the React parts of `app/src/common/` (cube, notation display, move hint, icons, ui, stealth, settings blocks)
-- [ ] 3.2 Move `PllIcon` and `SlotIcon` here; drop `SlotIcon` if it is still unused
-- [ ] 3.3 Split `app/src/index.css`: theme tokens, base, shell, stealth and shared components to `packages/ui`; the rest stays tagged per tool until group 4 moves it
+- [x] 3.1 Move `app/src/shell/` (except the registry) and the React parts of `app/src/common/` (cube, notation display, move hint, icons, ui, stealth, settings blocks)
+- [x] 3.2 Move `PllIcon` and `SlotIcon` here; drop `SlotIcon` if it is still unused
+- [x] 3.3 Split `app/src/index.css`: theme tokens, base, shell, stealth and shared components to `packages/ui`; the rest stays tagged per tool until group 4 moves it
 
 ## 4. Tools
 

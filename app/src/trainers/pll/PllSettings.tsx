@@ -1,4 +1,4 @@
-import { OnOff, Segmented, Setting, SettingsSection } from '../../common/ui/settings.tsx'
+import { OnOff, Segmented, Setting, SettingsSection } from '../../../../packages/ui/settings.tsx'
 import { COUNTDOWNS, updatePllSettings, usePllSettings } from './settings.ts'
 
 /** PLL's section in the settings menu. */

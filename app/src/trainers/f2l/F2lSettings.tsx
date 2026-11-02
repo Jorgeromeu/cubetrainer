@@ -1,5 +1,5 @@
-import { CubeDisplaySettings } from '../../common/cube/CubeDisplaySettings.tsx'
-import { OnOff, Setting, SettingsSection } from '../../common/ui/settings.tsx'
+import { CubeDisplaySettings } from '../../../../packages/ui/cube/CubeDisplaySettings.tsx'
+import { OnOff, Setting, SettingsSection } from '../../../../packages/ui/settings.tsx'
 import { DistinctAlgs } from './DistinctAlgs.tsx'
 import { LinkKindsPicker } from './LinkKindsPicker.tsx'
 import { updateF2lSettings, useF2lSettings } from './settings.ts'

@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
-import type { TrainerProps } from '../../common/trainer.ts'
+import type { TrainerProps } from '../../../../packages/ui/tool.ts'
 import { clustersById } from './catalog.ts'
 import { ClusterCrumb, ClusterView } from './ClusterView.tsx'
 import { Overview } from './Overview.tsx'
+import { useProgress } from './progress.ts'
 import { isTrainPath, parseF2lPath } from './route.ts'
 import { Train, TrainCrumb } from './Train.tsx'
-import { ServerNotice } from './ServerNotice.tsx'
+import { ServerNotice } from '../../../../packages/ui/ServerNotice.tsx'
 
 const clusterAt = (path: string[]) => {
   const { clusterId } = parseF2lPath(path)
@@ -20,6 +21,7 @@ export function F2lTrainer({ path }: TrainerProps) {
   const { slotCaseId, algId } = parseF2lPath(path)
   const cluster = clusterAt(path)
   const training = isTrainPath(path)
+  const progress = useProgress()
 
   // The overview comes back where it was left; training starts at the top.
   const overview = !cluster && !training
@@ -41,7 +43,7 @@ export function F2lTrainer({ path }: TrainerProps) {
       ) : (
         <Overview />
       )}
-      <ServerNotice />
+      <ServerNotice load={progress.load} error={progress.error} offline="No server · progress not loaded" />
     </>
   )
 }

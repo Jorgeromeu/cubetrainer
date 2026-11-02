@@ -4,7 +4,7 @@
 // sides, so never the top). ←/→ over a cube turn it between those views (rotate). The zoom
 // and the view presets are shared: they set every cube at once.
 import type { TwistyPlayer } from 'cubing/twisty'
-import { CAMERA_DISTANCE } from '../../common/cube/cubeModel.ts'
+import { CAMERA_DISTANCE } from '../../../../packages/ui/cube/cubeModel.ts'
 
 export interface View {
   latitude: number

@@ -3,8 +3,8 @@
 // layer turning); anything else jumps. Shift+click picks the sticker under the pointer.
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { TwistyPlayer } from 'cubing/twisty'
-import { CAMERA_DISTANCE, HOLD_CROSS_ON_D } from '../../common/cube/cubeModel.ts'
-import { trackStealthColors } from '../../common/cube/stealthCube.ts'
+import { CAMERA_DISTANCE, HOLD_CROSS_ON_D } from '../../../../packages/ui/cube/cubeModel.ts'
+import { trackStealthColors } from '../../../../packages/ui/cube/stealthCube.ts'
 import { quarters, U_TURNS, type Block } from './board.ts'
 import type { BoardCamera } from './camera.ts'
 import { markAt, showMarks } from './marks.ts'

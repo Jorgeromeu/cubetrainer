@@ -7,7 +7,7 @@
 // The app works without the server: while it's unreachable, `load` is 'offline', the
 // progress UI is hidden, and loading is retried in the background until it answers.
 import { useSyncExternalStore } from 'react'
-import { Rejected, request } from '../../../../packages/core/api.ts'
+import { type Load, Rejected, request } from '../../../../packages/core/api.ts'
 import { algsById, reachable, type CatalogAlg } from './catalog.ts'
 import type {
   AlgRef,
@@ -61,7 +61,7 @@ export const nextAlgStatus = (status: AlgStatus | null | undefined): AlgStatus |
 
 export interface ProgressState {
   /** loading: first fetch in flight · offline: no server, progress hidden · ready: loaded and editable. */
-  load: 'loading' | 'ready' | 'offline'
+  load: Load
   bySlotCase: ReadonlyMap<string, SlotCaseState>
   /** All notes, by id. */
   notes: ReadonlyMap<string, Note>

@@ -1,8 +1,9 @@
 // The F2L trainer: the alg explorer over catalog/f2l.json, with progress kept by ../server.
-import type { Trainer } from '../../common/trainer.ts'
+import type { Trainer } from '../../../../packages/ui/tool.ts'
 import { F2lCrumb, F2lTrainer } from './F2lTrainer.tsx'
 import { F2lSettings } from './F2lSettings.tsx'
 import { F2L_ID } from './route.ts'
+import './f2l.css'
 
 export const f2lTrainer: Trainer = {
   id: F2L_ID,

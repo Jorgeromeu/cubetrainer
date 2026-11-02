@@ -4,12 +4,12 @@
 // Settings → F2L says: it's the easy one to do on a real cube). Set it up, solve it, go
 // on; R shows the alg. Rating how it went is shown but off for now: nothing is recorded.
 import { useCallback, useEffect, useMemo } from 'react'
-import { Cube } from '../../common/cube/Cube.tsx'
+import { Cube } from '../../../../packages/ui/cube/Cube.tsx'
 import { pick, pickInRounds, roundPosition } from '../../../../packages/core/drill/draw.ts'
-import { useDealt, type Draw } from '../../common/drill/dealt.ts'
-import { DrillNav } from '../../common/drill/DrillNav.tsx'
-import { isControl, isTextField, NEXT_KEYS, PREV_KEYS } from '../../common/drill/keys.ts'
-import { Notation } from '../../common/notation/Notation.tsx'
+import { useDealt, type Draw } from '../../../../packages/ui/drill/dealt.ts'
+import { DrillNav } from '../../../../packages/ui/drill/DrillNav.tsx'
+import { isControl, isTextField, NEXT_KEYS, PREV_KEYS } from '../../../../packages/ui/drill/keys.ts'
+import { Notation } from '../../../../packages/ui/notation/Notation.tsx'
 import { AUFS, joinMoves, undoAuf } from '../../../../packages/core/notation/moves.ts'
 import type { AlgTrigger } from '../../../../packages/core/cube.ts'
 import { SLOT_NAMES, caseSetup, catalog, getAlg, getCase, getSlotCase, type CatalogAlg } from './catalog.ts'

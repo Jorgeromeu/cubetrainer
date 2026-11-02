@@ -16,7 +16,7 @@ import { normaliseMoves } from "./types.ts";
 
 const OUT_PATH = "data/recommended-f2l.json";
 
-/** What the sheets are, for the app's badges (shared/f2l/catalog.ts RECOMMENDERS). */
+/** What the sheets are, for the app's badges (packages/core/catalog/f2l.ts RECOMMENDERS). */
 const NOTES: Record<(typeof RECOMMENDED_SOURCES)[number]["id"], string> = {
   jperm:
     "J Perm, Best F2L Algorithms (updated 2021-08-08). FR: the left column is the case, the right column its mirror case " +

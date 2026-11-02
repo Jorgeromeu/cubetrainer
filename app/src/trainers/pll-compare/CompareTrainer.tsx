@@ -4,10 +4,10 @@
 // centres). The board lives in the URL (board.ts), and can be saved as a named set (sets.ts).
 import { useEffect, useEffectEvent, useRef, useState, type CSSProperties } from 'react'
 import type { TwistyPlayer } from 'cubing/twisty'
-import type { TrainerProps } from '../../common/trainer.ts'
-import { trainerHref } from '../../common/trainer.ts'
-import { setStealthPalette } from '../../common/cube/stealthCube.ts'
-import { PllIcon } from '../../common/pll/PllIcon.tsx'
+import type { TrainerProps } from '../../../../packages/ui/tool.ts'
+import { trainerHref } from '../../../../packages/ui/tool.ts'
+import { setStealthPalette } from '../../../../packages/ui/cube/stealthCube.ts'
+import { PllIcon } from '../../../../packages/ui/icons/PllIcon.tsx'
 import { BLOCK_COLORS, MAX_CAPTION, MAX_SET_NAME } from '../../../../shared/pll-compare/sets.ts'
 import {
   baseSetup,

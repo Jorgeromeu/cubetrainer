@@ -1,7 +1,7 @@
 // Named sets of cubes ("Ra Rb T", "Y V E"), held by the server (../server) and mirrored
 // here. Without a server there are no sets, and it keeps retrying (and on window focus).
 import { useSyncExternalStore } from 'react'
-import { request } from '../../../../packages/core/api.ts'
+import { type Load, request } from '../../../../packages/core/api.ts'
 import type { CompareCube, CompareSet, PutSetBody, SetsResponse } from '../../../../shared/pll-compare/sets.ts'
 
 export type { CompareSet }
@@ -11,7 +11,7 @@ const API = '/api/pll-compare'
 
 export interface SetsState {
   /** loading: first fetch in flight · offline: no server · ready: loaded. */
-  load: 'loading' | 'ready' | 'offline'
+  load: Load
   /** By name. */
   sets: readonly CompareSet[]
 }

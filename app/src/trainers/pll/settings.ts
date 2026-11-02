@@ -1,5 +1,5 @@
 // PLL trainer preferences (Settings → PLL). They only affect the PLL page.
-import { persisted } from '../../common/persisted.ts'
+import { persisted } from '../../../../packages/ui/persisted.ts'
 
 /**
  * How a solve starts: 'countdown' after Space (you scramble under the table and lift at

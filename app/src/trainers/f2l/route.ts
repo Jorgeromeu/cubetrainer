@@ -1,8 +1,8 @@
-// F2L's routes, under #/f2l/ (common/trainer.ts):
+// F2L's routes, under #/f2l/ (packages/ui/tool.ts):
 //   (empty)                              overview
 //   train                                train the overview's selection (Train.tsx)
 //   <clusterId>[/<slotCaseId>[/<algId>]] cluster detail
-import { trainerHref } from '../../common/trainer.ts'
+import { trainerHref } from '../../../../packages/ui/tool.ts'
 
 export interface F2lRoute {
   clusterId?: string

@@ -1,5 +1,5 @@
 // F2L trainer preferences (Settings → F2L). They only affect the F2L pages.
-import { persisted } from '../../common/persisted.ts'
+import { persisted } from '../../../../packages/ui/persisted.ts'
 import { LINK_KINDS, type LinkKind } from '../../../../packages/core/catalog/f2l.ts'
 import type { Status } from './progress.ts'
 

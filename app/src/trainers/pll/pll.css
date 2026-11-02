@@ -1,0 +1,430 @@
+/* PLL tool (scramble trainer). Loaded after packages/ui/ui.css. */
+
+.pll {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.drill.timing .drill-moves {
+  /* No reading the case off the scramble while the timer runs. */
+  visibility: hidden;
+}
+
+.pll-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: 190px;
+  padding: 6px 0 4px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.pll-timer {
+  padding: 0 12px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: clamp(56px, 11vw, 96px);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.pll-timer.blank {
+  color: var(--border);
+}
+
+.pll-timer.counting {
+  color: var(--select);
+}
+
+/* Hold-to-start: red while held too briefly, green once releasing will start it. */
+.pll-timer.holding {
+  color: var(--danger);
+}
+
+.pll-timer.ready {
+  color: var(--learnt);
+}
+
+.pll-timer.dnf {
+  color: var(--muted);
+}
+
+.pll-status {
+  min-height: 1.4em;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.pll-status:empty {
+  display: none;
+}
+
+/* The solve just timed (or a revealed case): case, penalty, remove; then its case's stats. */
+.pll-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.pll-result-main {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.pll-result .link-button {
+  margin: 0;
+  font-size: 13px;
+}
+
+.pll-reveal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* best / ao5 / ao12 / mean: big for all solves, one small line for a case. */
+.pll-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 28px;
+  margin: 10px 0 0;
+}
+
+.pll-stats dt {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.pll-stats dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.pll-stats.compact {
+  gap: 4px 14px;
+  margin: 0;
+  justify-content: center;
+}
+
+.pll-stats.compact > div {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.pll-stats.compact dd {
+  font-size: 13px;
+}
+
+.pll-overall {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.pll-overall b {
+  margin-right: 12px;
+  font-family: var(--mono);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.pll-overall b:last-child {
+  margin-right: 0;
+}
+
+.pll-cases-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.pll-cases-head::-webkit-details-marker {
+  display: none;
+}
+
+.pll-chevron {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: rotate(-90deg);
+  transition: transform 0.15s;
+}
+
+.pll-cases[open] .pll-chevron,
+.pll-solves[open] .pll-chevron {
+  transform: none;
+}
+
+.pll-cases-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 24px;
+  margin-top: 10px;
+}
+
+.pll-cases-bar .segmented {
+  margin-left: auto;
+  width: auto;
+}
+
+.pll-cases-bar .segmented button {
+  padding: 4px 12px;
+  white-space: nowrap;
+}
+
+.pll-cases-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.pll-cases-head h2,
+.pll-group h3 {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.pll-cases-actions .link-button,
+.pll-group h3 .link-button {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.pll-count {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.pll-group {
+  margin-top: 18px;
+}
+
+.pll-group h3 {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.pll-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 10px;
+}
+
+/* Selected: full strength with an accent outline. Not selected: faded. */
+.pll-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px 8px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.12s, opacity 0.12s;
+}
+
+.pll-card.selected {
+  border-color: var(--select);
+}
+
+.pll-card:not(.selected) {
+  opacity: 0.45;
+}
+
+.pll-card:hover {
+  opacity: 1;
+}
+
+.pll-card-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* A case's pace on its card: a fast → slow colour scale (green → red; --pace 0 → 1), kept
+   in stealth since it means something. The small number is its solve count. */
+.pll-pace {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: hsl(calc(130 - 130 * var(--pace)) 65% 50% / 0.2);
+  color: hsl(calc(130 - 130 * var(--pace)) 70% 30%);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.pll-pace small {
+  font-family: system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.pll-pace.untimed {
+  background: none;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+@media (prefers-color-scheme: dark) {
+  .pll-pace {
+    color: hsl(calc(130 - 130 * var(--pace)) 70% 72%);
+  }
+}
+
+/* OK / +2 / DNF: a small segmented control, the active one filled. */
+.pll-penalty {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.pll-penalty button {
+  padding: 2px 8px;
+  border: none;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pll-penalty button + button {
+  border-left: 1px solid var(--border);
+}
+
+.pll-penalty button:hover {
+  color: var(--text);
+}
+
+.pll-penalty button.active {
+  background: var(--select-soft);
+  color: var(--select);
+}
+
+.pll-solve-list {
+  margin: 12px 0 8px;
+  padding: 0;
+  list-style: none;
+  max-width: 460px;
+}
+
+.pll-solve-list li {
+  display: grid;
+  grid-template-columns: 3ch 7ch 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.pll-solve-n {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: right;
+}
+
+.pll-solve-time {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.pll-solve-list li.dnf .pll-solve-time {
+  color: var(--muted);
+}
+
+/* In the list a plain OK stays quiet, and the controls only come up on the row's hover;
+   a +2 or DNF stays marked. */
+.pll-solve-list .pll-penalty {
+  opacity: 0.35;
+  transition: opacity 0.12s;
+}
+
+.pll-solve-list li:hover .pll-penalty,
+.pll-solve-list .pll-penalty:focus-within {
+  opacity: 1;
+}
+
+.pll-solve-list .pll-penalty button.active[data-penalty='ok'] {
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.pll-solve-remove {
+  padding: 0 4px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.pll-solve-remove:hover {
+  color: var(--danger);
+}
+
+/* Stealth: a plain number, no big coloured digits. */
+[data-stealth] .pll-timer {
+  font-size: 32px;
+  font-weight: 500;
+}
+
+[data-stealth] .pll-timer.counting {
+  color: var(--muted);
+}
+
+[data-stealth] .pll-stage {
+  min-height: 0;
+}
+
+@media (max-width: 520px) {
+
+  .pll-grid {
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  }
+
+  .pll-cases-bar .segmented {
+    margin-left: 0;
+  }
+}

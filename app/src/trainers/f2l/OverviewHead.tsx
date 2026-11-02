@@ -3,7 +3,7 @@
 // filter lets through. Each legend count is what that choice would show given the rest of
 // the filter, and the bar is the status counts drawn to scale.
 import { useEffect, useState, type FormEvent } from 'react'
-import { isTextField } from '../../common/drill/keys.ts'
+import { isTextField } from '../../../../packages/ui/drill/keys.ts'
 import { getSlotCase } from './catalog.ts'
 import { allSlotCaseIds, filterMatcher, isFiltering, type FilterPart } from './filter.ts'
 import { useF2lFocus } from './focus.ts'

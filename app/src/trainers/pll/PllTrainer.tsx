@@ -5,13 +5,14 @@
 // saved for that case (solves.ts), the case is revealed and the next scramble comes up.
 // ← goes back through the scrambles dealt this session; R reveals a scramble's case.
 import { useCallback, useEffect, useState } from 'react'
-import { useDealt, type Draw } from '../../common/drill/dealt.ts'
-import { DrillNav } from '../../common/drill/DrillNav.tsx'
-import { isControl, isTextField, NEXT_KEYS, PREV_KEYS } from '../../common/drill/keys.ts'
-import { useStealth } from '../../common/stealth.ts'
+import { useDealt, type Draw } from '../../../../packages/ui/drill/dealt.ts'
+import { DrillNav } from '../../../../packages/ui/drill/DrillNav.tsx'
+import { ServerNotice } from '../../../../packages/ui/ServerNotice.tsx'
+import { isControl, isTextField, NEXT_KEYS, PREV_KEYS } from '../../../../packages/ui/drill/keys.ts'
+import { useStealth } from '../../../../packages/ui/stealth.ts'
 import { pllCases, pllCasesById, type PllCase } from './catalog.ts'
-import { PllIcon } from '../../common/pll/PllIcon.tsx'
-import { Notation } from '../../common/notation/Notation.tsx'
+import { PllIcon } from '../../../../packages/ui/icons/PllIcon.tsx'
+import { Notation } from '../../../../packages/ui/notation/Notation.tsx'
 import { nextScramble, type PllScramble } from './scramble.ts'
 import { usePllSelection } from './selection.ts'
 import { usePllSettings } from './settings.ts'
@@ -279,18 +280,7 @@ export function PllTrainer() {
 
       <SolveList solves={solves} />
 
-      {load === 'offline' ? (
-        <div className="server-notice" role="status" title={`${error ?? 'Server not reachable'}. Retrying in the background.`}>
-          No server · times not saved yet
-        </div>
-      ) : (
-        load === 'ready' &&
-        error && (
-          <div className="server-notice save-error" role="alert">
-            {error}
-          </div>
-        )
-      )}
+      <ServerNotice load={load} error={error} offline="No server · times not saved yet" />
     </main>
   )
 }

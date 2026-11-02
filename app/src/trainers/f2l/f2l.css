@@ -1,0 +1,2114 @@
+/* F2L tool. Loaded after packages/ui/ui.css. */
+
+/* Previous / next cluster around the title (also Shift+←/→). */
+.cluster-steps {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cluster-step {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1;
+  transition: color 0.12s, background 0.12s;
+}
+
+.cluster-step:hover {
+  color: var(--select);
+  background: var(--select-soft);
+}
+
+/* Overview */
+
+.lede {
+  color: var(--muted);
+  margin: 4px 0 24px;
+}
+
+.overview section {
+  margin-bottom: 32px;
+}
+
+.overview h2 {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.cluster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 14px;
+}
+
+.cluster-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  background: var(--surface);
+  border-radius: 4px;
+  transition: box-shadow 0.15s;
+}
+
+.cluster-card:hover {
+  box-shadow: inset 0 -2px var(--accent);
+}
+
+.cluster-cubes {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  min-height: 110px;
+}
+
+.cluster-label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 17px;
+}
+
+.cluster-sub {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.back:hover,
+.link-button:hover,
+.setup-line > button:hover {
+  color: var(--accent);
+}
+
+/* Fills the window under the top bar; only the alg list scrolls. Wide: the viewer on the
+   left, family map over the algs on the right. Narrow: family map, viewer, algs stacked
+   (the page scrolls too if the window is too short for that). */
+.app:has(> .cluster-view) {
+  padding-bottom: 16px;
+}
+
+.cluster-view {
+  --cube-size: min(100%, 360px, calc(100dvh - var(--topbar-height) - 260px));
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    'viewer family'
+    'viewer algs';
+  gap: 12px 36px;
+  height: calc(100dvh - var(--topbar-height) - 36px);
+}
+
+.cluster-view > * {
+  min-width: 0;
+}
+
+.viewer {
+  grid-area: viewer;
+}
+
+.family {
+  grid-area: family;
+}
+
+.cluster-view .alg-list {
+  grid-area: algs;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+@media (max-width: 820px) {
+  .cluster-view {
+    --cube-size: min(100%, 300px, calc(100dvh - var(--topbar-height) - 520px));
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(240px, 1fr);
+    grid-template-areas: 'family' 'viewer' 'algs';
+    gap: 12px;
+  }
+}
+
+/* Medium widths: the cube beside its controls rather than above them, to save height. */
+@media (min-width: 521px) and (max-width: 820px) {
+  .cluster-view {
+    --cube-size: min(260px, calc(100dvh - var(--topbar-height) - 560px));
+  }
+
+  .cluster-view > .viewer {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'cube title'
+      'cube controls'
+      'cube setup';
+    align-items: center;
+    gap: 6px 20px;
+  }
+
+  .cluster-view > .viewer .player {
+    display: contents;
+  }
+
+  .cluster-view > .viewer .cube {
+    grid-area: cube;
+  }
+
+  .cluster-view > .viewer .selected-title {
+    grid-area: title;
+  }
+
+  .cluster-view > .viewer .controls {
+    grid-area: controls;
+  }
+
+  .cluster-view > .viewer .setup-line {
+    grid-area: setup;
+  }
+}
+
+.viewer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.viewer .cube {
+  width: max(160px, var(--cube-size)) !important;
+}
+
+.selected-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.setup-line {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.setup-line.active {
+  border-top-color: transparent;
+  background: var(--select-soft);
+  box-shadow: inset 2px 0 var(--select);
+}
+
+.setup-line.active .setup-label {
+  color: var(--select);
+}
+
+.setup-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.setup-line code {
+  flex: 1;
+  min-width: 0;
+  /* Wraps between moves, never inside one. */
+  overflow-wrap: normal;
+  font-family: var(--mono);
+  font-size: 15px;
+}
+
+.setup-line > button {
+  flex: none;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--link);
+  font-size: 13px;
+}
+
+.setup-line.active > button {
+  font-weight: 600;
+}
+
+.setup-head {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.setup-mode {
+  flex: none;
+}
+
+.setup-mode button {
+  flex: none;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+.family-map {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+}
+
+.family-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 4px;
+}
+
+.slot-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 6px 4px;
+  border-radius: 4px;
+  background: var(--surface);
+  transition: background 0.12s;
+}
+
+.slot-cell:hover {
+  background: var(--select-soft);
+}
+
+.slot-cell.selected {
+  background: var(--select-soft);
+}
+
+/* Linked mains share a tint; the selected one keeps it and gets a ring instead. */
+.slot-cell[data-group='0'] {
+  background: var(--group-0);
+}
+
+.slot-cell[data-group='1'] {
+  background: var(--group-1);
+}
+
+.slot-cell[data-group='2'] {
+  background: var(--group-2);
+}
+
+.slot-cell[data-group='3'] {
+  background: var(--group-3);
+}
+
+.slot-cell[data-group='4'] {
+  background: var(--group-4);
+}
+
+.slot-cell[data-group].selected {
+  box-shadow: inset 0 0 0 2px var(--select);
+}
+
+.slot-cell[data-group]:hover {
+  filter: brightness(0.97);
+}
+
+/* Go to equivalent: cells with a linked alg invite a click, the rest step back. */
+.family-map.picking .slot-cell.pickable {
+  box-shadow: inset 0 0 0 1.5px var(--select);
+}
+
+.family-map.picking .slot-cell.pickable:hover {
+  box-shadow: inset 0 0 0 2.5px var(--select);
+}
+
+.family-map.picking .slot-cell.selected {
+  box-shadow: none;
+  opacity: 0.5;
+}
+
+.family-map.picking .slot-cell.unpickable {
+  opacity: 0.3;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
+/* Above the family map: go to equivalent, and which links count. */
+.family-tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.family-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  transition: color 0.12s, background 0.12s, border-color 0.12s;
+}
+
+.family-tool:hover {
+  color: var(--text);
+}
+
+.family-tool.active {
+  border-color: var(--select);
+  background: var(--select-soft);
+  color: var(--select);
+}
+
+.family-tool kbd {
+  min-width: 14px;
+  line-height: 14px;
+  font-size: 10px;
+}
+
+.pick-hint {
+  margin: -2px 0 8px;
+  font-size: 12px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.pick-hint code {
+  font-family: var(--mono);
+  color: var(--text);
+}
+
+/* A small panel under its button (link kinds for the map filter and for notes). */
+.popover-anchor {
+  position: relative;
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 10;
+  width: min(290px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.16);
+  text-align: left;
+}
+
+.family-tools .popover {
+  left: auto;
+  right: 0;
+}
+
+.popover-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.popover-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.link-kinds {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* One toggle row per kind: its mark (lit when on), name and hint. The checkbox is kept
+   for keyboard and screen readers but drawn by the row. */
+.link-kinds label {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.link-kinds label:hover {
+  background: var(--bg);
+}
+
+.link-kinds label:has(input:checked) {
+  background: var(--select-soft);
+}
+
+.link-kinds label:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.link-kinds input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.link-kinds .link-set-icon {
+  flex: none;
+  margin-top: 1px;
+}
+
+.link-kinds small {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+/* LinkSetIcon (LinkKindsPicker.tsx): a top view with each link kind's mark, lit when on. */
+.link-set-icon {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.link-set-icon .frame {
+  stroke: currentColor;
+  stroke-width: 1.2;
+  opacity: 0.4;
+}
+
+.link-set-icon .on {
+  stroke: var(--select);
+  stroke-width: 1.8;
+}
+
+.link-set-icon .off {
+  stroke: currentColor;
+  stroke-width: 1.2;
+  opacity: 0.2;
+}
+
+.link-set-icon .frame,
+.link-set-icon .outline.off {
+  opacity: 0.45;
+}
+
+/* Under the picker in a note's popover: where the note will show. */
+.reach-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.reach-preview svg {
+  flex: none;
+}
+
+.reach-preview rect.on {
+  fill: var(--select);
+}
+
+.reach-preview rect.off {
+  fill: var(--border);
+}
+
+.reach-preview rect.here {
+  stroke: var(--text);
+  stroke-width: 1;
+}
+
+/* Sits on the grid's centre, between the four cells. */
+.slot-grid-key {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.slot-grid-key .key-plate {
+  fill: var(--bg);
+  stroke: var(--muted);
+  stroke-width: 1.5;
+}
+
+.slot-grid-key .key-corner {
+  fill: var(--select);
+}
+
+.slot-cell-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.slot-cell.selected .slot-cell-label {
+  color: var(--select);
+}
+
+.alg-list h3 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 4px 0 6px;
+  background: var(--bg);
+  font-size: 15px;
+}
+
+.shortcut-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.alg-list ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* A flat list with dividers; the selected row tinted, with an accent edge. */
+.alg-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.alg-list li:hover {
+  background: var(--surface);
+}
+
+.alg-list li.selected {
+  background: var(--select-soft);
+  box-shadow: inset 2px 0 var(--select);
+}
+
+.alg-moves {
+  flex: 1;
+  min-width: 2.5em;
+  /* One line per alg: long ones end in "…" (full moves in the tooltip and on the cube). */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--mono);
+  font-size: 15px;
+}
+
+/* Votes and STM: a tight pair with fixed-width boxes, so they line up from row to row:
+   the ▲ always at the same spot with its number left-aligned after it (box sized to the
+   list's widest count), and the STM number right-aligned in a 2-digit box. */
+.alg-metrics {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ▲ plus the list's widest count (--vote-chars, set on .alg-list), and room for its
+   column label. */
+.alg-votes {
+  width: calc((var(--vote-chars, 2) + 1.4) * 1ch);
+  min-width: 34px;
+}
+
+/* Picks: the recommendation sheets an alg is on for its slot (JP, CS), as small pills;
+   solid when it's the sheet's exact moves, outlined when it's the same alg in another grip. */
+.alg-picks {
+  display: inline-flex;
+  gap: 3px;
+  width: 52px;
+}
+
+.pick.via {
+  background: none;
+  color: var(--muted);
+  border-color: var(--muted);
+  opacity: 0.8;
+}
+
+/* Labels over the row numbers: laid out like a row (same padding, gap and columns, and
+   the go-to-equivalent button's room at the end), so they sit over their columns. */
+.alg-columns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 0 10px;
+  margin: -2px 0 -8px;
+}
+
+.alg-columns .alg-mirror-votes {
+  opacity: 1;
+}
+
+.alg-columns .col-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: help;
+}
+
+.alg-columns-end {
+  flex: none;
+  width: 16px;
+}
+
+/* The left-right mirror's votes: the mirror mark (as in the link pickers) and its count,
+   quieter than the alg's own. Sized like .alg-votes (--mirror-vote-chars). */
+.alg-mirror-votes {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  width: calc((var(--mirror-vote-chars, 2) + 1.6) * 1ch);
+  min-width: 34px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.alg-mirror-votes .link-set-icon {
+  flex: none;
+  position: relative;
+  top: 1px;
+}
+
+.alg-mirror-votes .link-set-icon .on {
+  stroke: currentColor;
+}
+
+.alg-votes .num {
+  margin-left: 1px;
+}
+
+.alg-stm .num {
+  display: inline-block;
+  width: 2ch;
+  text-align: right;
+}
+
+@media (max-width: 520px) {
+
+  .slot-cell {
+    padding: 2px 3px 4px;
+  }
+
+  .family-map {
+    gap: 12px;
+  }
+
+  .family-grid {
+    gap: 4px;
+  }
+
+  .slot-cell .cube {
+    width: 56px !important;
+  }
+
+  /* Keyboard hints are no use on a phone. */
+  .shortcut-hint {
+    display: none;
+  }
+
+  /* Still one line per alg, just tighter: the moves give way (truncated; the cube shows them). */
+  .alg-list li,
+  .alg-columns {
+    gap: 8px;
+    padding: 6px 4px;
+  }
+
+  .alg-columns {
+    padding-block: 0;
+  }
+
+  .alg-moves {
+    font-size: 14px;
+  }
+
+  .alg-metrics {
+    gap: 4px;
+    font-size: 11px;
+  }
+
+  .alg-picks {
+    width: 40px;
+    gap: 2px;
+  }
+
+  /* Just the number on a phone (the tooltip says STM): more room for the moves. */
+  .alg-stm .unit {
+    display: none;
+  }
+}
+
+.status-mark {
+  flex: none;
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.5;
+}
+
+.status-mark.main {
+  fill: var(--main);
+  stroke: var(--main);
+}
+
+.status-mark.learnt {
+  fill: var(--learnt);
+  stroke: var(--learnt);
+}
+
+.status-mark.learning {
+  stroke: var(--learning);
+}
+
+.status-mark path.half {
+  fill: var(--learning);
+  stroke: none;
+}
+
+.status-mark.wanted {
+  stroke: var(--learning);
+}
+
+.status-mark circle.dot {
+  fill: var(--learning);
+  stroke: none;
+}
+
+.status-mark path {
+  stroke: var(--on-accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.progress-bar {
+  display: flex;
+  flex: 1;
+  height: 6px;
+  min-width: 40px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--border);
+}
+
+.progress-bar .learnt {
+  background: var(--learnt);
+}
+
+.progress-bar .learning {
+  background: var(--learning);
+}
+
+.progress-bar .wanted {
+  background: var(--wanted);
+}
+
+.progress-bar .main {
+  background: var(--main);
+}
+
+/* F2L overview head (OverviewHead.tsx): the bar, then the legend as labelled filter rows,
+   then the Train bar. Flat: plain-text toggles with the soft active fill of the speed
+   buttons, uppercase muted labels like the section headings, one solid button (Train). */
+.overview-head {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0 0 32px;
+}
+
+.overall-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.overall-bar .progress-bar {
+  height: 10px;
+}
+
+.overall-pct {
+  min-width: 3.5ch;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.overall-pct.complete {
+  color: var(--learnt);
+}
+
+.filter-rows {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 6px 16px;
+}
+
+.filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 4px;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.legend button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.legend button:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--muted) 10%, transparent);
+}
+
+.legend button.active {
+  background: var(--select-soft);
+  color: var(--select);
+  font-weight: 600;
+}
+
+.legend button.empty:not(.active) {
+  opacity: 0.5;
+}
+
+.legend .count {
+  color: var(--text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.legend button.active .count {
+  color: inherit;
+}
+
+.legend .swatch {
+  margin-left: 0;
+}
+
+.legend .focus-chip {
+  margin-left: 6px;
+}
+
+.case-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.case-filter {
+  width: 180px;
+  max-width: 100%;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.case-filter-clear,
+.legend .saved-filter-delete {
+  padding: 2px 6px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.case-filter-clear:hover,
+.legend .saved-filter-delete:hover {
+  color: var(--danger);
+}
+
+/* Saved filters: like the legend's toggles, the × to delete only showing on hover/focus. */
+.saved-filter {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
+}
+
+.saved-filter.active {
+  background: var(--select-soft);
+}
+
+.legend .saved-filter.active button:first-child {
+  background: none;
+}
+
+.legend .saved-filter-delete {
+  padding: 3px 6px 3px 2px;
+  opacity: 0;
+}
+
+.saved-filter:hover .saved-filter-delete,
+.saved-filter-delete:focus-visible {
+  opacity: 1;
+}
+
+.legend .save-filter {
+  color: var(--link);
+}
+
+.save-filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.save-filter-form input {
+  width: 260px;
+  max-width: 100%;
+  padding: 3px 8px;
+  border: 1px solid var(--select);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.legend .save-filter-form button[type='submit'] {
+  background: var(--select);
+  color: var(--on-select);
+  font-weight: 600;
+}
+
+.legend .save-filter-form button[type='submit']:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.save-filter-form .link-button {
+  margin: 0;
+}
+
+/* What Train would deal, and the one solid button. */
+.train-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.train-what {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+  min-width: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.train-what strong {
+  color: var(--text);
+}
+
+.train-what .link-button {
+  margin: 0 0 0 8px;
+  font-size: 13px;
+}
+
+.train-button {
+  padding: 7px 18px;
+  border-radius: 4px;
+  background: var(--select);
+  color: var(--on-select);
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.train-button:hover {
+  filter: brightness(1.08);
+  text-decoration: none;
+}
+
+.train-button.disabled {
+  background: var(--border);
+  color: var(--muted);
+}
+
+@media (max-width: 520px) {
+  .train-button {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  margin-left: 6px;
+}
+
+.swatch.learnt,
+.slot-status-grid .learnt {
+  background: var(--learnt);
+}
+
+.swatch.learning,
+.slot-status-grid .learning {
+  background: var(--learning);
+}
+
+.swatch.wanted,
+.slot-status-grid .wanted {
+  background: var(--wanted);
+}
+
+.swatch.main,
+.slot-status-grid .main {
+  background: var(--main);
+}
+
+.swatch.none,
+.slot-status-grid .none {
+  background: var(--border);
+}
+
+.group-count {
+  margin-left: 8px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.cluster-case {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.slot-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 9px);
+  gap: 2px;
+}
+
+.slot-status-grid span {
+  height: 9px;
+  border-radius: 2px;
+}
+
+.cluster-progress {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.cluster-progress > span:last-child {
+  min-width: 3.2em;
+  text-align: right;
+}
+
+.cluster-progress .complete {
+  color: var(--learnt);
+  font-weight: 600;
+}
+
+.alg-toggle {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin: -4px -6px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  opacity: 0.55;
+  transition: opacity 0.12s, color 0.12s, background 0.12s;
+}
+
+.alg-toggle svg path,
+.alg-toggle svg circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.alg-toggle:hover {
+  opacity: 1;
+  background: var(--bg);
+}
+
+.alg-star.on {
+  color: var(--main);
+  opacity: 1;
+}
+
+.alg-star.on svg path {
+  fill: currentColor;
+}
+
+.alg-status:hover {
+  color: var(--learning);
+}
+
+/* Want to learn: violet ring with a dot. Learning: violet ring, left half filled. Learnt:
+   filled green with a check. */
+.alg-status.wanted,
+.alg-status.learning {
+  color: var(--learning);
+  opacity: 1;
+}
+
+.alg-status.wanted svg circle.dot,
+.alg-status.learning svg path.half {
+  fill: currentColor;
+  stroke: none;
+}
+
+.alg-status.learnt {
+  color: var(--learnt);
+  opacity: 1;
+}
+
+.alg-status.learnt svg circle {
+  fill: currentColor;
+}
+
+.alg-status.learnt svg path {
+  stroke: var(--on-accent);
+  stroke-width: 2.2;
+}
+
+/* Go to equivalent: the end of the row; lit while the family map is picking for it. */
+.equivalent-toggle svg :is(rect, path) {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.equivalent-toggle:hover {
+  color: var(--text);
+}
+
+.equivalent-toggle.on {
+  opacity: 1;
+  color: var(--select);
+  background: var(--select-soft);
+}
+
+/* Note button: outline when empty, filled page when the alg has a note. */
+.alg-note-toggle:hover,
+.alg-note-toggle.open {
+  color: var(--text);
+  opacity: 1;
+}
+
+.alg-note-toggle.has-note {
+  color: var(--text);
+  opacity: 0.85;
+}
+
+.alg-toggle.alg-note-toggle.has-note svg path.page {
+  fill: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+/* Video button: a screen with a play mark; filled when the alg has a link. Ink, not a
+   brand red, so it stays quiet in stealth too. */
+.alg-video-toggle:hover,
+.alg-video-toggle.open {
+  color: var(--text);
+  opacity: 1;
+}
+
+.alg-video-toggle.has-video {
+  color: var(--text);
+  opacity: 0.85;
+}
+
+.alg-toggle.alg-video-toggle.has-video svg rect.screen {
+  fill: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.alg-toggle.alg-video-toggle svg path.play {
+  fill: currentColor;
+  stroke-width: 1.2;
+}
+
+/* The video link's popover: open it, paste or change it, remove it. */
+.video-open {
+  align-self: flex-start;
+  color: var(--link);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.video-open:hover {
+  text-decoration: underline;
+}
+
+.video-popover input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.video-popover input:focus {
+  outline: 2px solid var(--select);
+  outline-offset: -1px;
+}
+
+.video-popover input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.video-error {
+  color: var(--danger);
+}
+
+.video-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.video-remove {
+  margin: 0;
+  margin-right: auto;
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.video-save {
+  padding: 4px 14px;
+  border: none;
+  border-radius: 6px;
+  background: var(--select);
+  color: var(--on-select);
+  font-size: 13px;
+}
+
+.video-save:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Your own algs: "YOU" where a catalog alg shows its picks, and a delete button where it
+   has go-to-equivalent. */
+.pick.yours {
+  background: none;
+  color: var(--select);
+  border-color: var(--select);
+  cursor: default;
+}
+
+.delete-user-alg svg path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.delete-user-alg:hover {
+  color: var(--danger);
+}
+
+.add-alg-button {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Adding an alg: a row with the moves field and, under it, whether it solves the case. */
+/* An alg of yours with no moves yet: "No moves yet · its note", then Add moves. */
+.placeholder-moves {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.placeholder-moves a {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted);
+}
+
+.placeholder-moves em {
+  color: var(--text);
+}
+
+.placeholder-moves .link-button {
+  flex: none;
+  margin: 0;
+  font-size: 13px;
+}
+
+.alg-list li.add-alg-row,
+.alg-list li.add-alg-row:hover {
+  display: block;
+  background: var(--surface);
+}
+
+.add-alg {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.add-alg input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 15px;
+}
+
+.add-alg-note {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.add-alg-note:focus,
+.add-alg input:focus {
+  outline: 2px solid var(--select);
+  outline-offset: -1px;
+}
+
+.add-alg input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.add-alg-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.add-alg-status {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.add-alg-status.good {
+  color: var(--learnt);
+  font-weight: 600;
+}
+
+.add-alg-status.bad {
+  color: var(--danger);
+}
+
+.add-alg-status .link-button {
+  margin: 0;
+  font-size: inherit;
+}
+
+.add-alg-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.add-alg-actions .link-button {
+  margin: 0;
+  font-size: 13px;
+}
+
+.add-alg-actions button[type='submit'] {
+  padding: 4px 14px;
+  border: none;
+  border-radius: 6px;
+  background: var(--select);
+  color: var(--on-select);
+  font-size: 13px;
+}
+
+.add-alg-actions button[type='submit']:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.selected-title .preview-tag {
+  margin-left: 8px;
+}
+
+/* An open note: a light strip under its row, edge to edge, square corners. */
+.alg-list li.alg-note {
+  padding: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.alg-list li.alg-note:hover {
+  background: var(--surface);
+}
+
+.notes-strip {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* One note: symmetry grid, then its text. Hairlines between notes. */
+.note-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 0 0 0 8px;
+}
+
+.note-row + .note-row {
+  border-top: 1px solid var(--border);
+}
+
+.note-row textarea {
+  flex: 1;
+  min-width: 0;
+  min-height: 34px;
+  margin: 0;
+  padding: 8px 12px 8px 4px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.45;
+  resize: none;
+  overflow: hidden;
+}
+
+.note-row textarea:focus {
+  outline: none;
+}
+
+.note-row textarea::placeholder {
+  color: var(--muted);
+}
+
+/* A note's link kinds (LinkSetIcon); opens its picker. */
+.follows-picker {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin-top: 4px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.follows-picker:hover,
+.follows-picker[aria-expanded='true'] {
+  opacity: 1;
+  background: var(--bg);
+}
+
+.note-draft .follows-picker {
+  opacity: 0.35;
+}
+
+.note-draft:focus-within .follows-picker {
+  opacity: 0.75;
+}
+
+.alg-section-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 12px 2px 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.alg-list h3 + .alg-section-label {
+  margin-top: 4px;
+}
+
+/* Search by moves, inline on the right of the "Other algs" label: no box, just the
+   icon and text, with a hairline under it while focused. */
+.alg-search {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 1 180px;
+  min-width: 0;
+  padding-bottom: 1px;
+  border-bottom: 1px solid transparent;
+  color: var(--muted);
+  cursor: text;
+  text-transform: none;
+  letter-spacing: 0;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.alg-search:hover,
+.alg-search:focus-within {
+  color: var(--text);
+}
+
+.alg-search:focus-within {
+  border-bottom-color: var(--accent);
+}
+
+.alg-search svg {
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.alg-search input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.alg-search input::placeholder {
+  color: var(--muted);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+.alg-search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.alg-search-count {
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.alg-list li.alg-search-empty {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.alg-list li.alg-search-empty:hover {
+  background: none;
+}
+
+.use-in-all {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.alg-list li.alg-main-empty {
+  gap: 8px;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.alg-main-empty svg path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+/* A row that just moved in or out of the main section. */
+.alg-list li.just-moved {
+  animation: alg-arrive 1.1s ease-out;
+}
+
+@keyframes alg-arrive {
+  0%,
+  25% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 4px transparent;
+  }
+}
+
+/* Star over the corner of a family icon or slot cell: it's the main alg there. The halo
+   in the surface colour separates it from the icon. */
+.main-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 10px;
+  height: 10px;
+  overflow: visible;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 5;
+  stroke-linejoin: round;
+  fill: var(--main);
+}
+
+.slot-cell {
+  position: relative;
+}
+
+/* Top outer corner: clear of the grid key (inner corner) and the label (bottom). */
+.slot-cell > .main-badge {
+  top: 5px;
+  width: 14px;
+  height: 14px;
+}
+
+.slot-cell[data-slot$='L'] > .main-badge {
+  left: 5px;
+  right: auto;
+}
+
+.slot-cell[data-slot$='R'] > .main-badge {
+  left: auto;
+  right: 5px;
+}
+
+/* Good/bad edge: good is quiet (the easy default), bad stands out a little. */
+.edge-tag {
+  display: inline-block;
+  padding: 0 7px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 17px;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.edge-tag.bad {
+  border-color: transparent;
+  background: var(--mirror-soft);
+  color: var(--mirror);
+}
+
+/* Focus on what's missing (Settings → F2L): learnt cases fade back but stay clickable;
+   the one being viewed is greyed a little, not as much. */
+.cluster-card.done,
+.slot-cell.done {
+  opacity: 0.3;
+  filter: grayscale(1);
+  transition: opacity 0.15s;
+}
+
+.cluster-card.done:hover,
+.slot-cell.done:hover {
+  opacity: 0.55;
+}
+
+.slot-cell.done.selected {
+  opacity: 0.65;
+  filter: grayscale(0.8);
+}
+
+.cluster-case.done {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+/* Inside an already faded card, don't fade its cases twice. */
+.cluster-card.done .cluster-case.done {
+  opacity: 1;
+  filter: none;
+}
+
+.viewer.done .cube,
+.viewer.done .selected-title {
+  opacity: 0.7;
+  filter: grayscale(0.8);
+}
+
+.focus-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 4px 1px 9px;
+  border-radius: 999px;
+  background: var(--select-soft);
+  color: var(--select);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.focus-chip button {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.focus-chip button:hover {
+  background: color-mix(in srgb, currentColor 15%, transparent);
+}
+
+/* Settings → F2L: "Main algs 63 → 59 shapes → 25 ideas", how much there really is to learn. */
+.distinct-stat {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.distinct-stat strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* A clearly more popular alg than your main exists (votes, see betterAlg). */
+.better-mark,
+.better-count {
+  color: var(--mirror);
+  font-weight: 600;
+}
+
+.better-count {
+  font-size: 12px;
+}
+
+.alg-list li.alg-better {
+  gap: 6px;
+  padding: 5px 10px 6px 42px;
+  font-size: 12px;
+  color: var(--muted);
+  background: none;
+}
+
+.alg-better-moves {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 3px;
+}
+
+.alg-better-moves:hover {
+  text-decoration-color: currentColor;
+}
+
+/* An alg's closing trigger, in parentheses; hovering shows its tooltip (AlgMoves). */
+.alg-trigger {
+  cursor: help;
+  border-radius: 3px;
+}
+
+.alg-trigger:hover {
+  background: var(--select-soft);
+}
+
+.trigger-tooltip {
+  position: fixed;
+  z-index: 40;
+  width: max-content;
+  max-width: min(320px, calc(100vw - 16px));
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.16);
+  font-size: 13px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+.trigger-tooltip-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.trigger-tooltip-moves {
+  font-family: var(--mono);
+  color: var(--muted);
+}
+
+.trigger-tooltip-case {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.trigger-tooltip-note {
+  margin: 6px 0 0;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  white-space: pre-wrap;
+}
+
+.alg-better-votes {
+  font-variant-numeric: tabular-nums;
+}
+
+/* "+" at the end of the last note's bar: adds another note (no permanent empty row). */
+.note-add {
+  flex: none;
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-right: 6px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.note-add:hover {
+  opacity: 1;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.swatch.edge-good {
+  box-shadow: inset 0 0 0 1px var(--muted);
+}
+
+.swatch.edge-bad {
+  background: var(--mirror);
+}
+
+.cluster-case.filtered-out {
+  opacity: 0.25;
+  filter: grayscale(1);
+}
+
+.slot-status-grid span.dimmed {
+  opacity: 0.2;
+}
+
+/* A cluster's slot-cases outside the overview's filter fade like learnt ones in focus mode. */
+.slot-cell.filtered-out {
+  opacity: 0.3;
+  filter: grayscale(1);
+  transition: opacity 0.15s;
+}
+
+.slot-cell.filtered-out:hover {
+  opacity: 0.55;
+}
+
+.slot-cell.filtered-out.selected {
+  opacity: 0.65;
+  filter: grayscale(0.8);
+}
+
+/* F2L train (src/trainers/f2l/Train.tsx), in the shared drill card. The cube dims and lies
+   flat in stealth like any other (Cube.tsx, data-reveal on the stage). */
+.f2l-train {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Revealed, when your main alg there has no moves yet: its notes instead. */
+.f2l-train-placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 300px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.f2l-train-placeholder p {
+  margin: 0;
+}
+
+.f2l-train-note {
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.f2l-train-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0 14px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.f2l-train-answer {
+  color: inherit;
+  font-size: 17px;
+}
+
+.f2l-train-hint {
+  min-height: 3em;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.f2l-train-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.f2l-train-rating button {
+  padding: 3px 9px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+}
+
+.f2l-train-rating button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.f2l-train-rating span {
+  margin-left: 8px;
+  font-size: 11px;
+}
+
+.f2l-train-round {
+  font-size: 13px;
+  color: var(--muted);
+}

@@ -1,4 +1,4 @@
-// Builds ../catalog/f2l.json (the app's catalog, shared/f2l/catalog.ts) from data/speedcubedb-f2l.json.
+// Builds ../catalog/f2l.json (the app's catalog, packages/core/catalog/f2l.ts) from data/speedcubedb-f2l.json.
 //
 // - Setups: SpeedCubeDB's FR setup (or, if it uses wide/slice moves, the inverse of the
 //   best face-turn-only FR alg), relabelled for the other slots. Every derived setup is

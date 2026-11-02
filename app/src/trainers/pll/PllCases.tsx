@@ -2,9 +2,9 @@
 // case's pace (ao5, or the mean until it has 5 solves) on a fast → slow colour scale
 // across the timed cases, with the full stats on hover. Sorted by group, or slowest first.
 import type { CSSProperties } from 'react'
-import { Segmented } from '../../common/ui/settings.tsx'
+import { Segmented } from '../../../../packages/ui/settings.tsx'
 import { pllCases, pllGroups, type PllCase } from './catalog.ts'
-import { PllIcon } from '../../common/pll/PllIcon.tsx'
+import { PllIcon } from '../../../../packages/ui/icons/PllIcon.tsx'
 import { setPllSelection, togglePllCases, usePllSelection } from './selection.ts'
 import { updatePllSettings, usePllSettings, type CaseOrder } from './settings.ts'
 import { formatTime, paceOf, statsTitle, type Stats } from './solves.ts'
