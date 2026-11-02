@@ -73,35 +73,6 @@ function allowedBare(from: string, spec: string): boolean {
   }
 }
 
-/**
- * The layout before restructure-workspaces, allowed until its files are gone (tasks 5.1, 5.2).
- * Each entry: a path prefix the importing file is under, and prefixes it may import from.
- */
-const LEGACY: [string, string[]][] = [
-  ["shared/", ["shared/", "packages/core/"]],
-  ["app/src/common/", ["app/src/common/", "shared/", "packages/core/", "packages/ui/"]],
-  ["app/src/shell/", ["app/src/shell/", "app/src/common/", "app/src/trainers/", "packages/ui/", "packages/core/", "tools/"]],
-  ["app/src/trainers/", ["app/src/common/", "shared/", "catalog/", "packages/core/", "packages/ui/", "tools/"]],
-  ["app/src/main.tsx", ["app/src/"]],
-  ["server/src/trainers/", ["server/src/trainer.ts", "server/src/http.ts", "shared/", "packages/core/", "tools/"]],
-  ["server/src/trainers.ts", ["server/src/trainers/", "server/src/trainer.ts"]],
-  ["server/src/", ["server/src/"]],
-  ["catalog-builder/src/", ["shared/"]],
-  ["packages/", ["shared/"]],
-  ["tools/", ["shared/", "app/src/common/"]],
-];
-
-function legacyAllowed(file: string, target: string): boolean {
-  for (const [prefix, targets] of LEGACY) {
-    if (!file.startsWith(prefix)) continue;
-    if (targets.some((t) => target.startsWith(t))) return true;
-    // A legacy trainer may import its own folder.
-    const own = file.match(/^(app\/src\/trainers|server\/src\/trainers)\/[^/]+\//)?.[0];
-    if (own && target.startsWith(own)) return true;
-  }
-  return false;
-}
-
 function* files(path: string): Generator<string> {
   const full = join(ROOT, path);
   let entries;
@@ -137,7 +108,6 @@ for (const scanned of SCAN) {
       }
       const target = relative(ROOT, resolve(ROOT, dirname(file), spec)).split(sep).join("/");
       const to = zoneOf(target);
-      if (legacyAllowed(rel, target)) continue;
       if (!from || !to || !allowed(from, to)) {
         problems.push(`${rel}: imports ${target} (${from ?? "?"} → ${to ?? "outside every zone"} is not allowed)`);
       }

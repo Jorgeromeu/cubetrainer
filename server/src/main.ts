@@ -8,7 +8,8 @@ import { readFile } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { extname, join, normalize } from "node:path";
 import { openDb } from "./db.ts";
-import { InvalidRequest, compileRoute, json, matchRoute, readJson, type CompiledRoute } from "./http.ts";
+import { compileRoute, json, matchRoute, readJson, type CompiledRoute } from "./http.ts";
+import { InvalidRequest } from "./tool.ts";
 import { TRAINERS } from "./trainers.ts";
 
 const ROOT = join(import.meta.dirname, "../..");

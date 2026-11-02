@@ -18,5 +18,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "../shared", "../packages/core", "../tools/*/contract.ts", "../tools/*/server"]
+  "include": ["src", "../packages/core", "../tools/*/contract.ts", "../tools/*/server"]
 }

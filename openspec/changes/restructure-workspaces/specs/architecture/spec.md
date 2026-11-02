@@ -43,7 +43,7 @@ Each tool's `contract.ts` SHALL define its HTTP API's request and response bodie
 - **THEN** the change is made in its `contract.ts` and both its app and server compile against it
 
 ### Requirement: What a tool exposes
-A tool's contract SHALL list in an `exposes` section the calls other tools may use: each a named, typed, read-only function over one of its API endpoints. Everything not exposed is private to the tool, even though it is reachable over HTTP. Exposing nothing is the default.
+A tool's contract SHALL list in an `exposes` section the calls other tools may use: each a named, typed, read-only function over one of its API endpoints. Everything not exposed is private to the tool, even though it is reachable over HTTP. Exposing nothing is the default: a contract without an `exposes` section exposes nothing.
 
 #### Scenario: Private endpoint
 - **WHEN** another tool wants data from an endpoint that is not in the provider's `exposes`

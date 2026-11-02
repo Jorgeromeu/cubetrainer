@@ -24,12 +24,12 @@ Each group is one commit. After each: `npm run build` in `app/`, start the serve
 
 ## 4. Tools
 
-- [ ] 4.1 `tools/f2l/`: contract (from `shared/f2l`), app (from `app/src/trainers/f2l`), server (from `server/src/trainers/f2l`, migrations included)
-- [ ] 4.2 `tools/pll/`: same (its contract exposes nothing yet; `exposes` is defined but empty everywhere)
-- [ ] 4.3 `tools/pll-compare/`: same
-- [ ] 4.4 `tools/stats/`: same
-- [ ] 4.5 Each tool's styles to `tools/<id>/app/<id>.css`, imported by its view; no tool-specific rule left in ui's CSS
-- [ ] 4.6 App and server registries point at `tools/<id>/`; `app/` and `server/` keep only host code
+- [x] 4.1 `tools/f2l/`: contract (from `shared/f2l`), app (from `app/src/trainers/f2l`), server (from `server/src/trainers/f2l`, migrations included)
+- [x] 4.2 `tools/pll/`: same (no contract has an `exposes` section yet: none is needed until a tool reads another's data)
+- [x] 4.3 `tools/pll-compare/`: same
+- [x] 4.4 `tools/stats/`: same
+- [x] 4.5 Each tool's styles to `tools/<id>/app/<id>.css`, imported by its view; no tool-specific rule left in ui's CSS
+- [x] 4.6 App and server registries point at `tools/<id>/`; `app/` and `server/` keep only host code
 
 ## 5. Cleanup
 

@@ -1,10 +1,7 @@
 // HTTP plumbing shared by every trainer's routes: JSON in and out, request errors, and
 // matching a request to a route.
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { ApiRoute } from "./trainer.ts";
-
-/** A request the client got wrong; becomes a 400 with its message. */
-export class InvalidRequest extends Error {}
+import { type ApiRoute, InvalidRequest } from "./tool.ts";
 
 export const json = (res: ServerResponse, status: number, body: unknown) => {
   res.writeHead(status, { "Content-Type": "application/json" });
