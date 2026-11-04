@@ -8,19 +8,21 @@
 //   PUT   /api/f2l/user-algs/:id          PutUserAlgBody -> UserAlg
 //   PATCH /api/f2l/user-algs/:id          PatchUserAlgBody -> UserAlg
 //   DELETE /api/f2l/user-algs/:id         -> null
+//
+// Exposed (f2lExposes): active-cases -> ActiveCasesResponse
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { Catalog } from "../../../packages/core/catalog/f2l.ts";
-import type { ProgressResponse } from "../contract.ts";
-import type { ServerTool } from "../../../server/src/tool.ts";
+import type { Catalog } from "../catalog/catalog.ts";
+import { f2lExposes, type ActiveCasesResponse, type ProgressResponse } from "../contract.ts";
+import { implement, type ApiRoute, type ServerTool } from "../../../server/src/tool.ts";
 import { algRefFrom, progressRepository } from "./progress.ts";
 
 export const f2lTool: ServerTool = {
   id: "f2l",
-  routes({ repoRoot, openDb }) {
-    const catalog = JSON.parse(readFileSync(join(repoRoot, "catalog/f2l.json"), "utf8")) as Catalog;
+  start({ repoRoot, openDb }) {
+    const catalog = JSON.parse(readFileSync(join(repoRoot, "tools/f2l/catalog/f2l.json"), "utf8")) as Catalog;
     const progress = progressRepository(openDb(join(import.meta.dirname, "migrations")), catalog);
-    return [
+    const routes = [
       {
         method: "GET",
         path: "/progress",
@@ -68,6 +70,19 @@ export const f2lTool: ServerTool = {
         path: "/user-algs/:id",
         handle: ({ params }) => progress.deleteUserAlg(params.id),
       },
-    ];
+    ] satisfies ApiRoute[];
+    return { routes, exposes: [implement(f2lExposes.activeCases, () => activeCases(progress))] };
   },
 };
+
+function activeCases(progress: ReturnType<typeof progressRepository>): ActiveCasesResponse {
+  const cases = new Map<string, ActiveCasesResponse["cases"][number]>();
+  const entry = (slotCaseId: string) => {
+    let c = cases.get(slotCaseId);
+    if (!c) cases.set(slotCaseId, (c = { slotCaseId, mainAlg: null, algs: [] }));
+    return c;
+  };
+  for (const p of progress.list()) entry(p.slotCaseId).mainAlg = p.mainAlg;
+  for (const a of progress.listAlgStates()) entry(a.slotCaseId).algs.push({ alg: a.alg, status: a.status });
+  return { cases: [...cases.values()].sort((a, b) => a.slotCaseId.localeCompare(b.slotCaseId)) };
+}

@@ -1,0 +1,592 @@
+/* Timer tool: the timer page, then the stats page. Loaded after packages/ui/ui.css. */
+
+.muted {
+  color: var(--muted);
+}
+
+/* The top bar's page switch: links styled as the shared segmented control. */
+.timer-pages a {
+  padding: 3px 9px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.timer-pages a:hover {
+  color: var(--text);
+}
+
+.timer-pages a.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* The timer page: scramble, time, then what's below fades out while timing. */
+.timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: 760px;
+  margin: 0 auto;
+  padding-top: 24px;
+}
+
+.timer-scramble {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px 14px;
+  min-height: 2em;
+  font-size: 20px;
+  text-align: center;
+}
+
+.timer.running .timer-scramble {
+  visibility: hidden;
+}
+
+.timer-next {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 13px;
+}
+
+.timer-time {
+  padding: 8px 32px;
+  border: none;
+  background: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: clamp(64px, 14vw, 128px);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  user-select: none;
+  touch-action: none;
+}
+
+/* Held, not yet long enough to start; then ready to go on release. */
+.timer-time.holding {
+  color: var(--danger);
+}
+
+.timer-time.ready {
+  color: var(--learnt);
+}
+
+.timer-hint {
+  font-size: 13px;
+}
+
+.timer-last {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+}
+
+.timer-delete {
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.timer-delete:hover {
+  color: var(--danger);
+}
+
+.timer-averages {
+  display: flex;
+  gap: 36px;
+}
+
+.timer-averages dt {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.timer-averages dd {
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.timer-recent {
+  align-self: stretch;
+  max-width: 420px;
+  width: 100%;
+  margin: 8px auto 0;
+}
+
+/* As the stats page's section headings. */
+.timer-recent h2 {
+  margin-bottom: 6px;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.timer-recent ol {
+  list-style: none;
+}
+
+.timer-recent li {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.timer-recent-time {
+  min-width: 64px;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-source {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* The stats page. Flat like the F2L overview: uppercase section
+   headings, numbers inline, hairline rows, no cards or pills. Marks are data: the accent. */
+.stats {
+  --stats-mark: var(--accent);
+  --stats-dot: color-mix(in srgb, var(--muted) 45%, var(--bg));
+  /* Pinned periods (Charts.tsx pinStyle), one hue each in this order, never reused while
+     pinned. The categorical palette minus its blue (the bars'); checked for colour-blind
+     separation on --bg in both modes. Each pin also carries its number. */
+  --stats-pin-1: #eb6834;
+  --stats-pin-2: #1baf7a;
+  --stats-pin-3: #eda100;
+  --stats-pin-4: #e87ba4;
+  --stats-pin-5: #008300;
+  --stats-pin-6: #6250d6;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.stats-empty {
+  color: var(--muted);
+}
+
+.stats-range button {
+  white-space: nowrap;
+}
+
+/* The headline numbers: a flat row, label over value over a quieter line. */
+.stats-figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 40px;
+  margin: 0;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.stats-figure dt {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.stats-figure dd {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.stats-figure .stats-figure-sub {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.stats-section {
+  min-width: 0;
+}
+
+.stats-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 20px;
+  margin-bottom: 10px;
+}
+
+/* As the F2L overview's group headings. */
+.stats-section-head h2 {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.stats-count {
+  margin-left: 4px;
+  font-weight: 400;
+}
+
+.stats-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.stats-legend-sep {
+  padding: 0 4px;
+}
+
+/* Plain-text toggles, as the cube player's speed buttons. */
+.stats-legend-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 6px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+}
+
+.stats-legend-toggle:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+
+.stats-legend-toggle.off {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+.stats-window-key {
+  fill: var(--stats-mark);
+  fill-opacity: 0.15;
+  stroke: var(--stats-mark);
+  stroke-width: 1;
+}
+
+.stats-plot {
+  position: relative;
+}
+
+.stats-plot svg {
+  display: block;
+  overflow: visible;
+}
+
+.stats-grid line {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.stats-grid text,
+.stats-axis text {
+  fill: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-dot {
+  fill: var(--stats-dot);
+}
+
+.stats-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.stats-crosshair line {
+  stroke: var(--muted);
+  stroke-width: 1;
+}
+
+/* The solves the window at the hovered point covers (Charts.tsx ProgressChart). */
+
+.stats-bracket {
+  fill: none;
+  stroke-width: 2;
+}
+
+.stats-end {
+  stroke: var(--bg);
+  stroke-width: 2;
+}
+
+.stats-bar {
+  fill: var(--stats-mark);
+}
+
+.stats-bar.hovered {
+  fill: color-mix(in srgb, var(--stats-mark) 70%, var(--bg));
+}
+
+.stats-hit {
+  fill: transparent;
+}
+
+.stats-tooltip {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px 10px;
+  border-radius: 4px;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 4px 14px rgb(0 0 0 / 0.1);
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.stats-tooltip strong {
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-tooltip-sub {
+  color: var(--muted);
+}
+
+/* Every solve: a flat list with dividers, as F2L's alg list. */
+.stats-table-wrap {
+  overflow-x: auto;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.stats-table th {
+  padding: 4px 14px 6px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stats-table td {
+  padding: 6px 14px 6px 0;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.stats-table tbody tr:hover {
+  background: var(--surface);
+}
+
+.stats-table .num {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-table .muted {
+  color: var(--muted);
+}
+
+.stats-table .stats-scramble {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.stats-section > .link-button {
+  margin-top: 8px;
+}
+
+.stats-axis line {
+  stroke: var(--border);
+}
+
+/* A long break between solves on the date axis: the line goes on, dashed and quieter. */
+.stats-line.stats-break {
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  opacity: 0.7;
+}
+
+/* By date / by solve: as the cube player's speed buttons. */
+.stats-axis-pick {
+  display: flex;
+  gap: 2px;
+}
+
+.stats-axis-pick button {
+  padding: 2px 6px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+}
+
+.stats-axis-pick button:hover {
+  color: var(--text);
+}
+
+.stats-axis-pick button.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* The last column takes the leftover width, so the numbers stay together on the left. */
+.stats-table th:last-child {
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .stats {
+    --stats-pin-1: #d95926;
+    --stats-pin-2: #199e70;
+    --stats-pin-3: #c98500;
+    --stats-pin-4: #d55181;
+    --stats-pin-5: #008300;
+    --stats-pin-6: #9085e9;
+  }
+}
+
+/* The periods hovered or pinned on the solves-per chart, shaded on the timelines between
+   two edges: a pin in its colour (--pin, set inline), the hovered one in the accent. */
+.stats-focus rect {
+  fill: var(--pin, var(--stats-mark));
+  fill-opacity: 0.14;
+}
+
+.stats-focus line {
+  stroke: var(--pin, var(--stats-mark));
+  stroke-width: 1;
+}
+
+.stats-focus-badge {
+  fill: var(--pin);
+}
+
+.stats-focus-badge-text,
+.stats-pin-badge {
+  font-size: 9px;
+  font-weight: 700;
+  fill: var(--bg);
+  color: var(--bg);
+}
+
+.stats-pin-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: var(--pin);
+  vertical-align: -2px;
+}
+
+.stats-focus .hovered rect {
+  fill-opacity: 0.24;
+}
+
+.stats-focus-label {
+  fill: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 3px;
+}
+
+/* A pinned column, in its pin's colour. */
+.stats-bar.picked {
+  fill: var(--pin);
+}
+
+/* The spread around the progress curve: eight faint nested bands, so it shades from
+   barely there at the middle 80%'s edges to about a third of the mark in the middle. */
+.stats-range-fan {
+  fill: var(--stats-mark);
+  fill-opacity: 0.05;
+}
+
+/* The legend swatch has only four layers: each counts double. */
+.stats-range-key {
+  fill-opacity: 0.12;
+}
+
+/* The average itself: ink over the blue bands, so it reads in every theme. */
+.stats-line.stats-avg {
+  stroke: var(--text);
+}
+
+.stats-end.stats-avg-dot {
+  fill: var(--text);
+}
+
+.stats-window {
+  fill: var(--stats-mark);
+  opacity: 0.08;
+}
+
+.stats-bracket {
+  stroke: var(--stats-mark);
+}
+
+.stats-plot-empty {
+  margin: 0;
+  padding: 40px 0;
+  text-align: center;
+}
+
+/* Date-axis milestones (month and year starts) stand out from the days between. */
+.stats-axis .major text {
+  fill: var(--text);
+  font-weight: 600;
+}
+
+.stats-axis .major line {
+  stroke: var(--muted);
+}
+
+/* Milestones on the timeline (Charts.tsx MilestoneMarks): a neutral wash with a left
+   edge, so they never read as data; the label in ink. */
+.stats-milestone {
+  fill: var(--text);
+  fill-opacity: 0.06;
+}
+
+.stats-milestone-edge {
+  stroke: var(--muted);
+  stroke-width: 1;
+}
+
+.stats-milestone-label {
+  fill: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+}

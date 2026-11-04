@@ -1,36 +1,31 @@
-// How 3D cubes are displayed (Settings → Cube display, CubeDisplaySettings.tsx), shared by
-// every tool that shows them. A per-browser preference, kept in localStorage and shared live.
-import { persisted } from '../persisted.ts'
-
-export type HintMode = 'off' | 'pair' | 'all'
+// The one setting about every 3D cube, owned by this library (`ui.cube`): the player's
+// playback speed, set from its own buttons and the same in every tool. How a tool's cubes are
+// drawn (which pieces are highlighted, hint stickers) is that tool's, passed as Cube's
+// `display` prop.
+import { setting } from '../settings/setting.ts'
 
 export interface CubeSettings {
-  /** Pair in full colour, the rest of F2L dimmed. Off = normal colours. */
-  highlightPair: boolean
-  /** Floating stickers showing hidden faces (big player only). */
-  hints: HintMode
-  /** Hint distance from the cube, in cubing.js units (stickers sit at ~0.5). */
-  hintDistance: number
+  /** Playback speed: cubing.js tempoScale, one of SPEEDS. */
+  tempo: number
 }
 
-export const HINT_DISTANCE = { min: 0.8, max: 1.6, step: 0.05 }
+/** The player's speeds (tempoScale; 1 is cubing.js's ~1 s per quarter turn). */
+export const SPEEDS = [
+  { label: 'Slow', tempo: 0.75 },
+  { label: 'Normal', tempo: 1.5 },
+  { label: 'Fast', tempo: 3 },
+]
 
-export const DEFAULT_CUBE_SETTINGS: CubeSettings = {
-  highlightPair: true,
-  hints: 'pair',
-  // cubing.js's default is 1.45, which floats the hints quite far from the cube.
-  hintDistance: 0.95,
-}
-
-const cubeSettings = persisted<CubeSettings>(
-  'cubetrainer.cubeSettings',
-  DEFAULT_CUBE_SETTINGS,
-  (s) =>
-    typeof s.highlightPair === 'boolean' &&
-    ['off', 'pair', 'all'].includes(s.hints) &&
-    s.hintDistance >= HINT_DISTANCE.min &&
-    s.hintDistance <= HINT_DISTANCE.max,
-)
+const cubeSettings = setting<CubeSettings>('ui.cube', { tempo: 1.5 }, (s) => SPEEDS.some((speed) => speed.tempo === s.tempo), {
+  // The speed used to be kept per browser, on its own.
+  migrate: (stored) => {
+    if ('tempo' in stored) return { tempo: stored.tempo } as Partial<CubeSettings>
+    const tempo = Number(localStorage.getItem('cubetrainer.tempo'))
+    return SPEEDS.some((s) => s.tempo === tempo) ? { tempo } : {}
+  },
+  legacyKey: 'cubetrainer.tempo',
+})
 
 export const updateCubeSettings = cubeSettings.update
 export const useCubeSettings = cubeSettings.use
+export const getCubeSettings = cubeSettings.get

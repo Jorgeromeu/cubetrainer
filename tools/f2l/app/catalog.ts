@@ -1,5 +1,5 @@
 // Loads the static catalog and builds lookup indexes over it.
-import catalogJson from '../../../catalog/f2l.json'
+import catalogJson from '../catalog/f2l.json'
 import { FRONT_BACK_SLOT, MIRROR_SLOT, OPPOSITE_SLOT, type Slot } from '../../../packages/core/cube.ts'
 import {
   LINK_KINDS,
@@ -11,7 +11,7 @@ import {
   type LinkKind,
   type Recommender,
   type SlotCase,
-} from '../../../packages/core/catalog/f2l.ts'
+} from '../catalog/catalog.ts'
 import { isRotation, joinMoves } from '../../../packages/core/notation/moves.ts'
 import type { SetupMode } from './settings.ts'
 
@@ -24,7 +24,7 @@ export const catalog = catalogJson as unknown as Catalog
 const byId = <T extends { id: string }>(items: T[]) => new Map(items.map((x) => [x.id, x]))
 
 export const clustersById = byId(catalog.clusters)
-export const casesById = byId(catalog.cases)
+const casesById = byId(catalog.cases)
 export const slotCasesById = byId(catalog.slotCases)
 export const algsById = byId(catalog.algs)
 
@@ -49,7 +49,7 @@ export function caseSetup(slotCase: SlotCase, mode: SetupMode, auf = ''): { setu
 }
 
 /** Whole-cube rotations in an alg (wherever they are). */
-export const rotationCount = (alg: CatalogAlg) => alg.moves.split(' ').filter(isRotation).length
+const rotationCount = (alg: CatalogAlg) => alg.moves.split(' ').filter(isRotation).length
 
 /** The alg's left-right mirror (same motion, other hand), if the catalog has it. */
 export const leftRightMirror = (alg: CatalogAlg) => {
@@ -125,7 +125,7 @@ const linksCache = new Map<string, AlgLink[]>()
  * Every alg linked to `alg`, with how: the same shape is a rotation link, the mirror
  * shape a mirror (neighbouring slot) or transpose (same or opposite slot) link.
  */
-export function linksOf(alg: CatalogAlg): AlgLink[] {
+function linksOf(alg: CatalogAlg): AlgLink[] {
   const cached = linksCache.get(alg.id)
   if (cached) return cached
   const slot = getSlotCase(alg.slotCaseId).slot

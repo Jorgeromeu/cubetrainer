@@ -1,7 +1,7 @@
 // Repository for F2L progress. The only module that touches F2L's tables.
 import type { DatabaseSync } from "node:sqlite";
-import { LINK_KINDS, type Catalog, type LinkKind } from "../../../packages/core/catalog/f2l.ts";
-import { InvalidRequest } from "../../../server/src/tool.ts";
+import { LINK_KINDS, type Catalog, type LinkKind } from "../catalog/catalog.ts";
+import { bodyOf, InvalidRequest, transaction } from "../../../server/src/tool.ts";
 import {
   ALG_STATUSES,
   MAX_NOTE_LENGTH,
@@ -281,17 +281,11 @@ export function progressRepository(db: DatabaseSync, catalog: Catalog) {
       return toUserAlg(selectUserAlg.get(id) as unknown as UserAlgRow);
     },
 
-    /** Deletes a user alg along with its main-alg row, status, notes and video link. */
+    /** Deletes a user alg along with its main-alg row, status, notes and video link. Deleting it again is a no-op. */
     deleteUserAlg(id: string): null {
-      if (!selectUserAlg.get(id)) throw new InvalidRequest(`Unknown user alg ${id}`);
-      db.exec("BEGIN");
-      try {
+      transaction(db, () => {
         for (const statement of removeUserAlgRows) statement.run(id);
-        db.exec("COMMIT");
-      } catch (e) {
-        db.exec("ROLLBACK");
-        throw e;
-      }
+      });
       return null;
     },
   };
@@ -305,7 +299,7 @@ function parseAlgRef(value: unknown, field: string): AlgRef {
 }
 
 function parseProgressBody(body: unknown): PutProgressBody {
-  const { mainAlg } = (body ?? {}) as Record<string, unknown>;
+  const { mainAlg } = bodyOf(body, ["mainAlg"]);
   return { mainAlg: mainAlg === null ? null : parseAlgRef(mainAlg, "mainAlg (or null)") };
 }
 
@@ -316,16 +310,14 @@ export function algRefFrom(kind: string, id: string): AlgRef {
 }
 
 function parsePatchAlgBody(body: unknown): PatchAlgBody {
-  const { status, ...rest } = (body ?? {}) as Record<string, unknown>;
-  const unknownKeys = Object.keys(rest);
-  if (unknownKeys.length) throw new InvalidRequest(`Unknown field(s): ${unknownKeys.join(", ")}`);
+  const { status } = bodyOf(body, ["status"]);
   if (status !== null && !ALG_STATUSES.includes(status as AlgStatus))
     throw new InvalidRequest(`status must be null or one of ${ALG_STATUSES.join(", ")}`);
   return { status: status as AlgStatus | null };
 }
 
 function parseNoteBody(body: unknown): PutNoteBody {
-  const { alg, follows, text } = (body ?? {}) as Record<string, unknown>;
+  const { alg, follows, text } = bodyOf(body, ["alg", "follows", "text"]);
   if (
     !Array.isArray(follows) ||
     !follows.every((k) => LINK_KINDS.includes(k as LinkKind)) ||
@@ -339,9 +331,7 @@ function parseNoteBody(body: unknown): PutNoteBody {
 }
 
 function parseVideoBody(body: unknown): PutVideoBody {
-  const { url, ...rest } = (body ?? {}) as Record<string, unknown>;
-  const unknownKeys = Object.keys(rest);
-  if (unknownKeys.length) throw new InvalidRequest(`Unknown field(s): ${unknownKeys.join(", ")}`);
+  const { url } = bodyOf(body, ["url"]);
   if (url === null) return { url: null };
   if (typeof url !== "string") throw new InvalidRequest("url must be a string or null");
   const trimmed = url.trim();
@@ -375,16 +365,12 @@ function parseMoves(moves: unknown, allowEmpty: boolean): string {
 }
 
 function parseUserAlgBody(body: unknown): PutUserAlgBody {
-  const { slotCaseId, moves, ...rest } = (body ?? {}) as Record<string, unknown>;
-  const unknownKeys = Object.keys(rest);
-  if (unknownKeys.length) throw new InvalidRequest(`Unknown field(s): ${unknownKeys.join(", ")}`);
+  const { slotCaseId, moves } = bodyOf(body, ["slotCaseId", "moves"]);
   if (typeof slotCaseId !== "string") throw new InvalidRequest("slotCaseId must be a string");
   return { slotCaseId, moves: parseMoves(moves, true) };
 }
 
 function parsePatchUserAlgBody(body: unknown): string {
-  const { moves, ...rest } = (body ?? {}) as Record<string, unknown>;
-  const unknownKeys = Object.keys(rest);
-  if (unknownKeys.length) throw new InvalidRequest(`Unknown field(s): ${unknownKeys.join(", ")}`);
+  const { moves } = bodyOf(body, ["moves"]);
   return parseMoves(moves, false);
 }

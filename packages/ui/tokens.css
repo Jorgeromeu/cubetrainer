@@ -1,0 +1,100 @@
+/* Design tokens: every colour, size and space the UI uses, light and dark. Shared by
+   packages/ui and every tool's CSS; the rules for using them: openspec/specs/library/design. */
+
+:root {
+  --bg: #f6f6f4;
+  --surface: #ffffff;
+  --text: #1d1d1f;
+  --muted: #6b6b70;
+  --border: #e2e2de;
+  --accent: #2f6fd6;
+  --accent-soft: #e6eefb;
+  /* Text and icons on an --accent fill. */
+  --on-accent: #fff;
+  /* A slot-case's main alg (star, status marks, progress). */
+  --main: var(--accent);
+  --mirror: #d98a1c;
+  --mirror-soft: #fbf0df;
+  --rotation: #e0731a;
+  --trigger: #14898f;
+  --learnt: #2a9d5c;
+  --learnt-soft: #e2f4e9;
+  --learning: #8a63d2;
+  --learning-soft: #efe9fa;
+  /* Want to learn: a paler violet, the step before learning. */
+  --wanted: #bba5e6;
+  --danger: #c23b3b;
+  --danger-soft: #fbe6e6;
+  /* Family map group tints (ClusterView FamilyMap): cells whose main algs are linked.
+     Matplotlib tab10 hues without its green/orange/red, which read as good/bad; blue
+     last, since selection is blue. Each a soft mix into the surface, so dark mode only
+     changes the mix. */
+  --group-0-hue: #9467bd;
+  --group-1-hue: #17becf;
+  --group-2-hue: #e377c2;
+  --group-3-hue: #8c564b;
+  --group-4-hue: #1f77b4;
+  --group-mix: 22%;
+  --group-0: color-mix(in srgb, var(--group-0-hue) var(--group-mix), var(--surface));
+  --group-1: color-mix(in srgb, var(--group-1-hue) var(--group-mix), var(--surface));
+  --group-2: color-mix(in srgb, var(--group-2-hue) var(--group-mix), var(--surface));
+  --group-3: color-mix(in srgb, var(--group-3-hue) var(--group-mix), var(--surface));
+  --group-4: color-mix(in srgb, var(--group-4-hue) var(--group-mix), var(--surface));
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Shape. Layout is panes split by hairlines: no cards, no rounded boxes. Only small
+     controls (buttons, chips, inputs, segmented rows) get --radius. */
+  --hairline: 1px solid var(--border);
+  --radius: 4px;
+
+  /* Type, dense: body text, secondary text (hints, counts, controls), labels (uppercase
+     group headings). */
+  --text-body: 13px;
+  --text-small: 12px;
+  --text-label: 11px;
+  --label-spacing: 0.04em;
+
+  /* Panes (panes.tsx): a thin tinted header bar over a scrolling body. */
+  --topbar-height: 52px;
+  --pane-head-height: 28px;
+  --pane-head-bg: color-mix(in srgb, var(--border) 55%, var(--bg));
+  --pane-pad-y: 14px;
+  --pane-pad-x: 16px;
+  --row-pad-y: 10px;
+  --control-height: 24px;
+
+  /* Floating surfaces, the only ones with a shadow: menus and windows over the page (the
+     settings window), on a dimmed backdrop. */
+  --shadow-float: 0 8px 28px rgb(0 0 0 / 0.18);
+  --backdrop: rgb(0 0 0 / 0.28);
+
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.45;
+  color: var(--text);
+  background: var(--bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17171a;
+    --surface: #212125;
+    --text: #ececef;
+    --muted: #9a9aa2;
+    --border: #34343a;
+    --accent: #7aa7f0;
+    --accent-soft: #24324a;
+    --mirror: #e7a548;
+    --mirror-soft: #3a2e1c;
+    --rotation: #f0954a;
+    --trigger: #4cc4c9;
+    --learnt: #5cc98a;
+    --learnt-soft: #1d3527;
+    --learning: #b195f0;
+    --learning-soft: #2c2540;
+    --wanted: #7a65ad;
+    --danger: #f07a7a;
+    --danger-soft: #3d2222;
+    --group-mix: 30%;
+  }
+}

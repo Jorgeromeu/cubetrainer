@@ -3,7 +3,7 @@
 // filter lets through. Each legend count is what that choice would show given the rest of
 // the filter, and the bar is the status counts drawn to scale.
 import { useEffect, useState, type FormEvent } from 'react'
-import { isTextField } from '../../../packages/ui/drill/keys.ts'
+import { isTextField } from '../../../packages/ui/keys.ts'
 import { getSlotCase } from './catalog.ts'
 import { allSlotCaseIds, filterMatcher, isFiltering, type FilterPart } from './filter.ts'
 import { useF2lFocus } from './focus.ts'
@@ -15,7 +15,8 @@ import {
   isFilter,
   legendFilter,
   updateF2lSettings,
-  useF2lSettings,
+  updateOverview,
+  useOverview,
   toggleStatus,
   type EdgeFilter,
   type LegendFilter,
@@ -49,7 +50,7 @@ const describe = (f: LegendFilter) =>
     .join(' · ') || 'everything'
 
 export function OverviewHead() {
-  const settings = useF2lSettings()
+  const settings = useOverview()
   const { edgeFilter, statuses, caseFilter, savedFilters } = settings
   const { bySlotCase } = useProgress()
   const focus = useF2lFocus()
@@ -91,7 +92,7 @@ export function OverviewHead() {
               aria-pressed={statuses.includes(status)}
               title={STATUS_LABEL[status] + '.' + FILTER_HINT + ' Shift-click to pick several.'}
               onClick={(e) =>
-                updateF2lSettings({ statuses: toggleStatus(statuses, status, e.shiftKey || e.ctrlKey || e.metaKey) })
+                updateOverview({ statuses: toggleStatus(statuses, status, e.shiftKey || e.ctrlKey || e.metaKey) })
               }
             >
               <span className={`swatch ${status}`} /> {label} <span className="count">{byStatus[status]}</span>
@@ -115,7 +116,7 @@ export function OverviewHead() {
               className={edgeFilter === edge ? 'active' : undefined}
               aria-pressed={edgeFilter === edge}
               title={EDGE_HINT[edge] + FILTER_HINT}
-              onClick={() => updateF2lSettings({ edgeFilter: edgeFilter === edge ? 'all' : edge })}
+              onClick={() => updateOverview({ edgeFilter: edgeFilter === edge ? 'all' : edge })}
             >
               <span className={`swatch edge-${edge}`} /> {edge} edge <span className="count">{edgeCount(edge)}</span>
             </button>
@@ -134,11 +135,11 @@ export function OverviewHead() {
             placeholder="all · e.g. 27-30, 33"
             title={'Only these case numbers: single ones and ranges, like "27-30, 33". Empty for all.'}
             value={caseFilter}
-            onChange={(e) => updateF2lSettings({ caseFilter: e.target.value })}
-            onKeyDown={(e) => e.key === 'Escape' && updateF2lSettings({ caseFilter: '' })}
+            onChange={(e) => updateOverview({ caseFilter: e.target.value })}
+            onKeyDown={(e) => e.key === 'Escape' && updateOverview({ caseFilter: '' })}
           />
           {caseFilter && (
-            <button className="case-filter-clear" aria-label="Clear the case numbers" onClick={() => updateF2lSettings({ caseFilter: '' })}>
+            <button className="case-filter-clear" aria-label="Clear the case numbers" onClick={() => updateOverview({ caseFilter: '' })}>
               ×
             </button>
           )}
@@ -158,7 +159,7 @@ export function OverviewHead() {
             <>
               <strong>{selected}</strong> of {ids.length} slot-cases ·{' '}
               {saved ? <strong>{saved.name}</strong> : describe(settings)}
-              <button className="link-button" onClick={() => updateF2lSettings(NO_FILTER)}>
+              <button className="link-button" onClick={() => updateOverview(NO_FILTER)}>
                 Show all
               </button>
             </>
@@ -193,13 +194,13 @@ function SavedFilters({ current, filtering, saved }: { current: LegendFilter; fi
     e.preventDefault()
     const n = name.trim()
     if (!n) return
-    updateF2lSettings({ savedFilters: [...saved.filter((f) => f.name !== n), { name: n, ...legendFilter(current) }] })
+    updateOverview({ savedFilters: [...saved.filter((f) => f.name !== n), { name: n, ...legendFilter(current) }] })
     setNaming(false)
     setName('')
   }
   const remove = (f: SavedFilter) => {
     if (confirm(`Delete the saved filter "${f.name}"? (${describe(f)})`))
-      updateF2lSettings({ savedFilters: saved.filter((s) => s.name !== f.name) })
+      updateOverview({ savedFilters: saved.filter((s) => s.name !== f.name) })
   }
 
   return (
@@ -212,7 +213,7 @@ function SavedFilters({ current, filtering, saved }: { current: LegendFilter; fi
             <button
               aria-pressed={on}
               title={`${describe(f)}. ${on ? 'Click to show all.' : 'Click to apply.'}`}
-              onClick={() => updateF2lSettings(on ? NO_FILTER : { ...NO_FILTER, ...legendFilter(f) })}
+              onClick={() => updateOverview(on ? NO_FILTER : { ...NO_FILTER, ...legendFilter(f) })}
             >
               {f.name} <span className="count">{size}</span>
             </button>

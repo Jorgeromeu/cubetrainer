@@ -1,10 +1,11 @@
 # F2L
 
-The F2L alg explorer: every case in every slot over `catalog/f2l.json`, with your main algs, statuses, notes, video links and algs of your own. Behaviour: `openspec/specs/f2l-catalog`, `user-data`.
+The F2L alg explorer: every case in every slot over `catalog/f2l.json`, with your main algs, statuses, notes, video links and algs of your own. Behaviour: `openspec/specs/tools/f2l`, `openspec/specs/foundation/user-data`.
 
-- `contract.ts`: API request and response types, limits
+- `contract.ts`: API request and response types, limits, exposed calls (`f2lExposes`)
 - `app/`: the view (`app/index.ts` exports the `Tool`), its stylesheet and client state
 - `server/`: routes (`server/index.ts` exports the `ServerTool`), repository, `migrations/`
+- `catalog/`: the alg catalog this tool ships with (`f2l.json`, generated and committed), its types (`catalog.ts`) and the program that builds it (`builder/`, see its README)
 
 ## API
 
@@ -23,6 +24,12 @@ Types in `contract.ts`.
 A main alg is an `AlgRef`: `{ kind: "catalog", id }` for an alg in `catalog/f2l.json`,
 or `{ kind: "user", id }` for a custom alg in `user_algs`. The server checks the alg
 exists and belongs to that slot-case (for both endpoints).
+
+## Exposed to other tools
+
+| Call | Result |
+|---|---|
+| `f2lExposes.activeCases` (`GET /api/f2l/exposed/active-cases`) | `{ cases: [{ slotCaseId, mainAlg, algs: [{ alg, status }] }] }`: the slot-cases with a main alg or an alg with a status, by slot-case id |
 
 ## Schema (`data/f2l.sqlite`)
 

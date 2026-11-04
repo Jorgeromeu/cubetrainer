@@ -1,5 +1,4 @@
-// What sits where on the cube for a case, shared by the 3D player (Cube.tsx) and the
-// flat stealth drawing (FlatCube.tsx).
+// What sits where on the cube for a case, for the 3D player (Cube.tsx).
 import type { Slot } from '../../core/cube.ts'
 
 // Catalog moves assume the cross on D. The player's default orientation has white on

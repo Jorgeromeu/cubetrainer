@@ -1,13 +1,9 @@
-// The user's progress, held by the server (../server) and mirrored here: each slot-case's
-// main alg, per alg a status (learning/learnt) independent of main, notes, video links and the
-// algs you added yourself. Loaded
-// at startup; changes show immediately and, if a save fails, the state is reloaded from
-// the server, so nothing is shown as saved that isn't.
-//
-// The app works without the server: while it's unreachable, `load` is 'offline', the
-// progress UI is hidden, and loading is retried in the background until it answers.
-import { useSyncExternalStore } from 'react'
-import { type Load, Rejected, request } from '../../../packages/core/api.ts'
+// The user's progress, held by the server (../server) and mirrored here through serverData
+// (packages/ui/serverData.ts): each slot-case's main alg, per alg a status independent of
+// main, notes, video links and the algs you added yourself. Changes show at once and are
+// sent in order; until the first load the progress UI is hidden ('offline' or 'loading').
+import { type Load, request } from '../../../packages/core/api.ts'
+import { serverData, type ServerState } from '../../../packages/ui/serverData.ts'
 import { algsById, reachable, type CatalogAlg } from './catalog.ts'
 import type {
   AlgRef,
@@ -73,20 +69,27 @@ export interface ProgressState {
   error?: string
 }
 
-let state: ProgressState = { load: 'loading', bySlotCase: new Map(), notes: new Map(), videos: new Map(), userAlgs: new Map() }
-const listeners = new Set<() => void>()
-
-function setState(patch: Partial<ProgressState>) {
-  state = { ...state, ...patch }
-  listeners.forEach((l) => l())
+interface ProgressData {
+  bySlotCase: ReadonlyMap<string, SlotCaseState>
+  notes: ReadonlyMap<string, Note>
+  videos: ReadonlyMap<string, VideoLink>
+  userAlgs: ReadonlyMap<string, UserAlg>
 }
 
-const subscribe = (listener: () => void) => {
-  listeners.add(listener)
-  return () => listeners.delete(listener)
-}
+const progress = serverData<ProgressData>({
+  owner: 'f2l',
+  fetch: () => fetchProgress(),
+  empty: { bySlotCase: new Map(), notes: new Map(), videos: new Map(), userAlgs: new Map() },
+})
 
-export const useProgress = () => useSyncExternalStore(subscribe, () => state)
+let viewed: { from?: ServerState<ProgressData>; value?: ProgressState } = {}
+/** The store's state as ProgressState, the same object for the same state. */
+const view = (s: ServerState<ProgressData>): ProgressState =>
+  viewed.from === s ? viewed.value! : (viewed = { from: s, value: { load: s.load, error: s.error, ...s.data } }).value!
+
+export const useProgress = () => view(progress.use())
+
+const data = () => progress.get().data
 
 export const statusOf = (p: SlotCaseState | undefined): Status =>
   p?.algs.some((a) => a.status === 'learnt')
@@ -120,7 +123,7 @@ function toMap(progress: SlotCaseProgress[], algs: AlgState[]) {
   return map
 }
 
-async function fetchProgress(): Promise<Pick<ProgressState, 'bySlotCase' | 'notes' | 'videos' | 'userAlgs'>> {
+async function fetchProgress(): Promise<ProgressData> {
   const body = await request<ProgressResponse>(`${API}/progress`)
   if (
     !Array.isArray(body?.progress) ||
@@ -138,107 +141,19 @@ async function fetchProgress(): Promise<Pick<ProgressState, 'bySlotCase' | 'note
   }
 }
 
-/** Retry delays while offline: quick at first, then every 30s. Focus/online also retry. */
-const RETRY_MS = [2000, 5000, 10000, 30000]
-let retries = 0
-let retryTimer: ReturnType<typeof setTimeout> | undefined
-let loading = false
+const json = (method: 'PUT' | 'PATCH' | 'DELETE', url: string, body?: unknown) => ({ method, url, body })
 
-async function load() {
-  if (loading || state.load === 'ready') return
-  loading = true
-  clearTimeout(retryTimer)
-  try {
-    const loaded = await fetchProgress()
-    retries = 0
-    setState({ load: 'ready', ...loaded, error: undefined })
-  } catch (e) {
-    goOffline(e as Error)
-  } finally {
-    loading = false
-  }
+/** Shows `next` as the slot-case's progress at once and sends the change. */
+function save(slotCaseId: string, next: SlotCaseState, method: 'PUT' | 'PATCH', url: string, body: PutProgressBody | PatchAlgBody) {
+  progress.change((d) => {
+    const map = new Map(d.bySlotCase)
+    if (next.mainAlg || next.algs.length) map.set(slotCaseId, next)
+    else map.delete(slotCaseId)
+    return { ...d, bySlotCase: map }
+  }, json(method, url, body))
 }
 
-function goOffline(e: Error) {
-  setState({
-    load: 'offline',
-    bySlotCase: new Map(),
-    notes: new Map(),
-    videos: new Map(),
-    userAlgs: new Map(),
-    error: `Server ${e.message}`,
-  })
-  clearTimeout(retryTimer)
-  retryTimer = setTimeout(load, RETRY_MS[Math.min(retries++, RETRY_MS.length - 1)])
-}
-
-load()
-addEventListener('focus', load)
-addEventListener('online', load)
-
-/** Save errors fade after a while; the offline notice stays until the server is back. */
-let errorTimer: ReturnType<typeof setTimeout> | undefined
-function showSaveError(message: string) {
-  setState({ error: message })
-  clearTimeout(errorTimer)
-  errorTimer = setTimeout(() => state.error === message && setState({ error: undefined }), 6000)
-}
-
-/**
- * Saves per key (slot-case, note, video, user alg) run one after another, so they reach the
- * server in order. A save about a user alg also waits for that alg's own save (see send).
- */
-const queues = new Map<string, Promise<unknown>>()
-
-/** Applies `next` to the slot-case locally right away, then sends the request (about `alg`) to the server. */
-function save(
-  slotCaseId: string,
-  next: SlotCaseState,
-  method: 'PUT' | 'PATCH',
-  url: string,
-  body: PutProgressBody | PatchAlgBody,
-  alg: AlgRef | null,
-) {
-  if (state.load !== 'ready') return
-  const map = new Map(state.bySlotCase)
-  if (next.mainAlg || next.algs.length) map.set(slotCaseId, next)
-  else map.delete(slotCaseId)
-  setState({ bySlotCase: map })
-  send(slotCaseId, method, url, body, alg)
-}
-
-const userAlgQueue = (id: string) => `user-alg:${id}`
-
-/**
- * Sends a change already shown locally. If the server refuses it, reloads what the server
- * has; if the server is gone, goes offline (hiding progress) and reconnects. A change
- * about a user alg (`about`) goes after that alg's own save, so a just-added alg exists.
- */
-function send(queueKey: string, method: 'PUT' | 'PATCH' | 'DELETE', url: string, body: unknown, about?: AlgRef | null) {
-  const sendNow = () =>
-    request(url, {
-      method,
-      ...(method === 'DELETE' ? {} : { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }),
-    })
-  const waitFor = about?.kind === 'user' && userAlgQueue(about.id) !== queueKey ? queues.get(userAlgQueue(about.id)) : undefined
-  const before = Promise.all([queues.get(queueKey), waitFor].map((p) => p?.catch(() => {})))
-  const queued = before.then(sendNow).then(
-    () => {},
-    (e: Error) => {
-      if (!(e instanceof Rejected)) {
-        // The server went away: hide progress (nothing unsaved stays on screen) and reconnect.
-        if (state.load === 'ready') goOffline(e)
-        return
-      }
-      // Drop the optimistic state: show whatever the server actually has.
-      showSaveError(`Couldn't save: ${e.message}`)
-      fetchProgress().then(setState, goOffline)
-    },
-  )
-  queues.set(queueKey, queued)
-}
-
-const current = (slotCaseId: string): SlotCaseState => state.bySlotCase.get(slotCaseId) ?? { algs: [] }
+const current = (slotCaseId: string): SlotCaseState => data().bySlotCase.get(slotCaseId) ?? { algs: [] }
 
 /** Makes `alg` the slot-case's main alg, or clears it when null. Learnt algs are untouched. */
 export function setMainAlg(slotCaseId: string, alg: AlgRef | null) {
@@ -250,7 +165,6 @@ export function setMainAlg(slotCaseId: string, alg: AlgRef | null) {
     'PUT',
     `${API}/progress/${encodeURIComponent(slotCaseId)}`,
     { mainAlg: alg } satisfies PutProgressBody,
-    alg,
   )
 }
 
@@ -266,7 +180,6 @@ export function setAlgStatus(slotCaseId: string, alg: AlgRef, status: AlgStatus 
     'PATCH',
     `${API}/algs/${alg.kind}/${encodeURIComponent(alg.id)}`,
     { status } satisfies PatchAlgBody,
-    alg,
   )
 }
 
@@ -275,29 +188,29 @@ export function setAlgStatus(slotCaseId: string, alg: AlgRef, status: AlgStatus 
  * locally right away.
  */
 export function saveNote(id: string, note: PutNoteBody & { slotCaseId: string }) {
-  if (state.load !== 'ready') return
-  const before = state.notes.get(id)
+  const before = data().notes.get(id)
   if (before && before.text === note.text && before.follows.join() === note.follows.join()) return
   if (!before && !note.text.trim()) return
-  const notes = new Map(state.notes)
   const now = new Date().toISOString()
-  if (note.text.trim()) notes.set(id, { id, ...note, createdAt: before?.createdAt ?? now, updatedAt: now })
-  else notes.delete(id)
-  setState({ notes })
   const { alg, follows, text } = note
-  send(`note:${id}`, 'PUT', `${API}/notes/${id}`, { alg, follows, text } satisfies PutNoteBody, alg)
+  progress.change((d) => {
+    const notes = new Map(d.notes)
+    if (note.text.trim()) notes.set(id, { id, ...note, createdAt: before?.createdAt ?? now, updatedAt: now })
+    else notes.delete(id)
+    return { ...d, notes }
+  }, json('PUT', `${API}/notes/${id}`, { alg, follows, text } satisfies PutNoteBody))
 }
 
 /** Sets an alg's video link (an http(s) URL); null removes it. Shows locally right away. */
 export function setVideoLink(slotCaseId: string, alg: AlgRef, url: string | null) {
-  if (state.load !== 'ready') return
   const key = algKey(alg)
-  if ((state.videos.get(key)?.url ?? null) === url) return
-  const videos = new Map(state.videos)
-  if (url) videos.set(key, { alg, slotCaseId, url, updatedAt: new Date().toISOString() })
-  else videos.delete(key)
-  setState({ videos })
-  send(`video:${key}`, 'PUT', `${API}/videos/${alg.kind}/${encodeURIComponent(alg.id)}`, { url } satisfies PutVideoBody, alg)
+  if ((data().videos.get(key)?.url ?? null) === url) return
+  progress.change((d) => {
+    const videos = new Map(d.videos)
+    if (url) videos.set(key, { alg, slotCaseId, url, updatedAt: new Date().toISOString() })
+    else videos.delete(key)
+    return { ...d, videos }
+  }, json('PUT', `${API}/videos/${alg.kind}/${encodeURIComponent(alg.id)}`, { url } satisfies PutVideoBody))
 }
 
 /**
@@ -306,12 +219,13 @@ export function setVideoLink(slotCaseId: string, alg: AlgRef, url: string | null
  * id, or undefined while offline.
  */
 export function addUserAlg(slotCaseId: string, moves: string): string | undefined {
-  if (state.load !== 'ready') return
+  if (progress.get().load !== 'ready') return
   const id = crypto.randomUUID()
-  const userAlgs = new Map(state.userAlgs)
-  userAlgs.set(id, { id, slotCaseId, moves, createdAt: new Date().toISOString() })
-  setState({ userAlgs })
-  send(userAlgQueue(id), 'PUT', `${API}/user-algs/${id}`, { slotCaseId, moves } satisfies PutUserAlgBody)
+  progress.change((d) => {
+    const userAlgs = new Map(d.userAlgs)
+    userAlgs.set(id, { id, slotCaseId, moves, createdAt: new Date().toISOString() })
+    return { ...d, userAlgs }
+  }, json('PUT', `${API}/user-algs/${id}`, { slotCaseId, moves } satisfies PutUserAlgBody))
   return id
 }
 
@@ -320,29 +234,29 @@ export const isPlaceholder = (alg: UserAlg) => !alg.moves
 
 /** Fills in a placeholder's moves (checked on the cube by the caller). Its notes etc. stay. */
 export function fillUserAlg(alg: UserAlg, moves: string) {
-  if (state.load !== 'ready') return
-  const userAlgs = new Map(state.userAlgs)
-  userAlgs.set(alg.id, { ...alg, moves })
-  setState({ userAlgs })
-  send(userAlgQueue(alg.id), 'PATCH', `${API}/user-algs/${alg.id}`, { moves } satisfies PatchUserAlgBody)
+  progress.change((d) => {
+    const userAlgs = new Map(d.userAlgs)
+    userAlgs.set(alg.id, { ...alg, moves })
+    return { ...d, userAlgs }
+  }, json('PATCH', `${API}/user-algs/${alg.id}`, { moves } satisfies PatchUserAlgBody))
 }
 
 /** Deletes an alg you added, and with it its main-alg spot, status, notes and video link. */
 export function deleteUserAlg(alg: UserAlg) {
-  if (state.load !== 'ready') return
   const ref = userRef(alg)
-  const userAlgs = new Map(state.userAlgs)
-  userAlgs.delete(alg.id)
-  const bySlotCase = new Map(state.bySlotCase)
-  const p = current(alg.slotCaseId)
-  const next = { mainAlg: sameAlg(p.mainAlg, ref) ? undefined : p.mainAlg, algs: p.algs.filter((a) => !sameAlg(a.alg, ref)) }
-  if (next.mainAlg || next.algs.length) bySlotCase.set(alg.slotCaseId, next)
-  else bySlotCase.delete(alg.slotCaseId)
-  const notes = new Map([...state.notes].filter(([, n]) => !sameAlg(n.alg, ref)))
-  const videos = new Map(state.videos)
-  videos.delete(algKey(ref))
-  setState({ userAlgs, bySlotCase, notes, videos })
-  send(userAlgQueue(alg.id), 'DELETE', `${API}/user-algs/${alg.id}`, undefined)
+  progress.change((d) => {
+    const userAlgs = new Map(d.userAlgs)
+    userAlgs.delete(alg.id)
+    const bySlotCase = new Map(d.bySlotCase)
+    const p = d.bySlotCase.get(alg.slotCaseId) ?? { algs: [] }
+    const next = { mainAlg: sameAlg(p.mainAlg, ref) ? undefined : p.mainAlg, algs: p.algs.filter((a) => !sameAlg(a.alg, ref)) }
+    if (next.mainAlg || next.algs.length) bySlotCase.set(alg.slotCaseId, next)
+    else bySlotCase.delete(alg.slotCaseId)
+    const notes = new Map([...d.notes].filter(([, n]) => !sameAlg(n.alg, ref)))
+    const videos = new Map(d.videos)
+    videos.delete(algKey(ref))
+    return { userAlgs, bySlotCase, notes, videos }
+  }, json('DELETE', `${API}/user-algs/${alg.id}`))
 }
 
 /** The catalog algs a note shows on: its own, and those its links reach (see NoteFollows). */

@@ -26,7 +26,8 @@ import {
   type Recommender,
   type Slot,
 } from './catalog.ts'
-import { Cube } from '../../../packages/ui/cube/Cube.tsx'
+import { isTextField } from '../../../packages/ui/keys.ts'
+import { F2lCube } from './F2lCube.tsx'
 import { EdgeTag } from './EdgeTag.tsx'
 import { AlgMoves } from './Moves.tsx'
 import { Notation } from '../../../packages/ui/notation/Notation.tsx'
@@ -154,7 +155,7 @@ export function ClusterView({ cluster, slotCaseId, algId }: Props) {
   }
   const onKey = useEffectEvent((e: KeyboardEvent) => {
     if (e.key.toLowerCase() !== SHORTCUTS.equivalent || e.altKey || e.ctrlKey || e.metaKey) return
-    if (e.target instanceof HTMLElement && e.target.closest('input, textarea, select, [contenteditable]')) return
+    if (isTextField(e.target)) return
     if (selectedUser) return // your own algs have no links to follow
     e.preventDefault()
     togglePicking(alg)
@@ -178,9 +179,9 @@ export function ClusterView({ cluster, slotCaseId, algId }: Props) {
             </span>}
         </div>
         {preview !== undefined ? (
-          <Cube setup={setup} alg={preview} slot={slotCase.slot} pairSlot={pairSlot} size={380} interactive at="end" />
+          <F2lCube setup={setup} alg={preview} slot={slotCase.slot} pairSlot={pairSlot} size={380} interactive at="end" />
         ) : (
-          <Cube
+          <F2lCube
             setup={showingSetup ? '' : setup}
             alg={showingSetup ? setup : (selectedUser?.moves ?? alg.moves)}
             triggers={showingSetup || selectedUser ? undefined : alg.triggers}
@@ -265,7 +266,7 @@ export function ClusterCrumb({ cluster }: { cluster: Cluster }) {
     const onKey = (e: KeyboardEvent) => {
       const direction = NEIGHBOUR_KEYS[e.key]
       if (!direction || !e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return
-      if (e.target instanceof HTMLElement && e.target.closest('input, textarea, select, [contenteditable]')) return
+      if (isTextField(e.target)) return
       e.preventDefault()
       location.hash = f2lHref({ clusterId: neighbourClusters(cluster)[direction].id })
     }
@@ -411,7 +412,7 @@ function FamilyMap({ cluster, selected, familyIds, hrefFor, picking }: FamilyMap
     const content = (
       <>
         {mark === 'main' && <MainBadge />}
-        <Cube {...caseSetup(sc, setupMode)} slot={slot} size={76} />
+        <F2lCube {...caseSetup(sc, setupMode)} slot={slot} size={76} />
         <span className="slot-cell-label">
           F2L {caseNumber}
           {load === 'ready' && <StatusMark status={status} />}
@@ -431,7 +432,7 @@ function FamilyMap({ cluster, selected, familyIds, hrefFor, picking }: FamilyMap
       (!filter.matches(sc.id) && !picking ? ' filtered-out' : '') +
       (picking ? (equivalent ? ' pickable' : ' unpickable') : '')
     const group = groupOf.get(sc.id)
-    const common = { className, 'data-reveal': true, 'data-slot': slot, 'data-group': group, title }
+    const common = { className, 'data-slot': slot, 'data-group': group, title }
     if (picking && !equivalent)
       return (
         <span key={slot} {...common} aria-disabled>
@@ -585,7 +586,7 @@ function AlgList({ algs, userAlgs, setup, onDraft, selectedId, mainId, stateOf, 
   // Text fields keep their keys, like the player's shortcuts in Cube.tsx.
   const onKey = useEffectEvent((e: KeyboardEvent) => {
     if (e.altKey || e.ctrlKey || e.metaKey) return
-    if (e.target instanceof HTMLElement && e.target.closest('input:not([type=range]), textarea, select, [contenteditable]'))
+    if (isTextField(e.target))
       return
     if (e.key === SHORTCUTS.search && searchRef.current) {
       e.preventDefault()

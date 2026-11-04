@@ -4,11 +4,12 @@
 // Settings → F2L says: it's the easy one to do on a real cube). Set it up, solve it, go
 // on; R shows the alg. Rating how it went is shown but off for now: nothing is recorded.
 import { useCallback, useEffect, useMemo } from 'react'
-import { Cube } from '../../../packages/ui/cube/Cube.tsx'
+import { F2lCube } from './F2lCube.tsx'
 import { pick, pickInRounds, roundPosition } from '../../../packages/core/drill/draw.ts'
 import { useDealt, type Draw } from '../../../packages/ui/drill/dealt.ts'
 import { DrillNav } from '../../../packages/ui/drill/DrillNav.tsx'
-import { isControl, isTextField, NEXT_KEYS, PREV_KEYS } from '../../../packages/ui/drill/keys.ts'
+import { NEXT_KEYS, PREV_KEYS } from '../../../packages/ui/drill/keys.ts'
+import { isControl, isTextField } from '../../../packages/ui/keys.ts'
 import { Notation } from '../../../packages/ui/notation/Notation.tsx'
 import { AUFS, joinMoves, undoAuf } from '../../../packages/core/notation/moves.ts'
 import type { AlgTrigger } from '../../../packages/core/cube.ts'
@@ -16,7 +17,7 @@ import { SLOT_NAMES, caseSetup, catalog, getAlg, getCase, getSlotCase, type Cata
 import { useF2lFilter } from './filter.ts'
 import { notesOn, useProgress, type SlotCaseState, type UserAlg } from './progress.ts'
 import { f2lHref } from './route.ts'
-import { isFilter, useF2lSettings } from './settings.ts'
+import { isFilter, useOverview } from './settings.ts'
 
 /** A slot-case dealt this session, at an angle (a U turn after its setup). */
 interface Dealt {
@@ -80,7 +81,7 @@ function useSelection() {
 export function TrainCrumb() {
   const ids = useSelection()
   const { active } = useF2lFilter()
-  const settings = useF2lSettings()
+  const settings = useOverview()
   const saved = active ? settings.savedFilters.find((f) => isFilter(settings, f)) : undefined
   return (
     <nav className="crumb">
@@ -162,7 +163,7 @@ export function Train() {
           <Notation moves={moves} />
         </div>
 
-        <div className="f2l-train-stage" data-reveal>
+        <div className="f2l-train-stage">
           {entry.revealed ? (
             <>
               <a
@@ -181,7 +182,7 @@ export function Train() {
                   ))}
                 </div>
               )}
-              <Cube
+              <F2lCube
                 setup={moves}
                 alg={played.moves}
                 triggers={played.triggers}
@@ -194,7 +195,7 @@ export function Train() {
             </>
           ) : (
             <>
-              <Cube setup={moves} slot={slotCase.slot} pairSlot={pairSlot} size={300} interactive controls={false} zoomable />
+              <F2lCube setup={moves} slot={slotCase.slot} pairSlot={pairSlot} size={300} interactive controls={false} zoomable />
               <p className="f2l-train-hint">Set it up, solve it, then Next. Drag to turn the cube, scroll to zoom; R shows the alg.</p>
             </>
           )}

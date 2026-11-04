@@ -4,10 +4,10 @@
 // legend is hidden till then.
 import { SLOTS, catalog, getCase, getSlotCase, slotCaseIdFor } from './catalog.ts'
 import { statusOf, useProgress, type SlotCaseState } from './progress.ts'
-import { useF2lSettings, type LegendFilter } from './settings.ts'
+import { useOverview, type LegendFilter } from './settings.ts'
 
 /** The case numbers in a case filter like "27-30, 33" (a range either way round); none if nothing parses. */
-export function parseCaseNumbers(text: string): Set<number> | undefined {
+function parseCaseNumbers(text: string): Set<number> | undefined {
   const numbers = new Set<number>()
   for (const part of text.split(/[\s,;]+/)) {
     const m = /^(\d+)(?:-(\d+))?$/.exec(part)
@@ -49,7 +49,7 @@ export const isFiltering = (f: LegendFilter) =>
 export const allSlotCaseIds = () => catalog.slotCases.map((sc) => sc.id)
 
 export function useF2lFilter() {
-  const settings = useF2lSettings()
+  const settings = useOverview()
   const { load, bySlotCase } = useProgress()
   const active = load === 'ready' && isFiltering(settings)
   const passes = filterMatcher(settings, bySlotCase)

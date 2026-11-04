@@ -1,14 +1,11 @@
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { Alg } from 'cubing/alg'
-import type { KPattern } from 'cubing/kpuzzle'
 import { TwistyPlayer } from 'cubing/twisty'
 import type { AlgTrigger, Slot } from '../../core/cube.ts'
 import { moveKinds } from '../../core/notation/groups.ts'
+import { isTextField } from '../keys.ts'
 import { CAMERA_DISTANCE, HOLD_CROSS_ON_D, LL_PIECES, SLOT_PAIR } from './cubeModel.ts'
-import { FlatCube, type Face, type FlatView } from './FlatCube.tsx'
-import { useCubeSettings, type CubeSettings } from './settings.ts'
-import { useStealth } from '../stealth.ts'
-import { trackStealthColors } from './stealthCube.ts'
+import { getCubeSettings, SPEEDS, updateCubeSettings, useCubeSettings } from './settings.ts'
 
 type AlgIndexer = Awaited<ReturnType<TwistyPlayer['experimentalModel']['indexer']['get']>>
 
@@ -17,12 +14,27 @@ interface StickeringMask {
   orbits: Record<string, { pieces: { facelets: { mask: FaceletMask; hintMask: FaceletMask }[] }[] }>
 }
 
+export type HintMode = 'off' | 'pair' | 'all'
+
+/** How a cube is drawn: the showing tool's choice (e.g. F2L's settings), not a shared setting. */
+export interface CubeDisplay {
+  /** Only the pair in full colour, the rest of F2L dimmed. Off = normal colours. */
+  highlightPair: boolean
+  /** Floating copies of hidden faces (big player only): for the pair, all of F2L, or none. */
+  hints: HintMode
+  /** Hint distance from the cube, in cubing.js units (stickers sit at ~0.5). */
+  hintDistance: number
+}
+
+/** Plain: F2L in its normal colours, no hints. */
+const PLAIN_DISPLAY: CubeDisplay = { highlightPair: false, hints: 'off', hintDistance: 0.95 }
+
 /**
  * Last layer grey. With `highlightPair`, only the slot's pair is in full colour and the
  * rest of F2L (centers included) is dimmed; otherwise F2L keeps its normal colours.
  * Hint stickers are shown for the pair, all of F2L, or nothing.
  */
-function cubeMask(pairSlot: Slot, { highlightPair, hints }: CubeSettings): StickeringMask {
+function cubeMask(pairSlot: Slot, { highlightPair, hints }: CubeDisplay): StickeringMask {
   const { corner, edge } = SLOT_PAIR[pairSlot]
   const orbit = (count: number, pairPiece: number | null) => ({
     pieces: Array.from({ length: count }, (_, i) => {
@@ -52,47 +64,13 @@ const CAMERA_TURN_MS = 450
 /** A camera position in degrees, as cubing.js orbit coordinates. */
 type View = { latitude: number; longitude: number }
 
-/** cubing.js's cap on looking down at the cube; stealth lifts it to allow a top-down view. */
-const DEFAULT_LATITUDE_LIMIT = 35
-const TOP_DOWN = 90
-
-const roundToQuarter = (degrees: number) => Math.round(degrees / 90) * 90
-
-/**
- * Where a cube lies flat in stealth mode: small cubes seen from straight above, the big
- * one from the straight-on side (or top/bottom) nearest to where it's looking.
- */
-function flatView(view: View, interactive: boolean): View {
-  const latitude = !interactive ? TOP_DOWN : Math.abs(view.latitude) > 45 ? Math.sign(view.latitude) * TOP_DOWN : 0
-  return { latitude, longitude: roundToQuarter(view.longitude) }
-}
-
-const SIDE_AT_LONGITUDE: Record<number, Face> = { 0: 'F', 90: 'R', 180: 'B', [-90]: 'L' }
-const OPPOSITE: Record<Face, Face> = { U: 'D', D: 'U', F: 'B', B: 'F', R: 'L', L: 'R' }
-
-/** A flat (straight-on) camera position as faces: which one it looks at, which is up. */
-function facesOf({ latitude, longitude }: View): FlatView {
-  const side = SIDE_AT_LONGITUDE[((((roundToQuarter(longitude) % 360) + 540) % 360) - 180) as 0 | 90 | -90] ?? 'B'
-  if (latitude === TOP_DOWN) return { toward: 'U', up: OPPOSITE[side] }
-  if (latitude === -TOP_DOWN) return { toward: 'D', up: side }
-  return { toward: side, up: 'U' }
-}
-
-// tempoScale per speed; 1 is cubing.js's default (~1s per quarter turn).
-const SPEEDS = [
-  { label: 'Slow', tempo: 0.75 },
-  { label: 'Normal', tempo: 1.5 },
-  { label: 'Fast', tempo: 3 },
-]
-const DEFAULT_SPEED = 1.5
 /** Manual stepping always turns this fast (quicker than any playback speed); the speed setting is for playback. */
 const STEP_SPEED = 5
-const SPEED_KEY = 'cubetrainer.tempo'
 
 const FORWARDS = 1
 const BACKWARDS = -1
 
-interface Props {
+export interface CubeProps {
   setup: string
   alg?: string
   slot?: Slot
@@ -109,6 +87,8 @@ interface Props {
   zoomable?: boolean
   /** Where the player rests when the alg changes: before it (default) or after it, e.g. to preview moves as they're typed. */
   at?: 'start' | 'end'
+  /** How it's drawn (highlighting, hints): the showing tool's settings; plain by default. */
+  display?: CubeDisplay
 }
 
 /** How far the wheel can zoom the camera in and out. */
@@ -125,12 +105,9 @@ export function Cube({
   controls = true,
   zoomable = false,
   at = 'start',
-}: Props) {
+  display = PLAIN_DISPLAY,
+}: CubeProps) {
   const [player, setPlayer] = useState<TwistyPlayer | null>(null)
-  const [hovered, setHovered] = useState(false)
-  const stealth = useStealth()
-  /** Stealth mode, not hovered: the cube lies flat (see the camera effect below). */
-  const flat = stealth && !hovered
 
   // Mount a TwistyPlayer into the container; recreated only if `interactive` changes.
   const containerRef = useCallback(
@@ -142,32 +119,16 @@ export function Cube({
         controlPanel: 'none',
         hintFacelets: 'none',
         experimentalDragInput: interactive ? 'auto' : 'none',
-        tempoScale: loadSpeed(),
+        tempoScale: getCubeSettings().tempo,
         cameraDistance: CAMERA_DISTANCE,
       })
       p.style.width = '100%'
       p.style.height = '100%'
       container.appendChild(p)
       setPlayer(p)
-      const untrackStealth = trackStealthColors(p)
-
-      // Hovering the cube's card or slot cell (or just the cube) counts as looking at it.
-      // Leaving mid-drag (big cube) is settled when the button is released.
-      const scope = container.closest('[data-reveal]') ?? container
-      const onEnter = () => setHovered(true)
-      const onLeave = (e: Event) => {
-        if (!(e as PointerEvent).buttons) setHovered(false)
-        else addEventListener('pointerup', () => setHovered(scope.matches(':hover')), { once: true })
-      }
-      scope.addEventListener('pointerenter', onEnter)
-      scope.addEventListener('pointerleave', onLeave)
       return () => {
-        scope.removeEventListener('pointerenter', onEnter)
-        scope.removeEventListener('pointerleave', onLeave)
-        untrackStealth()
         p.remove()
         setPlayer(null)
-        setHovered(false)
       }
     },
     [interactive],
@@ -193,74 +154,31 @@ export function Cube({
     }
   }, [player, zoomable])
 
-  const settings = useCubeSettings()
+  const { tempo } = useCubeSettings()
+  const { highlightPair, hints, hintDistance } = display
   useEffect(() => {
     if (!player) return
-    setMask(player, cubeMask(pairSlot, settings))
-    // Hints only on the big player; in the small cubes they'd be too tiny to read. Not
-    // while it lies flat either: they'd poke out around the face as slivers.
-    setHints(player, interactive && !flat && settings.hints !== 'off', settings.hintDistance)
-  }, [player, pairSlot, interactive, settings, flat])
+    setMask(player, cubeMask(pairSlot, { highlightPair, hints, hintDistance }))
+    // Hints only on the big player; in the small cubes they'd be too tiny to read.
+    setHints(player, interactive && hints !== 'off', hintDistance)
+  }, [player, pairSlot, interactive, highlightPair, hints, hintDistance])
+  useEffect(() => {
+    if (player) player.tempoScale = tempo
+  }, [player, tempo])
 
-  // The camera leans toward the slot. In stealth mode, a cube that isn't hovered lies flat
-  // (see flatView) and hovering turns it back to its own view, kept in `ownView` while it's
-  // flat or on its way back. The first placement is instant, later moves animate.
+  // The camera leans toward the slot: placed at once on a new player, animated after.
   const cameraTurn = useRef(0)
-  /** The flat view the camera rests in (or is heading to), for the flat drawing. */
-  const [flatAt, setFlatAt] = useState<View | null>(null)
   const placed = useRef<{ player: TwistyPlayer; slot: Slot } | null>(null)
-  const ownView = useRef<View | null>(null)
   useEffect(() => {
     if (!player) return
     const isNew = placed.current?.player !== player
-    const slotChanged = isNew || placed.current?.slot !== slot
+    if (!isNew && placed.current?.slot === slot) return
     placed.current = { player, slot }
-    if (isNew) ownView.current = null
     const turn = ++cameraTurn.current
-    const isCurrent = () => turn === cameraTurn.current
-    const move = (to: Partial<View>) => moveCamera(player, to, isNew ? 0 : CAMERA_TURN_MS, isCurrent)
-    const longitude = SLOT_LONGITUDE[slot]
-    const aimed = (view: View) => (slotChanged ? { ...view, longitude } : view)
-    if (stealth) setLatitudeLimit(player, TOP_DOWN)
+    void moveCamera(player, { longitude: SLOT_LONGITUDE[slot] }, isNew ? 0 : CAMERA_TURN_MS, () => turn === cameraTurn.current)
+  }, [player, slot])
 
-    void (async () => {
-      if (flat) {
-        const own = ownView.current ?? (await currentView(player))
-        if (!isCurrent()) return
-        ownView.current = aimed(own)
-        const target = flatView(ownView.current, interactive)
-        setFlatAt(target)
-        await move(target)
-      } else if (ownView.current) {
-        ownView.current = aimed(ownView.current)
-        if (!(await move(ownView.current))) return
-        ownView.current = null
-        if (!stealth) setLatitudeLimit(player, DEFAULT_LATITUDE_LIMIT)
-      } else if (slotChanged) {
-        await move({ longitude })
-      }
-    })()
-  }, [player, slot, interactive, stealth, flat])
-
-  // While flat, a small cube's player gives way to a 2D drawing (FlatCube): the same
-  // picture plus the side stickers around it. Hovering swaps the player back in, then it
-  // turns. The big cube keeps its player throughout.
-  const [pattern, setPattern] = useState<KPattern | null>(null)
-  useEffect(() => {
-    if (!player || !stealth || interactive) return
-    const currentPattern = player.experimentalModel.currentPattern
-    const onPattern = (p: KPattern) => setPattern(p)
-    currentPattern.addFreshListener(onPattern)
-    return () => currentPattern.removeFreshListener(onPattern)
-  }, [player, stealth, interactive])
-
-  const cube = (
-    <div ref={containerRef} className="cube" style={{ width: size, maxWidth: '100%', aspectRatio: '1' }}>
-      {flat && !interactive && flatAt && pattern && (
-        <FlatCube pattern={pattern} pairSlot={pairSlot} highlightPair={settings.highlightPair} view={facesOf(flatAt)} />
-      )}
-    </div>
-  )
+  const cube = <div ref={containerRef} className="cube" style={{ width: size, maxWidth: '100%', aspectRatio: '1' }} />
   if (!interactive || !controls) return cube
   return (
     <div className="player">
@@ -288,10 +206,6 @@ function setHints(player: TwistyPlayer, show: boolean, distance: number) {
 function setView(player: TwistyPlayer, { latitude, longitude }: View) {
   player.cameraLatitude = latitude
   player.cameraLongitude = longitude
-}
-
-function setLatitudeLimit(player: TwistyPlayer, degrees: number) {
-  player.cameraLatitudeLimit = degrees
 }
 
 async function currentView(player: TwistyPlayer): Promise<View> {
@@ -331,18 +245,6 @@ function seek(player: TwistyPlayer, ms: number) {
   player.timestamp = ms as never
 }
 
-function setTempo(player: TwistyPlayer, speed: number) {
-  player.tempoScale = speed
-}
-
-function loadSpeed(): number {
-  try {
-    const saved = Number(localStorage.getItem(SPEED_KEY))
-    return SPEEDS.some((s) => s.tempo === saved) ? saved : DEFAULT_SPEED
-  } catch {
-    return DEFAULT_SPEED
-  }
-}
 
 function PlayerControls({ player, alg, triggers }: { player: TwistyPlayer; alg: string; triggers?: readonly AlgTrigger[] }) {
   const model = player.experimentalModel
@@ -356,7 +258,7 @@ function PlayerControls({ player, alg, triggers }: { player: TwistyPlayer; alg: 
   })
   /** [start, end] timestamp of each animated move. */
   const [moveSpans, setMoveSpans] = useState<[number, number][]>([])
-  const [speed, setSpeed] = useState(loadSpeed)
+  const speed = useCubeSettings().tempo
 
   useEffect(() => {
     const onPlaying = (info: { playing: boolean }) => setPlaying(info.playing)
@@ -452,26 +354,14 @@ function PlayerControls({ player, alg, triggers }: { player: TwistyPlayer; alg: 
     animation.pause()
     if (moveSpans[i]) seek(player, moveSpans[i][1])
   }
-  const changeSpeed = (s: number) => {
-    setSpeed(s)
-    setTempo(player, s)
-    try {
-      localStorage.setItem(SPEED_KEY, String(s))
-    } catch {
-      // Private mode etc.: the speed just isn't remembered.
-    }
-  }
+  const changeSpeed = (tempo: number) => updateCubeSettings({ tempo })
 
   // Keyboard: space = play/pause, ←/→ = step, Home/End = jump. Works even when a player
   // button or the scrubber has focus (after a click); only text fields keep their keys.
   const onKey = useEffectEvent((e: KeyboardEvent) => {
     // Shift+arrows are left to the page (e.g. F2L's previous/next cluster).
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
-    if (
-      e.target instanceof HTMLElement &&
-      e.target.closest('input:not([type=range]), textarea, select, [contenteditable]')
-    )
-      return
+    if (isTextField(e.target)) return
     const handlers: Record<string, () => void> = {
       ' ': togglePlay,
       ArrowRight: () => step(FORWARDS),

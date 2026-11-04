@@ -22,8 +22,8 @@
 }
 
 .cluster-step:hover {
-  color: var(--select);
-  background: var(--select-soft);
+  color: var(--accent);
+  background: var(--accent-soft);
 }
 
 /* Overview */
@@ -209,12 +209,12 @@
 
 .setup-line.active {
   border-top-color: transparent;
-  background: var(--select-soft);
-  box-shadow: inset 2px 0 var(--select);
+  background: var(--accent-soft);
+  box-shadow: inset 2px 0 var(--accent);
 }
 
 .setup-line.active .setup-label {
-  color: var(--select);
+  color: var(--accent);
 }
 
 .setup-label {
@@ -239,7 +239,7 @@
   padding: 0;
   border: none;
   background: none;
-  color: var(--link);
+  color: var(--accent);
   font-size: 13px;
 }
 
@@ -290,11 +290,11 @@
 }
 
 .slot-cell:hover {
-  background: var(--select-soft);
+  background: var(--accent-soft);
 }
 
 .slot-cell.selected {
-  background: var(--select-soft);
+  background: var(--accent-soft);
 }
 
 /* Linked mains share a tint; the selected one keeps it and gets a ring instead. */
@@ -319,7 +319,7 @@
 }
 
 .slot-cell[data-group].selected {
-  box-shadow: inset 0 0 0 2px var(--select);
+  box-shadow: inset 0 0 0 2px var(--accent);
 }
 
 .slot-cell[data-group]:hover {
@@ -328,11 +328,11 @@
 
 /* Go to equivalent: cells with a linked alg invite a click, the rest step back. */
 .family-map.picking .slot-cell.pickable {
-  box-shadow: inset 0 0 0 1.5px var(--select);
+  box-shadow: inset 0 0 0 1.5px var(--accent);
 }
 
 .family-map.picking .slot-cell.pickable:hover {
-  box-shadow: inset 0 0 0 2.5px var(--select);
+  box-shadow: inset 0 0 0 2.5px var(--accent);
 }
 
 .family-map.picking .slot-cell.selected {
@@ -373,9 +373,9 @@
 }
 
 .family-tool.active {
-  border-color: var(--select);
-  background: var(--select-soft);
-  color: var(--select);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .family-tool kbd {
@@ -460,7 +460,7 @@
 }
 
 .link-kinds label:has(input:checked) {
-  background: var(--select-soft);
+  background: var(--accent-soft);
 }
 
 .link-kinds label:has(input:focus-visible) {
@@ -500,7 +500,7 @@
 }
 
 .link-set-icon .on {
-  stroke: var(--select);
+  stroke: var(--accent);
   stroke-width: 1.8;
 }
 
@@ -531,7 +531,7 @@
 }
 
 .reach-preview rect.on {
-  fill: var(--select);
+  fill: var(--accent);
 }
 
 .reach-preview rect.off {
@@ -560,7 +560,7 @@
 }
 
 .slot-grid-key .key-corner {
-  fill: var(--select);
+  fill: var(--accent);
 }
 
 .slot-cell-label {
@@ -575,7 +575,7 @@
 }
 
 .slot-cell.selected .slot-cell-label {
-  color: var(--select);
+  color: var(--accent);
 }
 
 .alg-list h3 {
@@ -619,8 +619,8 @@
 }
 
 .alg-list li.selected {
-  background: var(--select-soft);
-  box-shadow: inset 2px 0 var(--select);
+  background: var(--accent-soft);
+  box-shadow: inset 2px 0 var(--accent);
 }
 
 .alg-moves {
@@ -926,8 +926,8 @@
 }
 
 .legend button.active {
-  background: var(--select-soft);
-  color: var(--select);
+  background: var(--accent-soft);
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -997,7 +997,7 @@
 }
 
 .saved-filter.active {
-  background: var(--select-soft);
+  background: var(--accent-soft);
 }
 
 .legend .saved-filter.active button:first-child {
@@ -1015,7 +1015,7 @@
 }
 
 .legend .save-filter {
-  color: var(--link);
+  color: var(--accent);
 }
 
 .save-filter-form {
@@ -1029,7 +1029,7 @@
   width: 260px;
   max-width: 100%;
   padding: 3px 8px;
-  border: 1px solid var(--select);
+  border: 1px solid var(--accent);
   border-radius: 4px;
   background: var(--surface);
   color: var(--text);
@@ -1037,8 +1037,8 @@
 }
 
 .legend .save-filter-form button[type='submit'] {
-  background: var(--select);
-  color: var(--on-select);
+  background: var(--accent);
+  color: var(--on-accent);
   font-weight: 600;
 }
 
@@ -1084,8 +1084,8 @@
 .train-button {
   padding: 7px 18px;
   border-radius: 4px;
-  background: var(--select);
-  color: var(--on-select);
+  background: var(--accent);
+  color: var(--on-accent);
   font-weight: 600;
   white-space: nowrap;
   text-decoration: none;
@@ -1272,8 +1272,8 @@
 
 .equivalent-toggle.on {
   opacity: 1;
-  color: var(--select);
-  background: var(--select-soft);
+  color: var(--accent);
+  background: var(--accent-soft);
 }
 
 /* Note button: outline when empty, filled page when the alg has a note. */
@@ -1293,7 +1293,7 @@
 }
 
 /* Video button: a screen with a play mark; filled when the alg has a link. Ink, not a
-   brand red, so it stays quiet in stealth too. */
+   brand red, so it stays quiet. */
 .alg-video-toggle:hover,
 .alg-video-toggle.open {
   color: var(--text);
@@ -1317,7 +1317,7 @@
 /* The video link's popover: open it, paste or change it, remove it. */
 .video-open {
   align-self: flex-start;
-  color: var(--link);
+  color: var(--accent);
   font-size: 13px;
   font-weight: 500;
   text-decoration: none;
@@ -1340,7 +1340,7 @@
 }
 
 .video-popover input:focus {
-  outline: 2px solid var(--select);
+  outline: 2px solid var(--accent);
   outline-offset: -1px;
 }
 
@@ -1370,8 +1370,8 @@
   padding: 4px 14px;
   border: none;
   border-radius: 6px;
-  background: var(--select);
-  color: var(--on-select);
+  background: var(--accent);
+  color: var(--on-accent);
   font-size: 13px;
 }
 
@@ -1384,8 +1384,8 @@
    has go-to-equivalent. */
 .pick.yours {
   background: none;
-  color: var(--select);
-  border-color: var(--select);
+  color: var(--accent);
+  border-color: var(--accent);
   cursor: default;
 }
 
@@ -1475,7 +1475,7 @@
 
 .add-alg-note:focus,
 .add-alg input:focus {
-  outline: 2px solid var(--select);
+  outline: 2px solid var(--accent);
   outline-offset: -1px;
 }
 
@@ -1526,8 +1526,8 @@
   padding: 4px 14px;
   border: none;
   border-radius: 6px;
-  background: var(--select);
-  color: var(--on-select);
+  background: var(--accent);
+  color: var(--on-accent);
   font-size: 13px;
 }
 
@@ -1850,8 +1850,8 @@
   gap: 4px;
   padding: 1px 4px 1px 9px;
   border-radius: 999px;
-  background: var(--select-soft);
-  color: var(--select);
+  background: var(--accent-soft);
+  color: var(--accent);
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
@@ -1928,7 +1928,7 @@
 }
 
 .alg-trigger:hover {
-  background: var(--select-soft);
+  background: var(--accent-soft);
 }
 
 .trigger-tooltip {
@@ -2032,8 +2032,7 @@
   filter: grayscale(0.8);
 }
 
-/* F2L train (src/tools/f2l/Train.tsx), in the shared drill card. The cube dims and lies
-   flat in stealth like any other (Cube.tsx, data-reveal on the stage). */
+/* F2L train (src/tools/f2l/Train.tsx), in the shared drill card. */
 .f2l-train {
   display: flex;
   flex-direction: column;

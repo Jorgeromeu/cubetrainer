@@ -10,7 +10,7 @@ import {
   slotCaseIdFor,
   type Cluster,
 } from './catalog.ts'
-import { Cube } from '../../../packages/ui/cube/Cube.tsx'
+import { F2lCube } from './F2lCube.tsx'
 import { useF2lFilter } from './filter.ts'
 import { useF2lFocus } from './focus.ts'
 import { ProgressBar, SlotStatusGrid } from './ProgressBits.tsx'
@@ -66,7 +66,7 @@ export function Overview() {
                             (caseMatches(caseId) ? '' : ' filtered-out')
                           }
                         >
-                          <Cube setup={getSlotCase(slotCaseIdFor(caseId, 'FR')).setup} size={110} />
+                          <F2lCube setup={getSlotCase(slotCaseIdFor(caseId, 'FR')).setup} size={110} />
                           {load === 'ready' && <SlotStatusGrid caseId={caseId} label={`F2L ${getCase(caseId).number}`} dimmed={(id) => !matches(id)} />}
                         </div>
                       ))}
@@ -106,7 +106,7 @@ export function Overview() {
                     href={f2lHref({ clusterId: cluster.id })}
                     className={'cluster-card' + (done ? ' done' : '')}
                     title={done ? 'All learnt' : undefined}
-                    data-reveal
+                   
                   >
                     {content}
                   </a>

@@ -1,4 +1,4 @@
-// The F2L tool: the alg explorer over catalog/f2l.json, with progress kept by ../server.
+// The F2L tool: the alg explorer over its catalog (../catalog), with progress kept by ../server.
 import type { Tool } from '../../../packages/ui/tool.ts'
 import { F2lCrumb, F2lView } from './F2lView.tsx'
 import { F2lSettings } from './F2lSettings.tsx'

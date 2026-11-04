@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { SLOT_NAMES, algsById, getCase, getSlotCase, type CatalogAlg } from './catalog.ts'
 import { TRIGGER_NAMES, type AlgTrigger } from '../../../packages/core/cube.ts'
-import type { AlgInsert } from '../../../packages/core/catalog/f2l.ts'
+import type { AlgInsert } from '../catalog/catalog.ts'
 import { Notation } from '../../../packages/ui/notation/Notation.tsx'
 import { notesFor, useProgress } from './progress.ts'
 

@@ -9,7 +9,7 @@
   "workspaces": [
     "app",
     "server",
-    "catalog-builder",
+    "tools/f2l/catalog/builder",
     "packages/*"
   ],
   "scripts": {
@@ -17,8 +17,14 @@
     "server": "npm run dev -w server",
     "build": "tsc -p server/tsconfig.json && npm run build -w app",
     "check:imports": "node scripts/check-imports.ts",
+    "new-tool": "node --disable-warning=ExperimentalWarning scripts/new-tool.ts",
+    "data:pull": "node --disable-warning=ExperimentalWarning scripts/data.ts pull",
+    "data:diff": "node --disable-warning=ExperimentalWarning scripts/data.ts diff",
+    "data:push": "node --disable-warning=ExperimentalWarning scripts/data.ts push",
+    "test": "node --disable-warning=ExperimentalWarning --test server/src/*.test.ts server/src/*/*.test.ts tools/*/server/*.test.ts scripts/*.test.ts",
     "typecheck": "tsc -p server/tsconfig.json && tsc -b app",
-    "lint": "npm run lint -w app"
+    "lint": "npm run lint -w app",
+    "check": "npm run build && npm run lint && npm test"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",

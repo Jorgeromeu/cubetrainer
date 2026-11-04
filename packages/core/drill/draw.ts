@@ -3,7 +3,7 @@
 export const pick = <T,>(items: readonly T[]) => items[Math.floor(Math.random() * items.length)]
 
 /** One of `ids`, avoiding `previous` when there's a choice. */
-export const pickOther = (ids: readonly string[], previous?: string) =>
+const pickOther = (ids: readonly string[], previous?: string) =>
   ids.length ? pick(ids.length > 1 ? ids.filter((id) => id !== previous) : ids) : undefined
 
 /**

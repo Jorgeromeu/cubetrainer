@@ -1,117 +1,8 @@
-/* Shared styles (packages/ui): theme tokens, base elements, the shell, stealth, cube, notation,
-   settings blocks, and the patterns several tools build with (crumb, drill card, server notice).
+/* Shared styles (packages/ui): base elements, the shell, panes, cube, notation, settings
+   blocks, and the patterns several tools build with (crumb, drill card, server notice). Every
+   value comes from tokens.css; the rules for using them: openspec/specs/library/design.
    A tool's own styles live in its folder, imported by its index.ts. */
-
-:root {
-  --bg: #f6f6f4;
-  --surface: #ffffff;
-  --text: #1d1d1f;
-  --muted: #6b6b70;
-  --border: #e2e2de;
-  --accent: #2f6fd6;
-  --accent-soft: #e6eefb;
-  /* Text and icons on an --accent fill. */
-  --on-accent: #fff;
-  /* Structural emphasis (selection, current item, primary buttons) and text links: the
-     accent normally, ink in stealth. */
-  --select: var(--accent);
-  --select-soft: var(--accent-soft);
-  --on-select: var(--on-accent);
-  --link: var(--accent);
-  /* A slot-case's main alg (star, status marks, progress). */
-  --main: var(--accent);
-  --mirror: #d98a1c;
-  --mirror-soft: #fbf0df;
-  --rotation: #e0731a;
-  --trigger: #14898f;
-  --learnt: #2a9d5c;
-  --learnt-soft: #e2f4e9;
-  --learning: #8a63d2;
-  --learning-soft: #efe9fa;
-  /* Want to learn: a paler violet, the step before learning. */
-  --wanted: #bba5e6;
-  --danger: #c23b3b;
-  --danger-soft: #fbe6e6;
-  /* Family map group tints (ClusterView FamilyMap): cells whose main algs are linked.
-     Matplotlib tab10 hues without its green/orange/red, which read as good/bad; blue
-     last, since selection is blue. Each a soft mix into the surface, so dark mode and
-     stealth (quieter) only change the mix. */
-  --group-0-hue: #9467bd;
-  --group-1-hue: #17becf;
-  --group-2-hue: #e377c2;
-  --group-3-hue: #8c564b;
-  --group-4-hue: #1f77b4;
-  --group-mix: 22%;
-  --group-0: color-mix(in srgb, var(--group-0-hue) var(--group-mix), var(--surface));
-  --group-1: color-mix(in srgb, var(--group-1-hue) var(--group-mix), var(--surface));
-  --group-2: color-mix(in srgb, var(--group-2-hue) var(--group-mix), var(--surface));
-  --group-3: color-mix(in srgb, var(--group-3-hue) var(--group-mix), var(--surface));
-  --group-4: color-mix(in srgb, var(--group-4-hue) var(--group-mix), var(--surface));
-  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-  --topbar-height: 52px;
-
-  color-scheme: light dark;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.45;
-  color: var(--text);
-  background: var(--bg);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #17171a;
-    --surface: #212125;
-    --text: #ececef;
-    --muted: #9a9aa2;
-    --border: #34343a;
-    --accent: #7aa7f0;
-    --accent-soft: #24324a;
-    --mirror: #e7a548;
-    --mirror-soft: #3a2e1c;
-    --rotation: #f0954a;
-    --trigger: #4cc4c9;
-    --learnt: #5cc98a;
-    --learnt-soft: #1d3527;
-    --learning: #b195f0;
-    --learning-soft: #2c2540;
-    --wanted: #7a65ad;
-    --danger: #f07a7a;
-    --danger-soft: #3d2222;
-    --group-mix: 30%;
-  }
-}
-
-/* Stealth mode (stealth.ts): a monochrome UI, not a desaturated one. Everything
-   structural (selection, the current move, primary buttons, sliders, links at rest) is
-   ink on grey; colour is kept, at full strength, only for small signals: status marks
-   and markers (learnt, learning, want to learn, main, mirror, rotation, bad edge), link hovers, focus
-   rings and errors. */
-:root[data-stealth] {
-  --bg: #f4f4f4;
-  --surface: #ffffff;
-  --text: #1e1e1e;
-  --muted: #747474;
-  --border: #e1e1e1;
-  --select: var(--text);
-  --select-soft: #e8e8e8;
-  --on-select: var(--surface);
-  --link: var(--text);
-  /* Group tints stay, just quieter. */
-  --group-mix: 12%;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root[data-stealth] {
-    --bg: #161616;
-    --surface: #1f1f1f;
-    --text: #e4e4e4;
-    --muted: #8e8e8e;
-    --border: #333333;
-    --select-soft: #2e2e2e;
-    --on-select: var(--bg);
-    --group-mix: 18%;
-  }
-}
+@import './tokens.css';
 
 * {
   box-sizing: border-box;
@@ -145,7 +36,250 @@ button {
   padding: 20px 20px 48px;
 }
 
-/* Sticky across the page: brand + stealth toggle, and in a cluster, its crumb. */
+/* A page that is a Workspace fills the page under the top bar, edge to edge, and the top
+   bar's content spans the same width. */
+.app:has(> .workspace) {
+  max-width: none;
+  padding: 0;
+}
+
+body:has(.workspace) .topbar-inner {
+  max-width: none;
+}
+
+/* Panes (panes.tsx): side by side, split by hairlines, each a thin header over a scrolling body. */
+.workspace {
+  display: flex;
+  height: calc(100dvh - var(--topbar-height) - 1px);
+  min-height: 360px;
+}
+
+.pane {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.pane + .pane {
+  border-left: var(--hairline);
+}
+
+.pane-head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  height: var(--pane-head-height);
+  padding: 0 4px 0 10px;
+  background: var(--pane-head-bg);
+  box-shadow: inset 0 -1px var(--border);
+  font-size: var(--text-small);
+}
+
+.pane-title {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pane-note {
+  overflow: hidden;
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pane-note a {
+  color: var(--accent);
+}
+
+.pane-actions {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.pane-button {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--muted);
+}
+
+.pane-button:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.pane-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.pane-group {
+  padding: 4px 0 8px;
+}
+
+.pane-group-head {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px 4px;
+  color: var(--muted);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: var(--label-spacing);
+  text-transform: uppercase;
+}
+
+.pane-count {
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.pane-row {
+  display: block;
+  padding: 3px 10px 3px 18px;
+  color: var(--text);
+  font-size: var(--text-body);
+  text-decoration: none;
+}
+
+.pane-row:hover {
+  background: var(--pane-head-bg);
+}
+
+.pane-row.current {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+button.pane-row {
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+}
+
+/* A window over the page (the settings window): panes in a floating frame on a dimmed
+   backdrop. The only floating surface besides menus. */
+.window-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--backdrop);
+}
+
+.window {
+  display: flex;
+  width: min(920px, 100%);
+  height: min(640px, 100%);
+  border: var(--hairline);
+  border-radius: var(--radius);
+  background: var(--bg);
+  box-shadow: var(--shadow-float);
+  overflow: hidden;
+  outline: none;
+}
+
+.pane-note .link-button {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* Settings rows (settings/blocks.tsx): label and hint left, control right, hairlines between. */
+.settings-body {
+  display: flex;
+  flex-direction: column;
+  max-width: 760px;
+  padding: 0 var(--pane-pad-x) var(--pane-pad-y);
+}
+
+.settings-section {
+  padding: 16px 0 2px;
+  color: var(--muted);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: var(--label-spacing);
+  text-transform: uppercase;
+}
+
+.setting {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding: var(--row-pad-y) 0;
+  border-bottom: var(--hairline);
+}
+
+.setting.disabled {
+  opacity: 0.45;
+}
+
+.setting-label {
+  flex: 1 1 260px;
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.setting-label span {
+  display: block;
+  color: var(--muted);
+  font-size: var(--text-small);
+  font-weight: 400;
+}
+
+/* A wide control (a list, a table) takes its own line under the label. */
+.setting-control:has(> :not(.segmented, .range-row)) {
+  flex-basis: 100%;
+}
+
+.segmented {
+  display: inline-flex;
+  border: var(--hairline);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.segmented button {
+  height: var(--control-height);
+  padding: 0 10px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: var(--text-small);
+}
+
+.segmented button + button {
+  border-left: var(--hairline);
+}
+
+.segmented button:hover {
+  color: var(--text);
+}
+
+.segmented button.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Sticky across the page: brand, and in a cluster, its crumb. */
 .topbar {
   position: sticky;
   top: 0;
@@ -198,36 +332,6 @@ button {
   }
 }
 
-.stealth-toggle {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border-radius: 50%;
-  border: none;
-  background: none;
-  color: var(--muted);
-  transition: background 0.12s, color 0.12s;
-}
-
-.stealth-toggle:hover {
-  background: var(--surface);
-  color: var(--text);
-}
-
-.stealth-toggle svg {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.stealth-toggle svg .fill {
-  fill: currentColor;
-}
-
 /* Normal mode's icon: a little cube in its real colours. */
 .cube-icon path {
   stroke: var(--text);
@@ -246,14 +350,10 @@ button {
   fill: #e8402f;
 }
 
-.settings {
-  position: relative;
-  margin-left: auto;
-}
-
 .settings-button {
   display: grid;
   place-items: center;
+  margin-left: auto;
   width: 34px;
   height: 34px;
   padding: 0;
@@ -264,90 +364,23 @@ button {
   transition: background 0.12s, color 0.12s;
 }
 
-.settings-button:hover,
-.settings-button[aria-expanded='true'] {
+.settings-button:hover {
   background: var(--bg);
   color: var(--text);
 }
 
-.settings-title {
-  font-size: 15px;
-  font-weight: 600;
-}
 
-.settings-section {
-  margin-bottom: -6px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
 
-.settings-panel {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 6px);
-  z-index: 10;
-  width: min(300px, calc(100vw - 56px));
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  box-shadow: 0 8px 28px rgb(0 0 0 / 0.16);
-}
 
-.setting {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
 
-.setting.disabled {
-  opacity: 0.45;
-}
 
-.setting-label {
-  font-size: 14px;
-  font-weight: 600;
-}
 
-.setting-label span {
-  display: block;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--muted);
-}
 
-.segmented {
-  display: flex;
-  padding: 2px;
-  border-radius: 8px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-}
 
-.segmented button {
-  flex: 1;
-  padding: 4px 8px;
-  border: none;
-  border-radius: 6px;
-  background: none;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.segmented button.active {
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
-}
 
 .range-row {
   display: flex;
+  width: 240px;
   align-items: center;
   gap: 10px;
   font-size: 12px;
@@ -356,13 +389,13 @@ button {
 
 .range-row input {
   flex: 1;
-  accent-color: var(--select);
+  accent-color: var(--accent);
 }
 
-.settings-panel .link-button {
+.settings-body .link-button {
   align-self: flex-start;
-  margin: 0;
-  font-size: 13px;
+  margin: var(--row-pad-y) 0 0;
+  font-size: var(--text-small);
 }
 
 .brand {
@@ -371,6 +404,34 @@ button {
   font-weight: 700;
   font-size: 18px;
   white-space: nowrap;
+}
+
+/* The branch badge (shell/DevBadge.tsx): shown unless on main with main's data. */
+.dev-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 12px;
+  padding: 2px 9px;
+  border: 1px solid color-mix(in srgb, var(--branch) 45%, var(--border));
+  border-radius: 999px;
+  color: var(--branch);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.dev-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--branch);
+}
+
+.dev-badge-data {
+  color: var(--muted);
+  font-weight: 400;
 }
 
 /* The tool's name after the brand; hovering or focusing it opens the tool menu. */
@@ -385,9 +446,9 @@ button {
   margin-left: 2px;
   padding: 2px 6px;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius);
   background: none;
-  color: var(--select);
+  color: var(--accent);
   font-weight: 700;
 }
 
@@ -417,16 +478,15 @@ button {
   z-index: 30;
   display: none;
   flex-direction: column;
-  gap: 2px;
   width: max-content;
-  min-width: 220px;
+  min-width: 240px;
   margin-top: 4px;
-  padding: 6px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
+  border: var(--hairline);
+  border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: 0 8px 28px rgb(0 0 0 / 0.16);
-  font-size: 14px;
+  box-shadow: var(--shadow-float);
+  font-size: var(--text-body);
+  overflow: hidden;
 }
 
 .tool-menu::before {
@@ -443,21 +503,24 @@ button {
 .tool-menu a {
   display: flex;
   flex-direction: column;
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: 6px 12px;
+}
+
+.tool-menu a + a {
+  border-top: var(--hairline);
 }
 
 .tool-menu a:hover,
 .tool-menu a:focus-visible {
-  background: var(--bg);
+  background: var(--pane-head-bg);
 }
 
 .tool-menu a.current strong {
-  color: var(--select);
+  color: var(--accent);
 }
 
 .tool-menu span {
-  font-size: 12px;
+  font-size: var(--text-small);
   font-weight: 400;
   color: var(--muted);
 }
@@ -467,8 +530,8 @@ button {
   font-size: 12px;
   padding: 1px 8px;
   border-radius: 999px;
-  background: var(--select-soft);
-  color: var(--select);
+  background: var(--accent-soft);
+  color: var(--accent);
   white-space: nowrap;
 }
 
@@ -476,89 +539,12 @@ button {
   flex: none;
 }
 
-/* Stealth mode (stealth.ts): cubes are dimmed and lie flat (Cube.tsx) until their
-   reveal area ([data-reveal]: overview card, slot cell) or the cube itself is hovered.
-   While flat, the 2D drawing (FlatCube.tsx) covers the player exactly. */
-[data-stealth] .cube > :is(twisty-player, .flat-cube) {
-  opacity: 0.4;
-  transition: opacity 0.2s;
-}
-
 .cube {
   position: relative;
 }
 
-.flat-cube {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-/* cubing.js's cubie bodies: translucent black, darker where layers overlap. Not drawn: at
-   rest in stealth the stickers are loose tiles, so the drawing reads as a grid rather than
-   a cube (the real one comes back on hover). Kept in FlatCube.tsx for a closer match. */
-.flat-cube-body {
-  display: none;
-}
-
-.cube:has(> .flat-cube) > twisty-player {
-  visibility: hidden;
-}
-
-[data-stealth] :is([data-reveal]:hover .cube, .cube:hover) > twisty-player {
-  opacity: 1;
-}
-
-/* PLL case icon (icons/PllIcon.tsx), shared by the PLL tools */
-
-.pll-icon {
-  flex: none;
-  display: block;
-}
-
-.pll-icon-body {
-  fill: #1d1d1f;
-}
-
-.pll-arrow-line {
-  fill: none;
-  stroke: #1d1d1f;
-  stroke-width: 0.11;
-  stroke-linecap: round;
-}
-
-.pll-arrow-head {
-  fill: #1d1d1f;
-}
-
-/* Stealth (stealth.ts): greys from PllIcon, no dark body behind the stickers (loose
-   tiles, like the F2L drawings), light arrows on the black last layer, and dimmed until
-   their card or line is hovered, like the F2L cubes. */
-[data-stealth] .pll-icon-body {
-  display: none;
-}
-
-[data-stealth] .pll-arrow-line {
-  stroke: #c8c8c8;
-}
-
-[data-stealth] .pll-arrow-head {
-  fill: #c8c8c8;
-}
-
-[data-stealth] .pll-icon {
-  opacity: 0.4;
-  transition: opacity 0.2s;
-}
-
-[data-stealth] :is([data-reveal]:hover .pll-icon, .pll-icon:hover) {
-  opacity: 1;
-}
-
 .back {
-  color: var(--link);
+  color: var(--accent);
   white-space: nowrap;
   transition: color 0.12s;
 }
@@ -611,8 +597,8 @@ button {
 
 .move.current {
   opacity: 1;
-  background: var(--select);
-  color: var(--on-select);
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .scrubber-track {
@@ -633,7 +619,7 @@ button {
   right: calc(var(--thumb) / 2);
   height: 4px;
   border-radius: 999px;
-  background: linear-gradient(to right, var(--select) var(--progress), var(--border) var(--progress));
+  background: linear-gradient(to right, var(--accent) var(--progress), var(--border) var(--progress));
   transform: translateY(-50%);
 }
 
@@ -657,7 +643,7 @@ button {
 }
 
 .scrubber-stop.passed {
-  background: var(--select);
+  background: var(--accent);
 }
 
 .scrubber {
@@ -681,9 +667,9 @@ button {
   width: var(--thumb);
   height: var(--thumb);
   border-radius: 50%;
-  background: var(--select);
+  background: var(--accent);
   border: 2px solid var(--surface);
-  box-shadow: 0 0 0 1px var(--select);
+  box-shadow: 0 0 0 1px var(--accent);
 }
 
 .scrubber::-moz-range-thumb {
@@ -691,7 +677,7 @@ button {
   width: var(--thumb);
   height: var(--thumb);
   border-radius: 50%;
-  background: var(--select);
+  background: var(--accent);
   border: 2px solid var(--surface);
 }
 
@@ -739,7 +725,7 @@ button {
 
 /* Play/pause: the same plain button as the rest, just in the accent colour. */
 .icon-button.primary {
-  color: var(--select);
+  color: var(--accent);
 }
 
 .speed {
@@ -761,8 +747,8 @@ button {
 }
 
 .speed button.active {
-  background: var(--select-soft);
-  color: var(--select);
+  background: var(--accent-soft);
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -798,7 +784,7 @@ kbd {
   padding: 0;
   border: none;
   background: none;
-  color: var(--link);
+  color: var(--accent);
 }
 
 @media (max-width: 520px) {
@@ -850,7 +836,7 @@ kbd {
   background: var(--danger);
 }
 
-/* The drill card (packages/ui/drill/, used by PLL and F2L): moves on top (a scramble, a setup),
+/* The drill card (packages/ui/drill/, used by F2L): moves on top (a scramble, a setup),
    the tool's stage in the middle, controls (drill/DrillNav.tsx) at the bottom. */
 .drill {
   display: flex;
@@ -903,14 +889,14 @@ kbd {
 }
 
 .drill-prev:hover:not(:disabled) {
-  border-color: var(--select);
+  border-color: var(--accent);
 }
 
 .drill-next {
   padding: 0 22px;
   border: none;
-  background: var(--select);
-  color: var(--on-select);
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .drill-next:hover:not(:disabled) {
@@ -984,7 +970,7 @@ kbd {
 
 /* The app-wide move hint (notation/MoveHint.tsx): hover any move for an icon of
    the turn. The cube is drawn in the UI's greys, the turning layer in the
-   select colour (ink in stealth), so it never looks like a real cube. */
+   select colour, so it never looks like a real cube. */
 [data-move] {
   cursor: help;
 }
@@ -1006,12 +992,12 @@ kbd {
 }
 
 .move-icon {
-  --move-colour: var(--select);
+  --move-colour: var(--accent);
   flex: none;
   overflow: visible;
 }
 
-/* Rotations in their own colour, like their notation (kept in stealth: a small signal). */
+/* Rotations in their own colour, like their notation */
 .move-icon.rotation {
   --move-colour: var(--rotation);
 }

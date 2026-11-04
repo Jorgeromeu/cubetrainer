@@ -1,6 +1,8 @@
-// F2L tool preferences (Settings → F2L). They only affect the F2L pages.
-import { persisted } from '../../../packages/ui/persisted.ts'
-import { LINK_KINDS, type LinkKind } from '../../../packages/core/catalog/f2l.ts'
+// F2L's settings (Settings → F2L) and the overview's view state. They only affect the F2L pages.
+import { setting } from '../../../packages/ui/settings/setting.ts'
+import { viewState } from '../../../packages/ui/settings/viewState.ts'
+import type { HintMode } from '../../../packages/ui/cube/Cube.tsx'
+import { LINK_KINDS, type LinkKind } from '../catalog/catalog.ts'
 import type { Status } from './progress.ts'
 
 /**
@@ -28,7 +30,7 @@ export interface SavedFilter extends LegendFilter {
   name: string
 }
 
-/** F2L tool preferences. They only affect the F2L pages. */
+/** F2L's settings (Settings → F2L): kept with every setting (packages/ui/settings/setting.ts). */
 export interface F2lSettings {
   /** Focus on what's missing: learnt slot-cases are greyed out (still clickable). */
   focusMissing: boolean
@@ -38,17 +40,28 @@ export interface F2lSettings {
    * cells whose main algs are linked by these, and the overview counts ideas by them.
    */
   linkKinds: LinkKind[]
-  edgeFilter: EdgeFilter
-  /** The overview's status filter (in its legend): only slot-cases with one of these statuses; none for all. */
-  statuses: Status[]
-  /** The overview's case filter (in its legend): case numbers as typed, like "27-30, 33"; empty for all. */
-  caseFilter: string
+  /** How F2L's cubes are drawn (F2lCube.tsx): the pair in full colour, the rest of F2L dimmed. */
+  highlightPair: boolean
+  /** Floating copies of hidden faces on the big cube: for the pair, all of F2L, or none. */
+  hints: HintMode
+  /** How far the hints float from the cube, in cubing.js units. */
+  hintDistance: number
+}
+
+/** The hint distance slider's range. */
+export const HINT_DISTANCE = { min: 0.8, max: 1.6, step: 0.05 }
+
+export const DEFAULT_CUBE_DISPLAY = { highlightPair: true, hints: 'pair' as HintMode, hintDistance: 0.95 }
+
+/** How the overview was left: its legend filter and saved filters, remembered per browser. */
+export interface OverviewView extends LegendFilter {
   /** Legend filters saved under a name (in the legend). */
+  // REVIEW: user data, not view state; moves into F2L's DB when the tool is reworked.
   savedFilters: SavedFilter[]
 }
 
 /** By default mirrors and rotations count as the same alg; transposes don't. */
-export const DEFAULT_LINK_KINDS: LinkKind[] = ['mirrorLR', 'mirrorFB', 'rotation']
+const DEFAULT_LINK_KINDS: LinkKind[] = ['mirrorLR', 'mirrorFB', 'rotation']
 
 const validStatuses = (statuses: Status[]) => Array.isArray(statuses) && statuses.every((s) => STATUSES.includes(s))
 
@@ -65,27 +78,53 @@ function migrateFilter<F extends object>(f: F & { statusFilter?: unknown; status
   return { ...rest, statuses: statusFilter === 'all' ? [] : [statusFilter] } as unknown as F
 }
 
-const f2lSettings = persisted<F2lSettings>(
-  'cubetrainer.f2lSettings',
-  { focusMissing: false, setupMode: 'colours', linkKinds: DEFAULT_LINK_KINDS, edgeFilter: 'all', statuses: [], caseFilter: '', savedFilters: [] },
+/** Both used to be one per-browser object under this key. */
+const LEGACY_KEY = 'cubetrainer.f2lSettings'
+
+const only = <K extends string>(stored: Record<string, unknown>, keys: readonly K[]) =>
+  Object.fromEntries(keys.filter((k) => k in stored).map((k) => [k, stored[k]]))
+
+const f2lSettings = setting<F2lSettings>(
+  'f2l',
+  { focusMissing: false, setupMode: 'colours', linkKinds: DEFAULT_LINK_KINDS, ...DEFAULT_CUBE_DISPLAY },
   (s) =>
     typeof s.focusMissing === 'boolean' &&
     ['colours', 'rotation'].includes(s.setupMode) &&
     Array.isArray(s.linkKinds) &&
     s.linkKinds.every((k) => LINK_KINDS.includes(k)) &&
-    ['all', 'good', 'bad'].includes(s.edgeFilter) &&
-    validStatuses(s.statuses) &&
-    typeof s.caseFilter === 'string' &&
-    Array.isArray(s.savedFilters) &&
-    s.savedFilters.every(validFilter),
-  (stored) => {
-    const s = migrateFilter(stored)
-    return Array.isArray(s.savedFilters) ? { ...s, savedFilters: s.savedFilters.map(migrateFilter) } : s
+    typeof s.highlightPair === 'boolean' &&
+    ['off', 'pair', 'all'].includes(s.hints) &&
+    s.hintDistance >= HINT_DISTANCE.min &&
+    s.hintDistance <= HINT_DISTANCE.max,
+  {
+    legacyKey: LEGACY_KEY,
+    migrate: (stored) => only(stored, ['focusMissing', 'setupMode', 'linkKinds', 'highlightPair', 'hints', 'hintDistance']),
   },
 )
 
 export const updateF2lSettings = f2lSettings.update
 export const useF2lSettings = f2lSettings.use
+
+const overview = viewState<OverviewView>(
+  'f2l.overview',
+  { edgeFilter: 'all', statuses: [], caseFilter: '', savedFilters: [] },
+  (s) =>
+    ['all', 'good', 'bad'].includes(s.edgeFilter) &&
+    validStatuses(s.statuses) &&
+    typeof s.caseFilter === 'string' &&
+    Array.isArray(s.savedFilters) &&
+    s.savedFilters.every(validFilter),
+  {
+    legacyKey: LEGACY_KEY,
+    migrate: (stored) => {
+      const s = migrateFilter(only(stored, ['edgeFilter', 'statuses', 'statusFilter', 'caseFilter', 'savedFilters']))
+      return Array.isArray(s.savedFilters) ? { ...s, savedFilters: s.savedFilters.map(migrateFilter) } : s
+    },
+  },
+)
+
+export const updateOverview = overview.update
+export const useOverview = overview.use
 
 export const NO_FILTER: LegendFilter = { edgeFilter: 'all', statuses: [], caseFilter: '' }
 

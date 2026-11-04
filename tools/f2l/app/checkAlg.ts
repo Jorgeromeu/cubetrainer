@@ -1,6 +1,6 @@
 // Checking an alg you type in against its slot-case, on a cubing.js cube: does it solve
 // the case? Used to add your own algs (see AddAlg in ClusterView.tsx). Same rules as the
-// catalog builder's check (catalog-builder/src/cube.ts), plus reading loosely typed moves.
+// catalog builder's check (catalog/builder/src/cube.ts), plus reading loosely typed moves.
 import { useEffect, useState } from 'react'
 import type { KPattern, KPuzzle } from 'cubing/kpuzzle'
 import { cube3x3x3 } from 'cubing/puzzles'

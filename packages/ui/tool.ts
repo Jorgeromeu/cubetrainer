@@ -2,6 +2,9 @@
 // it owns everything under #/<id>/, and only uses the shell through this interface.
 import type { ComponentType } from 'react'
 
+/** The app's name, in the top bar and the tab title. */
+export const BRAND = 'Cubetrainer'
+
 /** The route under a tool's #/<id>/, split on "/" (empty on its home page). */
 export interface ToolProps {
   path: string[]
@@ -14,14 +17,24 @@ export interface Tool {
   /** One line in the tool menu. */
   description: string
   View: ComponentType<ToolProps>
-  /** Its part of the top bar, after the brand and the stealth toggle. */
+  /** Its part of the top bar, after the brand. */
   Crumb?: ComponentType<ToolProps>
   /**
-   * Its settings menu, the only thing in it (no gear without one). Build it with
-   * settings.tsx; add shared sections only if they apply to it, e.g.
-   * cube/CubeDisplaySettings.tsx if it shows 3D cubes.
+   * Its own settings section in the settings window, under its name. Build it
+   * from settings/blocks.tsx, over a setting(<its id>, ...) store (settings/setting.ts).
    */
   Settings?: ComponentType
+  /** Shared library sections that apply to it (settings a library owns, the same in every tool): app-wide in the settings window. */
+  sharedSettings?: readonly SharedSettings[]
+}
+
+/**
+ * A settings section a shared library offers (its values are the same in every tool), for
+ * tools to list in `sharedSettings`.
+ */
+export interface SharedSettings {
+  title: string
+  View: ComponentType
 }
 
 /** A link into a tool: #/<id>/<path...>. Empty path parts are dropped. */

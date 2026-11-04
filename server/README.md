@@ -21,8 +21,9 @@ No npm dependencies: `node:http` + `node:sqlite`, `.ts` run directly. Requires N
 
 | Path | What |
 |---|---|
-| `src/main.ts` | HTTP server: sends `/api/<id>/...` to that tool's routes, serves `app/dist`. |
-| `src/tool.ts` | The interface tool servers use, and the only host file they may import: `ServerTool` (id + routes), `ApiRoute`, `ToolContext`, `InvalidRequest` (→ 400). |
+| `src/main.ts` | HTTP server: sends `/api/<id>/...` to that tool's routes, serves exposed calls (`/api/<id>/exposed/<name>`) and capabilities (`/api/_/capabilities/<name>`), serves `app/dist`. |
+| `src/tool.ts` | The interface tool servers use, and the only host file they may import: `ServerTool` (id, `uses`, `start()` → routes + exposed implementations), `ApiRoute`, `ToolContext` (own DB, `read`, `gather`), `implement`, `InvalidRequest` (→ 400). |
+| `src/registry.ts` | Starts every tool and holds its routes and exposed calls; what `ctx.read` / `ctx.gather` go through. Tested in `registry.test.ts` (`npm test`). |
 | `src/tools.ts` | The registry: every tool with server-side data. |
 | `src/http.ts` | JSON helpers, route matching. |
 | `src/db.ts` | Opens a tool's DB and applies its migrations. |
@@ -30,7 +31,9 @@ No npm dependencies: `node:http` + `node:sqlite`, `.ts` run directly. Requires N
 Tools are isolated:
 
 - A tool only sees the routes under its prefix and its own DB file, so it can't touch
-  another's data, and its migration numbers are its own.
+  another's data, and its migration numbers are its own. It reads other tools' data only
+  through their exposed calls (`ctx.read`, for tools listed in its `uses`), never writes it.
+- `exposed` is a reserved path under each prefix, and `_` a reserved prefix.
 - If one fails at startup (a bad migration, a missing catalog), only it is disabled: its
   routes answer 503 and the server log says why; the other tools and the app keep working.
   A failed migration is rolled back.

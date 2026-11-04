@@ -1,8 +1,10 @@
-// The user-data API contract between server/ and app/. See docs/requirements.md §5.2.
-import type { LinkKind } from "../../packages/core/catalog/f2l.ts";
+// The F2L tool's contract: its API between server/ and app/ (docs/requirements.md §5.2),
+// and the calls it exposes to other tools (f2lExposes, at the end).
+import type { LinkKind } from "./catalog/catalog.ts";
+import { exposed } from "../../packages/core/exposed.ts";
 
 /**
- * Which alg a slot-case's main alg is. Catalog algs live in catalog/f2l.json; user algs
+ * Which alg a slot-case's main alg is. Catalog algs live in catalog/f2l.json (this tool's); user algs
  * (algs you add yourself, see UserAlg) live in the user_algs table.
  */
 export interface AlgRef {
@@ -135,3 +137,23 @@ export interface PatchUserAlgBody {
 
 // DELETE /api/f2l/user-algs/:id -> null. Also clears what hangs off it: main alg (where it
 // is main), status, notes and video link.
+
+// Exposed to other tools (packages/core/exposed.ts).
+
+/** A slot-case you're working on: it has a main alg, or an alg with a status. */
+export interface ActiveCase {
+  slotCaseId: string;
+  mainAlg: AlgRef | null;
+  /** Your algs for it that have a status. */
+  algs: { alg: AlgRef; status: AlgStatus }[];
+}
+
+export interface ActiveCasesResponse {
+  /** By slot-case id. */
+  cases: ActiveCase[];
+}
+
+export const f2lExposes = {
+  /** The slot-cases you've picked a main alg for or are learning, e.g. to check real solves against. */
+  activeCases: exposed<ActiveCasesResponse>("f2l", "active-cases"),
+};
