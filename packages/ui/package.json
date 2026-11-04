@@ -1,0 +1,12 @@
+{
+  "name": "@cubetrainer/ui",
+  "private": true,
+  "type": "module",
+  "description": "Shared React UI: shell, cube rendering, notation display, drill UI, settings blocks. Imports only core from the repo.",
+  "dependencies": {
+    "cubing": "^0.63.8",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "three": "^0.170.0"
+  }
+}

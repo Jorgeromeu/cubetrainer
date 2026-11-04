@@ -1,0 +1,1053 @@
+/* Shared styles (packages/ui): base elements, the shell, panes, cube, notation, settings
+   blocks, and the patterns several tools build with (crumb, drill card, server notice). Every
+   value comes from tokens.css; the rules for using them: openspec/specs/library/design.
+   A tool's own styles live in its folder, imported by its index.ts. */
+@import './tokens.css';
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 20px 48px;
+}
+
+/* A page that is a Workspace fills the page under the top bar, edge to edge, and the top
+   bar's content spans the same width. */
+.app:has(> .workspace) {
+  max-width: none;
+  padding: 0;
+}
+
+body:has(.workspace) .topbar-inner {
+  max-width: none;
+}
+
+/* Panes (panes.tsx): side by side, split by hairlines, each a thin header over a scrolling body. */
+.workspace {
+  display: flex;
+  height: calc(100dvh - var(--topbar-height) - 1px);
+  min-height: 360px;
+}
+
+.pane {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.pane + .pane {
+  border-left: var(--hairline);
+}
+
+.pane-head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  height: var(--pane-head-height);
+  padding: 0 4px 0 10px;
+  background: var(--pane-head-bg);
+  box-shadow: inset 0 -1px var(--border);
+  font-size: var(--text-small);
+}
+
+.pane-title {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pane-note {
+  overflow: hidden;
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pane-note a {
+  color: var(--accent);
+}
+
+.pane-actions {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.pane-button {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--muted);
+}
+
+.pane-button:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.pane-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.pane-group {
+  padding: 4px 0 8px;
+}
+
+.pane-group-head {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px 4px;
+  color: var(--muted);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: var(--label-spacing);
+  text-transform: uppercase;
+}
+
+.pane-count {
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.pane-row {
+  display: block;
+  padding: 3px 10px 3px 18px;
+  color: var(--text);
+  font-size: var(--text-body);
+  text-decoration: none;
+}
+
+.pane-row:hover {
+  background: var(--pane-head-bg);
+}
+
+.pane-row.current {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+button.pane-row {
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+}
+
+/* A window over the page (the settings window): panes in a floating frame on a dimmed
+   backdrop. The only floating surface besides menus. */
+.window-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--backdrop);
+}
+
+.window {
+  display: flex;
+  width: min(920px, 100%);
+  height: min(640px, 100%);
+  border: var(--hairline);
+  border-radius: var(--radius);
+  background: var(--bg);
+  box-shadow: var(--shadow-float);
+  overflow: hidden;
+  outline: none;
+}
+
+.pane-note .link-button {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* Settings rows (settings/blocks.tsx): label and hint left, control right, hairlines between. */
+.settings-body {
+  display: flex;
+  flex-direction: column;
+  max-width: 760px;
+  padding: 0 var(--pane-pad-x) var(--pane-pad-y);
+}
+
+.settings-section {
+  padding: 16px 0 2px;
+  color: var(--muted);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: var(--label-spacing);
+  text-transform: uppercase;
+}
+
+.setting {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding: var(--row-pad-y) 0;
+  border-bottom: var(--hairline);
+}
+
+.setting.disabled {
+  opacity: 0.45;
+}
+
+.setting-label {
+  flex: 1 1 260px;
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.setting-label span {
+  display: block;
+  color: var(--muted);
+  font-size: var(--text-small);
+  font-weight: 400;
+}
+
+/* A wide control (a list, a table) takes its own line under the label. */
+.setting-control:has(> :not(.segmented, .range-row)) {
+  flex-basis: 100%;
+}
+
+.segmented {
+  display: inline-flex;
+  border: var(--hairline);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.segmented button {
+  height: var(--control-height);
+  padding: 0 10px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: var(--text-small);
+}
+
+.segmented button + button {
+  border-left: var(--hairline);
+}
+
+.segmented button:hover {
+  color: var(--text);
+}
+
+.segmented button.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Sticky across the page: brand, and in a cluster, its crumb. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 1200px;
+  height: var(--topbar-height);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.crumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin-left: 8px;
+  padding-left: 16px;
+  border-left: 1px solid var(--border);
+}
+
+.crumb h1 {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 17px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 520px) {
+  .topbar-inner {
+    padding: 0 16px;
+  }
+
+  .crumb {
+    margin-left: 0;
+    padding-left: 10px;
+  }
+
+  .crumb .back span,
+  .crumb .tag {
+    display: none;
+  }
+}
+
+/* Normal mode's icon: a little cube in its real colours. */
+.cube-icon path {
+  stroke: var(--text);
+  stroke-width: 1.3;
+}
+
+.cube-icon .top {
+  fill: #fff;
+}
+
+.cube-icon .front {
+  fill: #1fa34a;
+}
+
+.cube-icon .right {
+  fill: #e8402f;
+}
+
+.settings-button {
+  display: grid;
+  place-items: center;
+  margin-left: auto;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  color: var(--muted);
+  transition: background 0.12s, color 0.12s;
+}
+
+.settings-button:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+
+
+
+
+
+
+
+
+
+.range-row {
+  display: flex;
+  width: 240px;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.range-row input {
+  flex: 1;
+  accent-color: var(--accent);
+}
+
+.settings-body .link-button {
+  align-self: flex-start;
+  margin: var(--row-pad-y) 0 0;
+  font-size: var(--text-small);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+/* The branch badge (shell/DevBadge.tsx): shown unless on main with main's data. */
+.dev-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 12px;
+  padding: 2px 9px;
+  border: 1px solid color-mix(in srgb, var(--branch) 45%, var(--border));
+  border-radius: 999px;
+  color: var(--branch);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.dev-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--branch);
+}
+
+.dev-badge-data {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* The tool's name after the brand; hovering or focusing it opens the tool menu. */
+.tool-switch {
+  position: relative;
+}
+
+.tool-current {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 2px;
+  padding: 2px 6px;
+  border: none;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.tool-current svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.7;
+  transition: transform 0.15s;
+}
+
+.tool-switch:is(:hover, :focus-within) .tool-current {
+  background: var(--surface);
+}
+
+.tool-switch:is(:hover, :focus-within) .tool-current svg {
+  transform: rotate(180deg);
+}
+
+/* Starts right under the name (padding bridges the gap) so the pointer can move onto it. */
+.tool-menu {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: 30;
+  display: none;
+  flex-direction: column;
+  width: max-content;
+  min-width: 240px;
+  margin-top: 4px;
+  border: var(--hairline);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+  font-size: var(--text-body);
+  overflow: hidden;
+}
+
+.tool-menu::before {
+  content: '';
+  position: absolute;
+  inset: -8px 0 auto;
+  height: 8px;
+}
+
+.tool-switch:is(:hover, :focus-within) .tool-menu {
+  display: flex;
+}
+
+.tool-menu a {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 12px;
+}
+
+.tool-menu a + a {
+  border-top: var(--hairline);
+}
+
+.tool-menu a:hover,
+.tool-menu a:focus-visible {
+  background: var(--pane-head-bg);
+}
+
+.tool-menu a.current strong {
+  color: var(--accent);
+}
+
+.tool-menu span {
+  font-size: var(--text-small);
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.tag {
+  display: inline-block;
+  font-size: 12px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.cube {
+  flex: none;
+}
+
+.cube {
+  position: relative;
+}
+
+.back {
+  color: var(--accent);
+  white-space: nowrap;
+  transition: color 0.12s;
+}
+
+.player {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.controls {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.move-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  font-family: var(--mono);
+  font-size: 16px;
+}
+
+.move {
+  min-width: 30px;
+  padding: 3px 5px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  opacity: 0.55;
+  font: inherit;
+  transition: background 0.1s, color 0.1s, opacity 0.1s;
+}
+
+.move:hover {
+  background: var(--bg);
+}
+
+.move.done {
+  color: var(--text);
+  opacity: 1;
+  font-weight: 600;
+}
+
+.move.current {
+  opacity: 1;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.scrubber-track {
+  --thumb: 16px;
+  --progress: 0%;
+  position: relative;
+  width: 100%;
+  margin: 4px 0;
+}
+
+/* The bar spans only where the thumb's centre can go (half a thumb in from each end), so
+   the first and last dots sit on its ends and the fill ends exactly under the thumb. */
+.scrubber-track::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: calc(var(--thumb) / 2);
+  right: calc(var(--thumb) / 2);
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--accent) var(--progress), var(--border) var(--progress));
+  transform: translateY(-50%);
+}
+
+.scrubber-track:has(.scrubber:disabled) {
+  opacity: 0.5;
+}
+
+/* Dots at each move boundary. Inset by half the thumb width so they line up with
+   where the thumb's centre sits at that value. The dot under the thumb isn't rendered. */
+.scrubber-stop {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--thumb) / 2 + var(--at) * (100% - var(--thumb)));
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  box-shadow: 0 0 0 2px var(--surface);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.scrubber-stop.passed {
+  background: var(--accent);
+}
+
+.scrubber {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 4px;
+  margin: 0;
+  appearance: none;
+  background: none;
+  cursor: pointer;
+}
+
+.scrubber:disabled {
+  cursor: default;
+}
+
+.scrubber::-webkit-slider-thumb {
+  appearance: none;
+  box-sizing: border-box;
+  width: var(--thumb);
+  height: var(--thumb);
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.scrubber::-moz-range-thumb {
+  box-sizing: border-box;
+  width: var(--thumb);
+  height: var(--thumb);
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface);
+}
+
+.control-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+@media (max-width: 520px) {
+  .control-row {
+    justify-content: center;
+  }
+}
+
+.transport {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--text);
+  transition: background 0.12s, opacity 0.12s;
+}
+
+.icon-button:hover:not(:disabled) {
+  background: var(--bg);
+}
+
+.icon-button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* Play/pause: the same plain button as the rest, just in the accent colour. */
+.icon-button.primary {
+  color: var(--accent);
+}
+
+.speed {
+  display: flex;
+  gap: 2px;
+}
+
+.speed button {
+  padding: 3px 7px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.speed button:hover {
+  color: var(--text);
+}
+
+.speed button.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 18px;
+  padding: 0 4px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 16px;
+  text-align: center;
+}
+
+.pick {
+  padding: 0 4px;
+  border: 1px solid var(--text);
+  border-radius: 4px;
+  background: var(--text);
+  color: var(--surface);
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: 0.02em;
+  cursor: help;
+}
+
+.link-button {
+  margin-top: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+}
+
+@media (max-width: 520px) {
+  .app {
+    padding: 16px 16px 32px;
+  }
+
+  .pick {
+    padding: 0 2px;
+    font-size: 8.5px;
+  }
+}
+
+/* Bottom-right notice: no server (quiet, stays) or a failed save (red, fades). */
+.server-notice {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
+}
+
+.server-notice::before {
+  content: '';
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mirror);
+}
+
+.server-notice.save-error {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.server-notice.save-error::before {
+  background: var(--danger);
+}
+
+/* The drill card (packages/ui/drill/, used by F2L): moves on top (a scramble, a setup),
+   the tool's stage in the middle, controls (drill/DrillNav.tsx) at the bottom. */
+.drill {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 26px 28px 16px;
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.drill-moves {
+  font-family: var(--mono);
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 500;
+  line-height: 1.3;
+  word-spacing: 0.15em;
+  text-align: center;
+}
+
+.drill-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+}
+
+.drill-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drill-nav .link-button {
+  margin: 0 0 0 8px;
+}
+
+.drill-prev,
+.drill-next {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.drill-prev {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.drill-prev:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.drill-next {
+  padding: 0 22px;
+  border: none;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.drill-next:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.drill-next:focus-visible,
+.drill-prev:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.drill-nav button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.drill-keys {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  word-spacing: 0.1em;
+}
+
+.drill-keys kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  margin-left: 8px;
+  padding: 0 5px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 11px;
+  text-align: center;
+  color: var(--text);
+}
+
+.drill-keys kbd:first-child,
+.drill-keys kbd + kbd {
+  margin-left: 2px;
+}
+
+.drill-keys kbd:first-child {
+  margin-left: 0;
+}
+
+.drill-empty {
+  margin: 0;
+  color: var(--muted);
+}
+
+@media (max-width: 520px) {
+  .drill {
+    padding: 20px 16px 14px;
+  }
+}
+
+/* Same execution elsewhere (alg rows): fixed column after the family icons. */
+/* Notation (Notation.tsx, notation.ts), the same in alg moves, setups, scrambles and the
+   player's move strip: whole-cube rotations (x, y, z) and triggers in their own colours. */
+.rotation-move,
+.move.rotation-move:not(.current) {
+  color: var(--rotation);
+}
+
+.trigger-moves,
+.move.trigger-move:not(.current) {
+  color: var(--trigger);
+}
+
+/* The app-wide move hint (notation/MoveHint.tsx): hover any move for an icon of
+   the turn. The cube is drawn in the UI's greys, the turning layer in the
+   select colour, so it never looks like a real cube. */
+[data-move] {
+  cursor: help;
+}
+
+.move[data-move] {
+  cursor: pointer;
+}
+
+.move-hint {
+  position: fixed;
+  z-index: 50;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.16);
+  line-height: 0;
+  pointer-events: none;
+}
+
+.move-icon {
+  --move-colour: var(--accent);
+  flex: none;
+  overflow: visible;
+}
+
+/* Rotations in their own colour, like their notation */
+.move-icon.rotation {
+  --move-colour: var(--rotation);
+}
+
+.move-icon-sticker {
+  stroke: var(--surface);
+  stroke-width: 0.08;
+  stroke-linejoin: round;
+}
+
+.move-icon-sticker.top {
+  fill: color-mix(in srgb, var(--muted) 18%, var(--surface));
+}
+
+.move-icon-sticker.front {
+  fill: color-mix(in srgb, var(--muted) 32%, var(--surface));
+}
+
+.move-icon-sticker.right {
+  fill: color-mix(in srgb, var(--muted) 46%, var(--surface));
+}
+
+.move-icon-sticker.moving {
+  fill: color-mix(in srgb, var(--move-colour) 30%, var(--surface));
+}
+
+.move-icon-sticker.front.moving {
+  fill: color-mix(in srgb, var(--move-colour) 42%, var(--surface));
+}
+
+.move-icon-sticker.right.moving {
+  fill: color-mix(in srgb, var(--move-colour) 54%, var(--surface));
+}
+
+.move-icon-arrow path {
+  fill: none;
+  stroke: var(--move-colour);
+  stroke-width: 0.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.move-icon-arrow path.head {
+  fill: var(--move-colour);
+  stroke-width: 0.08;
+}
+
+.move-icon-double {
+  fill: var(--move-colour);
+  font-size: 0.95px;
+  font-weight: 700;
+  text-anchor: middle;
+}

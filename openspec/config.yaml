@@ -1,0 +1,25 @@
+schema: spec-driven
+
+# Project context: constraints an agent can't infer from the code.
+context: |
+  Personal cubing tool for one user, run locally (no accounts, no multi-user). Structured so it
+  could be hosted later without a rewrite, but never at the cost of simplicity now.
+  The user is a returning cuber (basic F2L + 2-look OLL/PLL); features serve learning and drilling.
+  Vocabulary (slot-case, mirror cluster, AUF, alg family, alg links...) is defined in
+  specs/tools/f2l/catalog; use those terms exactly.
+  Every new practice tool is its own isolated tool folder (see specs/foundation/architecture), never a
+  mode of an existing tool. A tool owns its data; others read it only through its exposed calls.
+  Specs are grouped: specs/foundation (architecture, shell, user data), specs/library (shared UI),
+  specs/tools/<id> (a tool's own data: specs/tools/<id>/catalog). Put a new capability in the matching group.
+  UI style: dense panes split by hairlines, no cards or rounded boxes; values only from
+  packages/ui/tokens.css (see specs/library/design).
+  The app must keep working without the server (read-only, no progress).
+
+rules:
+  proposal:
+    - Name the capabilities (specs/*) the change touches
+    - Name what other tools' exposed calls it reads or adds, if any
+    - A new tool starts from `npm run new-tool <id>`; say which settings, view state and data it keeps
+  specs:
+    - Use SHALL/MUST and at least one WHEN/THEN scenario per requirement
+    - Spec observable behaviour (keys, defaults, limits, per-browser vs server persistence), not file layout

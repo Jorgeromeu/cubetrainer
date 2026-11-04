@@ -1,10 +1,7 @@
-// HTTP plumbing shared by every trainer's routes: JSON in and out, request errors, and
+// HTTP plumbing shared by every tool's routes: JSON in and out, request errors, and
 // matching a request to a route.
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { ApiRoute } from "./trainer.ts";
-
-/** A request the client got wrong; becomes a 400 with its message. */
-export class InvalidRequest extends Error {}
+import { type ApiRoute, InvalidRequest } from "./tool.ts";
 
 export const json = (res: ServerResponse, status: number, body: unknown) => {
   res.writeHead(status, { "Content-Type": "application/json" });
@@ -22,7 +19,7 @@ export async function readJson(req: IncomingMessage): Promise<unknown> {
 }
 
 export interface CompiledRoute extends ApiRoute {
-  /** Matches the path under /api/<trainer id>; groups are the route's :params. */
+  /** Matches the path under /api/<tool id>; groups are the route's :params. */
   pattern: RegExp;
 }
 
@@ -37,7 +34,11 @@ export function compileRoute(route: ApiRoute): CompiledRoute {
 }
 
 /** The route for a path, with its decoded params; `methodMismatch` when only the method is wrong. */
-export function matchRoute(routes: CompiledRoute[], method: string, path: string) {
+export function matchRoute(
+  routes: CompiledRoute[],
+  method: string,
+  path: string,
+): { route: CompiledRoute; params: Record<string, string> } | { methodMismatch: boolean } {
   let methodMismatch = false;
   for (const route of routes) {
     const match = route.pattern.exec(path);

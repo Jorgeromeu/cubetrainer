@@ -1,6 +1,6 @@
-// Opens a trainer's SQLite file and brings its schema up to date.
+// Opens a tool's SQLite file and brings its schema up to date.
 //
-// Each trainer has its own DB and its own migrations: the numbered files in its
+// Each tool has its own DB and its own migrations: the numbered files in its
 // migrations folder (001_*.sql, 002_*.sql, ...), each applied once, in order, inside a
 // transaction. The DB's PRAGMA user_version records the last one applied. Never edit an
 // applied migration: add a new one.

@@ -1,10 +1,11 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './shell/App.tsx'
+import '../../packages/ui/ui.css'
+import { App } from '../../packages/ui/shell/App.tsx'
+import { TOOLS } from './tools.ts'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <App tools={TOOLS} />
   </StrictMode>,
 )

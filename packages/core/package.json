@@ -1,0 +1,6 @@
+{
+  "name": "@cubetrainer/core",
+  "private": true,
+  "type": "module",
+  "description": "Pure shared logic and types. No runtime dependencies, no DOM, no React; imports nothing else in the repo."
+}

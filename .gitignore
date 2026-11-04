@@ -10,14 +10,15 @@ node_modules/
 dist/
 *.tsbuildinfo
 
-# catalog-builder's download cache (re-fetchable; see catalog-builder/README.md)
-catalog-builder/raw/
+# The F2L catalog builder's download cache (re-fetchable; see tools/f2l/catalog/builder/README.md)
+tools/f2l/catalog/builder/raw/
 
 # Logs
 *.log
 logs/
 
 # Local env and editor/OS files
+.dev.json
 .env
 .env.*
 *.local
@@ -27,3 +28,4 @@ logs/
 .DS_Store
 Thumbs.db
 *.sw?
+.claude/worktrees/

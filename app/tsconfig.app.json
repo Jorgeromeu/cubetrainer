@@ -23,5 +23,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "../shared"]
+  "include": ["src", "../packages/core", "../packages/ui", "../tools/*/contract.ts", "../tools/*/app", "../tools/*/catalog/*.ts"]
 }

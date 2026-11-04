@@ -1,48 +1,102 @@
-// The server: each trainer's API under /api/<id>/ (trainers.ts lists them, trainer.ts says
-// what one provides), each with its own SQLite file in the data dir.
+// The server: each tool's API under /api/<id>/ (tools.ts lists them, tool.ts says
+// what one provides), each with its own SQLite file in the data dir. Tools read each
+// other's data only through exposed calls (registry.ts), also served here:
+//   GET /api/<tool>/exposed/<name>?args       -> that call's result (404 if not there)
+//   GET /api/_/capabilities/<name>?args       -> CapabilityResponse: every provider's
+//   GET /api/_/info                           -> DevInfo: branch, checkout and data (the shell's badge)
+//   GET /api/_/settings, PUT /api/_/settings/<owner>   the settings store (settings/store.ts)
 //
-// When ../app/dist exists (after `npm run build` in app/), it also serves the built app,
-// so one process runs everything. In development Vite proxies /api here instead.
-import { existsSync } from "node:fs";
+// In a git worktree, the first start copies main's data and picks free ports (scripts/devenv.ts).
+//
+// When ../app/dist exists (after `npm run build`), it also serves the built app, so one
+// process runs everything. In development Vite proxies /api here instead.
+import { existsSync, mkdirSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { extname, join, normalize } from "node:path";
+import { extname, join, normalize, resolve } from "node:path";
+import { DEV_INFO_PATH, type DevInfo } from "../../packages/core/devInfo.ts";
+import { SETTINGS_PATH } from "../../packages/core/settings.ts";
+import type { CapabilityName, CapabilityResponse } from "../../packages/core/exposed.ts";
+import { unpushedRows } from "../../scripts/datasync.ts";
+import { branch, checkout, copiedAt, copyMainData, devPorts, hasToolDbs, mainDataDir } from "../../scripts/devenv.ts";
 import { openDb } from "./db.ts";
-import { InvalidRequest, compileRoute, json, matchRoute, readJson, type CompiledRoute } from "./http.ts";
-import { TRAINERS } from "./trainers.ts";
+import { json, matchRoute, readJson } from "./http.ts";
+import { Registry } from "./registry.ts";
+import { SETTINGS_MIGRATIONS, settingsDbPath, settingsStore } from "./settings/store.ts";
+import { InvalidRequest } from "./tool.ts";
+import { TOOLS } from "./tools.ts";
 
 const ROOT = join(import.meta.dirname, "../..");
-const PORT = Number(process.env.PORT ?? 3001);
-const DATA_DIR = process.env.DATA_DIR ?? join(ROOT, "data");
+const CHECKOUT = checkout(ROOT);
+const PORT = Number(process.env.PORT ?? (await devPorts(CHECKOUT)).server);
+const DATA_DIR = resolve(process.env.DATA_DIR ?? join(ROOT, "data"));
+const MAIN_DATA_DIR = resolve(mainDataDir(CHECKOUT));
 const DIST = join(ROOT, "app/dist");
 
-/** Each trainer's routes, or why it couldn't start (then only it is down: 503s). */
-const mounted = new Map<string, { routes: CompiledRoute[] } | { failure: string }>();
-
-for (const trainer of TRAINERS) {
-  const { id } = trainer;
-  if (!/^[a-z0-9-]+$/.test(id)) throw new Error(`Trainer id must be lowercase letters, digits and dashes: ${id}`);
-  if (mounted.has(id)) throw new Error(`Two trainers with id ${id}`);
-  try {
-    const routes = trainer
-      .routes({ repoRoot: ROOT, openDb: (migrationsDir) => openDb(join(DATA_DIR, `${id}.sqlite`), migrationsDir) })
-      .map(compileRoute);
-    mounted.set(id, { routes });
-    console.log(`Trainer ${id}: ${routes.length} routes under /api/${id}`);
-  } catch (e) {
-    console.error(`Trainer ${id} failed to start and is disabled:`, e);
-    mounted.set(id, { failure: `The ${id} trainer failed to start (see the server log)` });
-  }
+// A worktree's first start: its own copy of main's data, before any tool opens a DB.
+if (CHECKOUT.isWorktree && DATA_DIR !== MAIN_DATA_DIR && !hasToolDbs(DATA_DIR)) {
+  mkdirSync(DATA_DIR, { recursive: true });
+  const files = copyMainData(CHECKOUT, DATA_DIR);
+  console.log(`Worktree: copied ${files.length} DB(s) from ${MAIN_DATA_DIR} into ${DATA_DIR} (npm run data:pull refreshes it)`);
 }
 
-async function handleApi(req: IncomingMessage, res: ServerResponse, path: string) {
-  const [, id, rest = ""] = path.match(/^\/api\/([^/]+)(\/.*)?$/) ?? [];
-  const trainer = id ? mounted.get(id) : undefined;
-  if (!trainer) return json(res, 404, { error: "Not found" });
-  if ("failure" in trainer) return json(res, 503, { error: trainer.failure });
+const devInfo = (): DevInfo => ({
+  branch: branch(CHECKOUT),
+  checkout: CHECKOUT.isWorktree ? "worktree" : "main",
+  root: ROOT,
+  dataDir: DATA_DIR,
+  mainDataDir: MAIN_DATA_DIR,
+  copiedAt: copiedAt(DATA_DIR),
+  unpushed: DATA_DIR === MAIN_DATA_DIR ? 0 : unpushedRows(DATA_DIR, MAIN_DATA_DIR),
+  serverPort: PORT,
+});
 
+const settings = settingsStore(openDb(settingsDbPath(DATA_DIR), SETTINGS_MIGRATIONS));
+
+const registry = new Registry(TOOLS, (id) => ({
+  repoRoot: ROOT,
+  openDb: (migrationsDir) => openDb(join(DATA_DIR, `${id}.sqlite`), migrationsDir),
+}));
+for (const [id, mounted] of registry.mounted)
+  if (!("failure" in mounted))
+    console.log(`Tool ${id}: ${mounted.routes.length} routes${mounted.exposes.size ? `, exposes ${[...mounted.exposes.keys()].join(", ")}` : ""}`);
+
+async function handleApi(req: IncomingMessage, res: ServerResponse, url: URL) {
+  const path = url.pathname;
   const method = req.method ?? "GET";
-  const match = matchRoute(trainer.routes, method, rest);
+  const args = Object.fromEntries(url.searchParams);
+
+  if (path === DEV_INFO_PATH) return json(res, 200, devInfo());
+  if (path === SETTINGS_PATH) {
+    if (method !== "GET") return json(res, 405, { error: "Method not allowed" });
+    return json(res, 200, settings.list());
+  }
+  const owner = path.startsWith(SETTINGS_PATH + "/") ? decodeURIComponent(path.slice(SETTINGS_PATH.length + 1)) : undefined;
+  if (owner !== undefined) {
+    if (method !== "PUT") return json(res, 405, { error: "Method not allowed" });
+    return json(res, 200, settings.put(owner, await readJson(req)));
+  }
+
+  const capability = path.match(/^\/api\/_\/capabilities\/([a-z0-9-]+)$/)?.[1];
+  if (capability) {
+    if (method !== "GET") return json(res, 405, { error: "Method not allowed" });
+    return json(res, 200, { results: registry.gather(capability as CapabilityName, args) } satisfies CapabilityResponse<CapabilityName>);
+  }
+
+  const [, id, rest = ""] = path.match(/^\/api\/([^/]+)(\/.*)?$/) ?? [];
+  const tool = id ? registry.mounted.get(id) : undefined;
+  if (!tool) return json(res, 404, { error: "Not found" });
+  if ("failure" in tool) return json(res, 503, { error: tool.failure });
+
+  const exposedName = rest.match(/^\/exposed\/([^/]+)$/)?.[1];
+  if (exposedName) {
+    const impl = tool.exposes.get(exposedName);
+    if (!impl) return json(res, 404, { error: "Not found" });
+    if (method !== "GET") return json(res, 405, { error: "Method not allowed" });
+    return json(res, 200, impl.handle(args) ?? null);
+  }
+
+  const match = matchRoute(tool.routes, method, rest);
   if (!("route" in match)) return match.methodMismatch ? json(res, 405, { error: "Method not allowed" }) : json(res, 404, { error: "Not found" });
   const body = method === "GET" || method === "DELETE" ? undefined : await readJson(req);
   json(res, 200, (await match.route.handle({ params: match.params, body })) ?? null);
@@ -73,9 +127,10 @@ async function serveApp(res: ServerResponse, path: string) {
 const serveDist = existsSync(DIST);
 
 createServer(async (req, res) => {
-  const path = new URL(req.url ?? "/", "http://localhost").pathname;
+  const url = new URL(req.url ?? "/", "http://localhost");
+  const path = url.pathname;
   try {
-    if (path.startsWith("/api/")) await handleApi(req, res, path);
+    if (path.startsWith("/api/")) await handleApi(req, res, url);
     else if (serveDist) await serveApp(res, path);
     else res.writeHead(404).end("No built app (run npm run build in app/), API only");
   } catch (e) {
@@ -84,6 +139,6 @@ createServer(async (req, res) => {
     json(res, 500, { error: "Internal error" });
   }
 }).listen(PORT, () => {
-  console.log(`Cubetrainer server on http://localhost:${PORT} (data: ${DATA_DIR})`);
+  console.log(`Cubetrainer server on http://localhost:${PORT} (branch ${branch(CHECKOUT)}, data: ${DATA_DIR})`);
   if (serveDist) console.log(`Serving the built app from ${DIST}`);
 });

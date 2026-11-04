@@ -1,0 +1,2357 @@
+{
+ "collectedAt": "2026-10-08T10:38:03.145Z",
+ "sources": [
+  {
+   "id": "jperm",
+   "note": "J Perm, Best F2L Algorithms (updated 2021-08-08). FR: the left column is the case, the right column its mirror case done with a y and the left hand. Highlighted algs (that need another slot empty) solve no case as-is.",
+   "algs": [
+    {
+     "moves": "U2 (R U R') U (R U' R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "y F R U2 R' F'",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "U (R U2 R') U (R U' R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "U (R U' R') U' (R U' R' U R U' R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "U (F R' F' R) U (R U R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "U2 (L F' L' F) (R U R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "y U L' U' (L2 F' L' F) (L' U L)",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "y F' (U' L' U L) F (L' U L)",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "y' U2 R U' R' U' S R' S'",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "(R U2 R') U' (R U R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "y U2 (L' U' L) U' (L' U L)",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "F' L' U2 L F",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "y U' (L' U2 L) U' (L' U L)",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "y U' (L' U L) U (L' U L U' L' U L)",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "y U' (F' L F L') U' (L' U' L)",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "y U2 (R F' R' F) (L' U' L)",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "U' R U (R2' F R F') (R U' R')",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "F (U R U' R') F' (R U' R')",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "y2 U2 L' U L U S' L S",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "y (L' U2 L) U (L' U' L)",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "(R U R')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "U' (R U R') U (R U R')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "U2 (R U' R') U' (R U R')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "R' U R2 U R'",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "R' U2 R2 U R2' U R",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "(R U' R') U (R U' R') U2 (R U' R')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "R' U2 R2 U R'",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "y U L' U2 L U' y' R U R'",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "U' (R U' R') U (R U R')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "y U' (L' U L)",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "y U (L' U2 L) U2 (L' U L)",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "r' U2 R2 U R2' U r",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "U' (R U R') U2 (R U' R')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "y U l' U L U' L' U' l",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "M U (L F' L') U' M'",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "U' (R' U R) U' (R U R')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "y (L' U L) y' U2 (R U R')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "y' (R2' F R F' R) U2 (R' U R)",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "y2 (f' L f) U2 (L U L')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "y (L' U' L)",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y U (L' U' L) U' (L' U' L)",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y U2 (L' U L) U (L' U' L)",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y L U' L2' U' L",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y L U2 L2' U' L2 U' L'",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y (L' U L) U' (L' U L) U2 (L' U L)",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y L U2 L2' U' L",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "U' (R U2 R') U y (L' U' L)",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y U (L' U L) U' (L' U' L)",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "U (R U' R')",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "U' (R U2 R') U2 (R U' R')",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y l U2 L2' U' L2 U' l'",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y U (L' U' L) U2 (L' U L)",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "U' r U' R' U R U r'",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y M U' (R' F R) U M'",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y U (L U' L') U (L' U' L)",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "(R U' R') y U2 (L' U' L)",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y2 (L2 F' L' F L') U2 (L U' L')",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y' (f R' f') U2 R' U' R",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "U (R U R') U2 (R U R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "U' (R U2 R') U (R U R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y U (L' U L) U2 (L' U L)",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "U (F' U' F) U' (R U R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y U2 (L' U' L) (F' L F L')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y U' M' (U' L' U l) (L' U L)",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y U' (L U F' L' F) (L' U L)",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y' U2 (R' U' R) y U (R U' R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y' U2 R' U' M U' R U M'",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y2 U (f' L' f) U' (L U L')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "(U R U' R')3",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "(R U R') U' (R U R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y M' (U' L' U L) (U' L' U l)",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y (L F' L' F)2",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "(R U' R') U (R U' R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "U' (R' F R F') (R U R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "(R' F' R) (U R U' R') F",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "U' F' (R U R' U') (R' F R)",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y U' (L' U L) (F' L F L')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y2 U' M U L U' M' U L'",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y' U' R' U M U' R U M'",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y U' (L' U' L) U2 (L' U' L)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y U (L' U2 L) U' (L' U' L)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "U' R U' R' U2 R U' R'",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y U' (F U F') U (L' U' L)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "U2 (R U R') (F R' F' R)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "U M' (U R U' r') (R U' R')",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "U (R' U' F R F') (R U' R')",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y2 U2 (L U L') y' U' (L' U L)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y2 U2 L U M U L' U' M'",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y' U' (f R f') U (R' U' R)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "U' (R' F R F') (R U' R')",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "(R U' R') (F' U2 F)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y' R' U R' F R F' R",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y' U' (R' U2 R) (f R f')",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y (L' U' L) U (L' U' L)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "M' (U R U' R') (U R U' r')",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "(R' F R F')2",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y (L' U L) U' (L' U L)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y U (L F' L' F) (L' U' L)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y (L F L') (U' L' U L) F'",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y U F (L' U' L U) (L F' L')",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "U (R U' R') (F R' F' R)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y' U M U' R' U M' U' R",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y2 U L U' M U L' U' M'",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "(R U' R') U (R U2 R' U R U' R')",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "y' (L' U L) U (L' U' L U2' L' U L)",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "(R U' R') (F' L' U2 L F)",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "y (F R U2' R' F') (L' U' L)",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "y2 L2 F U F' U' L' U L'",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "y' R' U R' U' F' U F R2",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "R2' U2' F R2 F' U2' R' U R'",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "y L2 U2 F' L2' F U2 L U' L",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "y' (f R' f') U (R' U2' R) U (R' U2' R)",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "y2 (f' L f) U' (L U2 L') U' (L U2 L')",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "y' (L' U L) U' (L' U2' L U' L' U L)",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "(R U' R') U' (R U R' U2 R U' R')",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "y (L' U L) (F R U2' R' F')",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "(F' L' U2 L F) (R U R')",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "y' R2' F' U' F U R U' R",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "y2 L U' L U F U' F' L2'",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "U' R' U R2 U' R'",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "U2 (R' U R) U' (S R S')",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "y R' F R2 U' R' U2 F'",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "y2 U2 (L F' L' F) (L U L')",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "U2 L2' u L2 u' L2'",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "y U2 R2 u' R2' u R2",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "y' U2 L2' u' L2 u L2'",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "y2 U2 R2 u R2' u' R2",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "y U L U' L2' U L",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "y U2 (L U' L') U (S' L' S)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "L F' L2' U L U2' F",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "y' U2 (R' F R F') (R' U' R)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "L F' U F L'",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "y R' F U' F' R",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "y' (L' u' L) U' (L' u L)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "y2 (R u R') U (R u' R')",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "R' U' R2 U R'",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "F D R D' F'",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y R (F U F') R'",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y2 F (L U L') F'",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y' R u R u' R'",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "U' (L' U' L) (R U' R')",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y U2 L' U' L2 U L2' U' L",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "(F U2 F') (R U R')",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y L U2 L' F U F'",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y' R U2 R' f R f'",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "U (R U R') (L U L')",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "U' (R U2 R') U' (L U L')",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y U (L' U L) (R' U R)",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "U2 F' (L U L') F",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y U2 L' (B U B') L",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y' U2 R' (F U F') R",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y2 f' U L U' f",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y L U L2' U' L",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y F' D' L' D F",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "L' (F' U' F) L",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y' F' (R' U' R) F",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y2 L' u' L' u L",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "U (R U R') (L' U L)",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y' U2' R U R2' U' R2 U R'",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y (F' U2 F) (L' U' L)",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "R' U2 R F' U' F",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y2 L' U2 L f' L' f",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y U' (L' U' L) (R' U' R)",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y U (L' U2 L) U (R' U' R)",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "U' (R U' R') (L U' L')",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y U2' F (R' U' R) F'",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "U2' R (B' U' B) R'",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y2 U2' L (F' U' F) L'",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y' f U' R' U f'",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "U (R U' R') (L' U L)",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "U2 (R U' R') U (L' U' L)",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "y (F' L F L') U' (L U2 L')",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "(R U R') U' (L' U L)",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "y (S' L S)",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "y U' (L' U L) (R U' R')",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "(F R' F' R) U (R' U2 R)",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "y U2 (L' U L) U' (R U R')",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "(S R' S')",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "y (L' U' L) U (R U' R')",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "y (L' U2 L) U' (L U L')",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "y U2 (L' U L) U' (L U2 L')",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "y U' L' U' L2 U2 L'",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "U' (R U R') (F U F')",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "y U (L' U L) U (L U L')",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "y U' (F U F') (L U L')",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "(R U2 R') U (R' U' R)",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "U2 (R U' R') U (R' U2 R)",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "U R U R2' U2 R",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "U (F U' F') (R' U' R)",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "U' (R U' R') U' (R' U R)",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "y U (L' U' L) (F' U' F)",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "U' (F' U F) (L U2 L')",
+     "page": 9,
+     "column": 0
+    },
+    {
+     "moves": "y U' (L' U L) U' (f R' f')",
+     "page": 9,
+     "column": 0
+    },
+    {
+     "moves": "(R U' R') (L U2 L')",
+     "page": 9,
+     "column": 0
+    },
+    {
+     "moves": "y (L' U' L) (f R' f')",
+     "page": 9,
+     "column": 0
+    },
+    {
+     "moves": "(R U' R') U (L U L')",
+     "page": 9,
+     "column": 0
+    },
+    {
+     "moves": "y (L F' L' F) (R' U2 R)",
+     "page": 9,
+     "column": 0
+    },
+    {
+     "moves": "U (R U' R') U (f' L f)",
+     "page": 9,
+     "column": 1
+    },
+    {
+     "moves": "y U (F U' F') (R' U2 R)",
+     "page": 9,
+     "column": 1
+    },
+    {
+     "moves": "(R U R') (f' L f)",
+     "page": 9,
+     "column": 1
+    },
+    {
+     "moves": "y (L' U L) (R' U2 R)",
+     "page": 9,
+     "column": 1
+    },
+    {
+     "moves": "(R' F R F') (L U2 L')",
+     "page": 9,
+     "column": 1
+    },
+    {
+     "moves": "y (L' U' L) U' (R' U' R)",
+     "page": 9,
+     "column": 1
+    },
+    {
+     "moves": "R2 U' R2' U R2",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "y2 L2' U' L2 U L2'",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "y F' R' F2 R F",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "y L2' U L2 U' L2'",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "y' R2 U R2' U' R2",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "F L F2' L' F'",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "L2' u' L2 u L2'",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "y' R2 u R2' u' R2",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "y L2' u L2 u' L2'",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "y2 R2 u' R2' u R2",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "R' F R2 U' R2' F' R",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "L F' L2' U' L2 F L'",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "y (f' L' f) U' (L' U L)",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "y' (R U R') U' (f R' f')",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "y2 (f R f') (L U2 L')",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "R (L U2 L') R'",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "y L' (R' U2 R) L",
+     "page": 10,
+     "column": 0
+    },
+    {
+     "moves": "f' R' U R f",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "y R' u' R u R",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "y' L' u' L u L",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "y2 f' D' L D f",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "y f L U' L' f'",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "L u L' u' L'",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "y2 R u R' u' R'",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "y' f D R' D' f'",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "(L' u' L) U (L' u L)",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "y' (R u R') U' (R u' R')",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "y (L u L') U' (L u' L')",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "y2 (R' u' R) U (R' u R)",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "y L F' L2' U L2 F L'",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "y R' F R2 U R2' F' R",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "(f R f') U (R U' R')",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "y2 (L' U' L) U (f' L f)",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "y' (f' L' f) (R' U2' R)",
+     "page": 10,
+     "column": 1
+    },
+    {
+     "moves": "L F2' L' F U' F",
+     "page": 11,
+     "column": 0
+    },
+    {
+     "moves": "(L F' L' U' F) U' (R U R')",
+     "page": 11,
+     "column": 0
+    },
+    {
+     "moves": "y (L U' F' L' F) (L' U L)",
+     "page": 11,
+     "column": 0
+    },
+    {
+     "moves": "(R' F R U' F') (R U' R')",
+     "page": 11,
+     "column": 0
+    },
+    {
+     "moves": "y (L' U' L) U (S' L' S)",
+     "page": 11,
+     "column": 0
+    },
+    {
+     "moves": "(L' U L) (M' U R U' r') (R U' R')",
+     "page": 11,
+     "column": 0
+    },
+    {
+     "moves": "y (L U F' L' F) U2 (L' U' L)",
+     "page": 11,
+     "column": 0
+    },
+    {
+     "moves": "y (L U L') (F U F') U' (L' U L)",
+     "page": 11,
+     "column": 0
+    },
+    {
+     "moves": "(R' F R U' F') U (R U' R')",
+     "page": 11,
+     "column": 0
+    },
+    {
+     "moves": "R U' R2' u' R' u R",
+     "page": 11,
+     "column": 0
+    },
+    {
+     "moves": "y2 L U' L2' u' L' u L",
+     "page": 11,
+     "column": 0
+    },
+    {
+     "moves": "y R' F2 R F' U F'",
+     "page": 11,
+     "column": 1
+    },
+    {
+     "moves": "y (R' F R U F') U (L' U' L)",
+     "page": 11,
+     "column": 1
+    },
+    {
+     "moves": "(R' U F R F') (R U' R')",
+     "page": 11,
+     "column": 1
+    },
+    {
+     "moves": "y (L F' L' U F) (L' U L)",
+     "page": 11,
+     "column": 1
+    },
+    {
+     "moves": "(R U R') U' (S R S')",
+     "page": 11,
+     "column": 1
+    },
+    {
+     "moves": "y (R U' R') (M' U' L' U l) (L' U L)",
+     "page": 11,
+     "column": 1
+    },
+    {
+     "moves": "(R' U' F R F') U2 (R U R')",
+     "page": 11,
+     "column": 1
+    },
+    {
+     "moves": "(R' U' R) (F' U' F) U (R U' R')",
+     "page": 11,
+     "column": 1
+    },
+    {
+     "moves": "y (L F' L' U F) U' (L' U L)",
+     "page": 11,
+     "column": 1
+    },
+    {
+     "moves": "y L' U L2 u L u' L'",
+     "page": 11,
+     "column": 1
+    },
+    {
+     "moves": "y' R' U R2 u R u' R'",
+     "page": 11,
+     "column": 1
+    }
+   ]
+  },
+  {
+   "id": "cubeskills",
+   "note": "CubeSkills F2L Algorithms – All Four Slot Angles, by Feliks Zemdegs and Andy Klise: FR, BR, FL, BL. The sheet marks one alg per case as suggested by layout, which its text doesn't carry: every alg on it counts as recommended.",
+   "algs": [
+    {
+     "moves": "U (R U' R')",
+     "page": 1,
+     "column": 0
+    },
+    {
+     "moves": "y' (R' U' R)",
+     "page": 1,
+     "column": 0
+    },
+    {
+     "moves": "y (L' U' L)",
+     "page": 1,
+     "column": 0
+    },
+    {
+     "moves": "U' (R U' R' U) y' (R' U' R)",
+     "page": 1,
+     "column": 0
+    },
+    {
+     "moves": "y' U (R' U' R U') (R' U' R)",
+     "page": 1,
+     "column": 0
+    },
+    {
+     "moves": "U' (R U2' R' U) y' (R' U' R)",
+     "page": 1,
+     "column": 0
+    },
+    {
+     "moves": "U' (R U2' R') d (R' U' R)",
+     "page": 1,
+     "column": 0
+    },
+    {
+     "moves": "y' U (R' U R U') (R' U' R)",
+     "page": 1,
+     "column": 0
+    },
+    {
+     "moves": "(U' R U R') U2 (R U' R')",
+     "page": 1,
+     "column": 0
+    },
+    {
+     "moves": "U' (R U2' R') U2 (R U' R')",
+     "page": 1,
+     "column": 0
+    },
+    {
+     "moves": "U (R U2' R') U (R U' R')",
+     "page": 1,
+     "column": 0
+    },
+    {
+     "moves": "U2 (R U R' U) (R U' R')",
+     "page": 1,
+     "column": 0
+    },
+    {
+     "moves": "(R U' R') U2 (R U R')",
+     "page": 1,
+     "column": 0
+    },
+    {
+     "moves": "y' U' (R' U R)",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "y U' (L' U L)",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "(R U R')",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "U' (R U R' U) (R U R')",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "R' U2' R2 U R2' U R",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "y' U (R' U2 R) U' y (R U R')",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "(R U' R' U) (R U' R') U2 (R U' R')",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "U' (R U' R' U) (R U R')",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "y' (U R' U' R) U2' (R' U R)",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "d (R' U' R) U2' (R' U R)",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "y' U (R' U2 R) U2' (R' U R)",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "d (R' U2 R) U2' (R' U R)",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "y' U' (R' U2 R) U' (R' U R)",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "y' U2 (R' U' R) U' (R' U R)",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "F' L' U2 L F",
+     "page": 1,
+     "column": 1
+    },
+    {
+     "moves": "y' (R' U R) U2' y (R U R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "(R U R') U2 (R U' R' U) (R U' R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "(R U2 R') U' (R U R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "U (R U' R' U') (R U' R' U) (R U' R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "(R U R' U2') (R U R' U') (R U R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "U' F' (R U R' U') R' F R",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "R' F' R U (R U' R') F",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "(R U' R' U) (R U' R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "y' (R' U' R U) (R' U' R)",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "(R' F R F') U (R U' R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "(R U' R' U) y' (R' U R)",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "U' (R' F R F') (R U' R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "(U' R U' R') U2 (R U' R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "(U' R U R') d (R' U' R)",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "(R U' R' U') R U R' U2 (R U' R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "(R U R' U') R U2 R' U' (R U R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "(F' U F) U2 (R U R' U) (R U' R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "(R U' R') F (R U R' U') F' (R U' R')",
+     "page": 2,
+     "column": 0
+    },
+    {
+     "moves": "(R U' R' U2) y' (R' U' R)",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "U F (R U R' U') F' (U R U' R')",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "y' (R' U2 R) U (R' U' R)",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "y' U' (R' U R U) (R' U R U') (R' U R)",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "F (U R U' R') F' (R U' R')",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "U (R U' R') U' (F' U F)",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "U (R U' R') (F R' F' R)",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "y' (R' U R U') (R' U R)",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "(R U R' U') (R U R')",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "(U R U' R') (U R U' R') (U R U' R')",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "U (R U R') U2 (R U R')",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "U (F' U' F) U' (R U R')",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "(R U' R') d (R' U2 R) U2' (R' U R)",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "(R U' R' U) (R U2' R') U (R U' R')",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "(R U R') U2' (R U' R' U) (R U R')",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "(R U R' U') (R U' R') U2 y' (R' U' R)",
+     "page": 2,
+     "column": 1
+    },
+    {
+     "moves": "y U (R U' R')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "y' U (L U' L')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "(R' U' R)",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "U (R' U' R U') (R' U' R)",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "R U2' R2' U' (R2 U' R')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "U (R' U R U') (R' U' R)",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "y (U' R U R') U2 (R U' R')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "U r' (U R U' R') U' r",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "y U' (R U2' R') U2 (R U' R')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "y U (R U2' R') U (R U' R')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "y U2 (R U R' U) (R U' R')",
+     "page": 3,
+     "column": 0
+    },
+    {
+     "moves": "U' (R' U R)",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y (R U R')",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y' (L U L')",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "U (R' U R U') y (R U R')",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "U (R' U2 R) U' y (R U R')",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "y U' (R U' R' U) (R U R')",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "(U R' U' R) U2' (R' U R)",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "U (R' U2 R) U2' (R' U R)",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "U' (R' U2 R) U' (R' U R)",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "U2 (R' U' R) U' (R' U R)",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "R' F' U2 F R",
+     "page": 3,
+     "column": 1
+    },
+    {
+     "moves": "(R' U R) U2' y (R U R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "(R2' F R F' R) U2' (R' U R)",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y (R U2 R') U' (R U R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "(R' U' R U' y) (R U' R' U) (R U' R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "(U R' U2' R) y (R U2' R' U) (R U' R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "(U' R' U R) y U (R U' R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y (R U' R' U) (R U' R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "R' U2 R' F R F' R",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "(R' U' R U) (R' U' R)",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "(R' U R' F) (R F' R)",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "(R' U R U') y (R U' R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "(U' R' U' R) U2 (R' U' R)",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y (U' R U R') d (R' U' R)",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "(R' U R U') (R' U2 R U') (R' U R)",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "(R' U R) U2' y (R U R' U) (R U' R')",
+     "page": 4,
+     "column": 0
+    },
+    {
+     "moves": "y (R U' R' U2) y' (R' U' R)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "U (R U' R' U) (R' U' R)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "(R' U2' R) U (R' U' R)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "U' (R' U R U) (R' U R U') (R' U R)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y F (U R U' R') F' (R U' R')",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y U (R U' R') U' (F' U F)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y U (R U' R') (F R' F' R)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "(R' U R U') (R' U R)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y (R U R' U') (R U R')",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "(U' R' U R) (U' R' U R) (U' R' U R)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "U (R' U R) U2' (R' U R)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "U (R' U' R) y U' (R U R')",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "(R' U R) d' (R U2' R') U2 (R U' R')",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "(R' U' R U) (R' U2' R) U (R' U' R)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "(R' U R U) (R' U' R U2') (R' U R)",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "(R' U R U) (R' U R U') y (R U R')",
+     "page": 4,
+     "column": 1
+    },
+    {
+     "moves": "y' U (R U' R')",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "y U (L U' L')",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "(L' U' L)",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "U (L' U' L U') (L' U' L)",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "L U2' L2' U' (L2 U' L')",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "U (L' U L U') (L' U' L)",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "y' (U' R U R') U2 (R U' R')",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "(L U L') y' (U R U' R')",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "y' U' (R U2' R') U2 (R U' R')",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "y' U (R U2' R') U (R U' R')",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "F R U2' R' F'",
+     "page": 5,
+     "column": 0
+    },
+    {
+     "moves": "U' (L' U L)",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "y' (R U R')",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "y (L U L')",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "U (L' U L U') y' (R U R')",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "U (L' U2 L) U' y' (R U R')",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "y' U' (R U' R' U) (R U R')",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "(U L' U' L) U2' (L' U L)",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "U (L' U2 L) U2' (L' U L)",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "U' (L' U2 L) U' (L' U L)",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "U2 (L' U' L) U' (L' U L)",
+     "page": 5,
+     "column": 1
+    },
+    {
+     "moves": "(L' U L) U2' y' (R U R')",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "y' (R U2 R') U' (R U R')",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "y' U (R U' R' U') (R U' R' U R U' R')",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "y' (R U R' U2') (R U R' U') (R U R')",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "(U' L' U L) d (R U' R')",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "y' (R U' R' U) (R U' R')",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "(L' U' L U) (L' U' L)",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "(L' U L U') y' (R U' R')",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "(U' L' U' L) U2 (L' U' L)",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "y' (U' R U R') d (R' U' R)",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "(L' U L U') (L' U2 L U') (L' U L)",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "(L' U L) F R U2' R' F'",
+     "page": 6,
+     "column": 0
+    },
+    {
+     "moves": "y' (R U' R' U2) y' (R' U' R)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "(U' R U' R') U' (L' U' L)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "(L' U2 L) U (L' U' L)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "U' (L' U L U) (L' U L U') (L' U L)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "y' F (U R U' R') F' (R U' R')",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "y' U (R U' R') U' (F' U F)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "y' U (R U' R') (F R' F' R)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "(L' U L U') (L' U L)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "y' (R U R' U') (R U R')",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "(r U' r' F) (r U' r' F)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "(U' L' U L) (U' L' U L) (U' L' U L)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "U (L' U L) U2' (L' U L)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "U (L' U' L) y' U' (R U R')",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "(L' U L U') y' (R U2' R' U2 R U' R')",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "(L' U' L U) (L' U2' L) U (L' U' L)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "(L' U L U) (L' U' L U2') (L' U L)",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "(L' U L U) (L' U L U') y (L U L')",
+     "page": 6,
+     "column": 1
+    },
+    {
+     "moves": "U (L U' L')",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y (R' U' R)",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y U (R' U' R U') (R' U' R)",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y R U2' R2' U' (R2 U' R')",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y U (R' U R U') (R' U' R)",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "(U' L U L') U2 (L U' L')",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "U' (L U2 L') U2 (L U' L')",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "U (L U2' L') U (L U' L')",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y' F R U2' R' F'",
+     "page": 7,
+     "column": 0
+    },
+    {
+     "moves": "y U' (R' U R)",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y' U' (L' U L)",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "(L U L')",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "U' (L U L' U) (L U L')",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "L' U2 L2 U (L2' U L)",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "U' (L U' L' U) (L U L')",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y (U R' U' R) U2' (R' U R)",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y U (R' U2' R) U2' (R' U R)",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y U' (R' U2 R) U' (R' U R)",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y U2 (R' U' R) U' (R' U R)",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y R' F' U2 F R",
+     "page": 7,
+     "column": 1
+    },
+    {
+     "moves": "y (R' U R) U2' y (R U R')",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "U' (L' U L U') (L U' L')",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "(L U2 L') U' (L U L')",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "U (L U' L' U') (L U' L' U) (L U' L')",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "y' (U' L' U L) d (R U' R')",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "(L U' L' U) (L U' L')",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "y (R' U' R U) (R' U' R)",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "y (R' U R' F) (R F' R)",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "(U' L U' L') U2 (L U' L')",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "(U2' L U L') d' (R' U R)",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "(L U L' U') (L U2 L' U') (L U L')",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "y (R' U R) U2' y (R U R' U R U' R')",
+     "page": 8,
+     "column": 0
+    },
+    {
+     "moves": "(L U' L' U2) y (R' U' R)",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "y (R' U2' R) U (R' U' R)",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "y U' (R' U R U) (R' U R U') (R' U R)",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "U (L U' L') d' (R' U R)",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "y (R' U R U') (R' U R)",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "(L U L' U') (L U L')",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "(U L U' L') (U L U' L') (U L U' L')",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "U (L U L') U2 (L U L')",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "y U2' (R' U R) d (L U L')",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "y (R' U R) d' (R U2' R' U2 R U' R')",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "(L U' L' U) (L U2' L') U (L U' L')",
+     "page": 8,
+     "column": 1
+    },
+    {
+     "moves": "(L U' L') d' (U' R' U' R U') (R' U R)",
+     "page": 8,
+     "column": 1
+    }
+   ]
+  }
+ ]
+}
