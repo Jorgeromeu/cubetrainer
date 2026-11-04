@@ -123,6 +123,12 @@ body:has(.workspace) .topbar-inner {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* While a window is open the page behind it doesn't scroll. */
+body:has(.window-backdrop) {
+  overflow: hidden;
 }
 
 .pane-group {
@@ -486,7 +492,15 @@ button.pane-row {
   background: var(--surface);
   box-shadow: var(--shadow-float);
   font-size: var(--text-body);
-  overflow: hidden;
+}
+
+/* Not overflow: hidden for the corners: it would clip the hover bridge (::before) above. */
+.tool-menu a:first-child {
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.tool-menu a:last-child {
+  border-radius: 0 0 var(--radius) var(--radius);
 }
 
 .tool-menu::before {
