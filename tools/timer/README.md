@@ -17,11 +17,6 @@ each tagged with its `source` (and its import). Its stats page charts them all. 
 | `#/timer` | Hold Space (or press the time) until it's green, release to start, any key stops. The last solve can be marked OK / +2 / DNF or deleted. ao5, ao12, ao100 and the latest 12 solves of every source. |
 | `#/timer/stats` | Every solve, charted (see `openspec/specs/tools/timer`). |
 
-## Clients
-
-The web app only, for now. A phone client (the hosted web app, later an iOS app) is planned:
-once it uses this API, the API only grows (openspec/specs/foundation/architecture, "Clients").
-
 ## API
 
 Types in `contract.ts`.

@@ -93,25 +93,12 @@ copies your data and picks its own ports, so it never writes to your real data, 
 bar shows its branch. After merging, `npm run data:push` from the worktree brings back what
 you saved there (new rows only). Details: `CLAUDE.md`, `openspec/specs/foundation/dev-workflow`.
 
-## Deploying
+## Hosting
 
-To reach it from a phone (or later an iOS app), run the server on any host that runs a
-container with a persistent disk; it serves the API and the built app:
-
-```sh
-docker build -t cubetrainer .
-docker run -p 8080:8080 -v cubetrainer-data:/data -e AUTH_TOKEN=<long random> cubetrainer
-```
-
-- HTTPS comes from the host (or a proxy in front). Always set `AUTH_TOKEN`: the API then
-  needs it. Sign a browser in once with `https://<host>/login?token=<token>`; other clients
-  send `Authorization: Bearer <token>`.
-- `/data` holds the SQLite files: keep that volume across deploys (migrations run at start).
-  Seed the first deploy by copying `data/*.sqlite` from your checkout into it.
-- `GET /api/_/health` answers without the token, for the host's health check.
-
-Details: `openspec/specs/foundation/deployment`. Other clients use the same APIs as the web
-app; once one does, that tool's API only grows (`foundation/architecture`, "Clients").
+Not set up yet. The server is built so it can be (one process, everything configured by
+`PORT` and `DATA_DIR`, no git checkout needed), and other clients such as an iOS app would use
+the same APIs: `openspec/specs/foundation/deployment`, and "Clients" in
+`foundation/architecture`.
 
 ## Your data
 
