@@ -60,6 +60,17 @@ Each tool's `contract.ts` SHALL define its HTTP API's request and response bodie
 - **WHEN** a tool's request body type changes
 - **THEN** the change is made in its `contract.ts` and both its app and server compile against it
 
+### Requirement: Clients
+The web app SHALL be one client of the tools' HTTP APIs, with no access to tool data the APIs don't give. Any other client (a native iOS app, a script) SHALL use the same APIs, each defined only by the tool's `contract.ts` as plain JSON, and SHALL implement only the tools it needs: a tool doesn't declare which clients it has. A client SHALL follow the same rules as the web app: client-made ids and idempotent requests, so it can work offline with an outbox (see App works without the server), and the token when the server requires one (see foundation/deployment). A tool's README SHALL say when a client other than the web app uses its API; from then on that API only grows (new optional fields, new endpoints): changing or removing anything takes a new endpoint, since an installed app isn't updated with the server.
+
+#### Scenario: An iOS timer
+- **WHEN** an iOS app logs solves
+- **THEN** it saves them with `PUT /api/timer/solves/<its uuid>` like the web app, they appear in the web app's stats, and the iOS app knows nothing about F2L
+
+#### Scenario: A field rename
+- **WHEN** a tool whose API an iOS app uses wants to rename a response field
+- **THEN** it adds the new field and keeps the old one, or adds a new endpoint, instead
+
 ### Requirement: What a tool exposes
 A tool's contract SHALL declare the calls other tools may read, each with `exposed<Result, Args>(tool, name)` from `packages/core/exposed.ts` (or `provides(tool, name, capability)`, see Capabilities), and its server SHALL implement them (`implement(call, handler)`, returned from `start()` next to its routes). Calls are read-only; arguments are strings (they travel as a query string); names are lowercase letters, digits and dashes. Everything not declared is private to the tool, even if reachable over HTTP. A tool SHALL only implement its own calls. Exposed today: `timer` → `solves` (see tools/timer), `f2l` → `active-cases` (see tools/f2l).
 

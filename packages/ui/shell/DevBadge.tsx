@@ -7,10 +7,11 @@ const day = (iso: string) => new Date(iso).toLocaleString(undefined, { day: 'num
 
 export function DevBadge() {
   const info = useDevInfo()
-  if (!info || isPlainMain(info)) return null
+  if (!info?.branch || isPlainMain(info)) return null
+  const branch = info.branch
   const own = info.dataDir !== info.mainDataDir
   const title = [
-    `Branch ${info.branch}`,
+    `Branch ${branch}`,
     info.checkout === 'worktree' ? `Worktree ${info.root}` : `Main checkout ${info.root}`,
     `Data ${info.dataDir}${own ? '' : ' (your real data)'}`,
     info.copiedAt && `Copied from main ${day(info.copiedAt)}`,
@@ -20,9 +21,9 @@ export function DevBadge() {
     .filter(Boolean)
     .join('\n')
   return (
-    <span className="dev-badge" style={{ ['--branch' as string]: branchColour(info.branch) }} title={title}>
+    <span className="dev-badge" style={{ ['--branch' as string]: branchColour(branch) }} title={title}>
       <span className="dev-badge-dot" aria-hidden />
-      {info.branch}
+      {branch}
       <span className="dev-badge-data">
         {own ? 'own data' : 'main data'}
         {own && info.unpushed > 0 && ` · ${info.unpushed} unpushed`}

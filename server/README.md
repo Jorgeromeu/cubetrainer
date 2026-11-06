@@ -15,6 +15,7 @@ No npm dependencies: `node:http` + `node:sqlite`, `.ts` run directly. Requires N
 | Env | Default |
 |---|---|
 | `PORT` | `3001` |
+| `AUTH_TOKEN` | unset: no sign-in. Set (hosted): every API request needs it (`src/auth.ts`, `openspec/specs/foundation/deployment`) |
 | `DATA_DIR` | `../data` (gitignored; its `*.sqlite` files **are** your progress, back them up) |
 
 ## Layout

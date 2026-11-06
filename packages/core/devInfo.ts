@@ -5,8 +5,8 @@
 export const DEV_INFO_PATH = '/api/_/info'
 
 export interface DevInfo {
-  /** The checked-out branch, read live; a short commit hash when detached. */
-  branch: string
+  /** The checked-out branch, read live; a short commit hash when detached; absent when deployed (no git checkout). */
+  branch?: string
   /** The main checkout or a git worktree of it. */
   checkout: 'main' | 'worktree'
   /** This checkout's folder. */
@@ -22,5 +22,5 @@ export interface DevInfo {
   serverPort: number
 }
 
-/** The badge is hidden only on `main` using main's data: normal use. */
-export const isPlainMain = (info: DevInfo) => info.branch === 'main' && info.dataDir === info.mainDataDir
+/** The badge is hidden on `main` using main's data (normal use), and when deployed. */
+export const isPlainMain = (info: DevInfo) => !info.branch || (info.branch === 'main' && info.dataDir === info.mainDataDir)

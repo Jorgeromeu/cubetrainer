@@ -43,7 +43,7 @@ switch (command) {
   }
   case "push": {
     printDiff();
-    const { backups, pushed } = push(dataDir, mainDir, branch(co).replace(/[^\w-]/g, "_"));
+    const { backups, pushed } = push(dataDir, mainDir, (branch(co) ?? "worktree").replace(/[^\w-]/g, "_"));
     for (const b of backups) console.log(`Backed up ${b}`);
     console.log(pushed.length ? `Pushed into ${mainDir}.` : "Nothing to push.");
     break;

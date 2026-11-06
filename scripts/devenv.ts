@@ -30,13 +30,13 @@ export function checkout(root: string): Checkout {
   return { root, isWorktree: true, mainRoot: dirname(dirname(dirname(gitDir))), gitDir };
 }
 
-/** The checked-out branch, read now (so switching branches shows without a restart). */
-export function branch(co: Checkout): string {
+/** The checked-out branch, read now (so switching branches shows without a restart); undefined without a git checkout (deployed). */
+export function branch(co: Checkout): string | undefined {
   try {
     const head = readFileSync(join(co.gitDir, "HEAD"), "utf8").trim();
     return head.match(/^ref: refs\/heads\/(.+)$/)?.[1] ?? head.slice(0, 8);
   } catch {
-    return "unknown";
+    return undefined;
   }
 }
 
@@ -128,7 +128,7 @@ export function copyMainData(co: Checkout, dataDir: string): string[] {
   const from = mainDataDir(co);
   const files = existsSync(from) ? readdirSync(from).filter(isToolDb) : [];
   for (const f of files) copyDb(join(from, f), join(dataDir, f));
-  writeFileSync(join(dataDir, COPIED_FILE), JSON.stringify({ from, at: new Date().toISOString(), branch: branch(co) }, null, 2) + "\n");
+  writeFileSync(join(dataDir, COPIED_FILE), JSON.stringify({ from, at: new Date().toISOString(), branch: branch(co) ?? null }, null, 2) + "\n");
   return files;
 }
 

@@ -1,0 +1,12 @@
+# Not in the image: dependencies (installed fresh), user data, build output, git, local tooling.
+node_modules
+**/node_modules
+data
+app/dist
+.git
+.claude
+.dev.json
+tools/f2l/catalog/builder/raw
+*.log
+*.sqlite
+*.sqlite-*

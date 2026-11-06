@@ -4,6 +4,8 @@
 //   GET /api/<tool>/exposed/<name>?args       -> that call's result (404 if not there)
 //   GET /api/_/capabilities/<name>?args       -> CapabilityResponse: every provider's
 //   GET /api/_/info                           -> DevInfo: branch, checkout and data (the shell's badge)
+//   GET /api/_/health                         -> { ok: true }, without signing in (hosts' health checks)
+//   GET /login?token=...                      -> signs this browser in (only with AUTH_TOKEN; auth.ts)
 //   GET /api/_/settings, PUT /api/_/settings/<owner>   the settings store (settings/store.ts)
 //
 // In a git worktree, the first start copies main's data and picks free ports (scripts/devenv.ts).
@@ -19,6 +21,7 @@ import { SETTINGS_PATH } from "../../packages/core/settings.ts";
 import type { CapabilityName, CapabilityResponse } from "../../packages/core/exposed.ts";
 import { unpushedRows } from "../../scripts/datasync.ts";
 import { branch, checkout, copiedAt, copyMainData, devPorts, hasToolDbs, mainDataDir } from "../../scripts/devenv.ts";
+import { auth } from "./auth.ts";
 import { openDb } from "./db.ts";
 import { json, matchRoute, readJson } from "./http.ts";
 import { Registry } from "./registry.ts";
@@ -32,6 +35,9 @@ const PORT = Number(process.env.PORT ?? (await devPorts(CHECKOUT)).server);
 const DATA_DIR = resolve(process.env.DATA_DIR ?? join(ROOT, "data"));
 const MAIN_DATA_DIR = resolve(mainDataDir(CHECKOUT));
 const DIST = join(ROOT, "app/dist");
+const AUTH = auth(process.env.AUTH_TOKEN || undefined);
+/** For a host's health checks: answered without signing in. */
+const HEALTH_PATH = "/api/_/health";
 
 // A worktree's first start: its own copy of main's data, before any tool opens a DB.
 if (CHECKOUT.isWorktree && DATA_DIR !== MAIN_DATA_DIR && !hasToolDbs(DATA_DIR)) {
@@ -130,6 +136,9 @@ createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://localhost");
   const path = url.pathname;
   try {
+    if (path === "/login") return AUTH.login(req, res, url);
+    if (path === HEALTH_PATH) return json(res, 200, { ok: true });
+    if (path.startsWith("/api/") && !AUTH.allows(req)) return json(res, 401, { error: "Not signed in: open /login?token=<token> once" });
     if (path.startsWith("/api/")) await handleApi(req, res, url);
     else if (serveDist) await serveApp(res, path);
     else res.writeHead(404).end("No built app (run npm run build in app/), API only");
@@ -139,6 +148,7 @@ createServer(async (req, res) => {
     json(res, 500, { error: "Internal error" });
   }
 }).listen(PORT, () => {
-  console.log(`Cubetrainer server on http://localhost:${PORT} (branch ${branch(CHECKOUT)}, data: ${DATA_DIR})`);
+  console.log(`Cubetrainer server on http://localhost:${PORT} (${branch(CHECKOUT) ? `branch ${branch(CHECKOUT)}` : "deployed"}, data: ${DATA_DIR})`);
+  if (AUTH.enabled) console.log("Signing in required (AUTH_TOKEN): the API answers 401 without the token");
   if (serveDist) console.log(`Serving the built app from ${DIST}`);
 });
